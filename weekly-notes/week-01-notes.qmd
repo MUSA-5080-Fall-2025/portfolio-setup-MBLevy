@@ -7,38 +7,56 @@ date: "2025-09-08"
 - [List main concepts from lecture]
 - [Technical skills covered]
 **Main Class Tools**
--Github
--Quarto
-  -Similar to RMarkdown
-    -Better site creation and language flexibility
-  -Integration of code, text, and output (so basically RMarkdown)
-  -Why?
-    -Reproductable research
-    -Professional Presentations
-  -Career Relevance
-    -"Industry standard"
-    -Creates sites, pdfs, presentations
-  -Formatting
-    -Text
-      -![text formatting how to](/imgNotes/textFormat.png)
-    -Headers
-      -![header formatting how to](/imageNotes/headersFormat.png)
-    -Lists
-      -![list formatting how to](/imageNotes/listFormat.png)
-    -Links & Images
-      -![header formatting how to](/imageNotes/miscFormat.png)
+- Github
+- Quarto
+  - Similar to RMarkdown
+    - Better site creation and language flexibility
+  - Integration of code, text, and output (so basically RMarkdown)
+  - Why?
+    - Reproductable research
+    - Professional Presentations
+  - Career Relevance
+    - "Industry standard"
+    - Creates sites, pdfs, presentations
+  - Formatting
+    - Text
+      - ![text formatting how to](imgNotes/textFormat.png)
+    - Headers
+      - ![header formatting how to](imgNotes/headersFormat.png)
+    - Lists
+      - ![list formatting how to](imgNotes/listFormat.png)
+    - Links & Images
+      - ![header formatting how to](imgNotes/miscFormat.png)
     
 ## Coding Techniques
 - [New R functions or approaches]
 - [Quarto features learned]
 
+**Tidyverse Review**
+
+- Why Tibbles?
+  - Smarter printing
+- Essential dplyr functions (you know these dummy)
+  - `select()` -- choose columns
+  - `filter()` -- choose rows i.e. `youngCars <- filter(carData, oldCars == "Not Old")`
+  - `&` -- syntax for AND
+  - `|` -- syntax for OR
+  - `mutate()` -- create new variables
+    - Use `case_when()` as if statement i.e. `carData <- mutate(carData, oldCars = case_when(age > 20 ~ "old", TRUE ~ "Not Old"))`
+  - `summarize()` -- create statistics
+  - `group_by()` -- operate on groups condenses rows by column values (works with `summarize()` like pb & jelly)
+- Piping
+  - `%>%` -- syntax for pipe
+  - read as "then"
+  - connects lines of code to minimize outputs
 ## Questions & Challenges
 - [What I didn't fully understand]
 - [Areas needing more practice]
-
+Branch control with github desktop
 ## Connections to Policy
 - [How this week's content applies to real policy work]
-
+Learning basics of professional version control
 ## Reflection
 - [What was most interesting]
 - [How I'll apply this knowledge]
+Application to doing R as a group

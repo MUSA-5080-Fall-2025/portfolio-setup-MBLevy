@@ -96,10 +96,6 @@ ul.task-list li input[type="checkbox"] {
     <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../weekly-notes/"> 
-<span class="menu-text">Weekly Notes</span></a>
-  </li>  
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
@@ -118,9 +114,6 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#key-concepts-learned" id="toc-key-concepts-learned" class="nav-link active" data-scroll-target="#key-concepts-learned">Key Concepts Learned</a></li>
   <li><a href="#coding-techniques" id="toc-coding-techniques" class="nav-link" data-scroll-target="#coding-techniques">Coding Techniques</a></li>
-  <li><a href="#questions-challenges" id="toc-questions-challenges" class="nav-link" data-scroll-target="#questions-challenges">Questions &amp; Challenges</a></li>
-  <li><a href="#connections-to-policy" id="toc-connections-to-policy" class="nav-link" data-scroll-target="#connections-to-policy">Connections to Policy</a></li>
-  <li><a href="#reflection" id="toc-reflection" class="nav-link" data-scroll-target="#reflection">Reflection</a></li>
   </ul>
 </nav>
     </div>
@@ -156,7 +149,65 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="key-concepts-learned">Key Concepts Learned</h2>
 <ul>
 <li>[List main concepts from lecture]</li>
-<li>[Technical skills covered] <strong>Main Class Tools</strong> -Github -Quarto -Similar to RMarkdown -Better site creation and language flexibility -Integration of code, text, and output (so basically RMarkdown) -Why? -Reproductable research -Professional Presentations -Career Relevance -“Industry standard” -Creates sites, pdfs, presentations -Formatting -Text -<img src="..\imgNotes/textFormat.png" class="img-fluid" alt="text formatting"></li>
+<li>[Technical skills covered] <strong>Main Class Tools</strong></li>
+<li>Github</li>
+<li>Quarto
+<ul>
+<li>Similar to RMarkdown
+<ul>
+<li>Better site creation and language flexibility</li>
+</ul></li>
+<li>Integration of code, text, and output (so basically RMarkdown)</li>
+<li>Why?
+<ul>
+<li>Reproductable research</li>
+<li>Professional Presentations</li>
+</ul></li>
+<li>Career Relevance
+<ul>
+<li>“Industry standard”</li>
+<li>Creates sites, pdfs, presentations</li>
+</ul></li>
+<li>Formatting
+<ul>
+<li>Text
+<ul>
+<li><div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="imgNotes/textFormat.png" class="img-fluid figure-img"></p>
+<figcaption>text formatting how to</figcaption>
+</figure>
+</div></li>
+</ul></li>
+<li>Headers
+<ul>
+<li><div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="imgNotes/headersFormat.png" class="img-fluid figure-img"></p>
+<figcaption>header formatting how to</figcaption>
+</figure>
+</div></li>
+</ul></li>
+<li>Lists
+<ul>
+<li><div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="imgNotes/listFormat.png" class="img-fluid figure-img"></p>
+<figcaption>list formatting how to</figcaption>
+</figure>
+</div></li>
+</ul></li>
+<li>Links &amp; Images
+<ul>
+<li><div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="imgNotes/miscFormat.png" class="img-fluid figure-img"></p>
+<figcaption>header formatting how to</figcaption>
+</figure>
+</div></li>
+</ul></li>
+</ul></li>
+</ul></li>
 </ul>
 </section>
 <section id="coding-techniques" class="level2">
@@ -165,25 +216,36 @@ ul.task-list li input[type="checkbox"] {
 <li>[New R functions or approaches]</li>
 <li>[Quarto features learned]</li>
 </ul>
-</section>
-<section id="questions-challenges" class="level2">
-<h2 class="anchored" data-anchor-id="questions-challenges">Questions &amp; Challenges</h2>
+<p><strong>Tidyverse Review</strong></p>
 <ul>
+<li>Why Tibbles?
+<ul>
+<li>Smarter printing</li>
+</ul></li>
+<li>Essential dplyr functions (you know these dummy)
+<ul>
+<li><code>select()</code> – choose columns</li>
+<li><code>filter()</code> – choose rows i.e.&nbsp;<code>youngCars &lt;- filter(carData, oldCars == "Not Old")</code></li>
+<li><code>&amp;</code> – syntax for AND</li>
+<li><code>|</code> – syntax for OR</li>
+<li><code>mutate()</code> – create new variables
+<ul>
+<li>Use <code>case_when()</code> as if statement i.e.&nbsp;<code>carData &lt;- mutate(carData, oldCars = case_when(age &gt; 20 ~ "old", TRUE ~ "Not Old"))</code></li>
+</ul></li>
+<li><code>summarize()</code> – create statistics</li>
+<li><code>group_by()</code> – operate on groups condenses rows by column values (works with <code>summarize()</code> like pb &amp; jelly)</li>
+</ul></li>
+<li>Piping
+<ul>
+<li><code>%&gt;%</code> – syntax for pipe</li>
+<li>read as “then”</li>
+<li>connects lines of code to minimize outputs ## Questions &amp; Challenges</li>
+</ul></li>
 <li>[What I didn’t fully understand]</li>
-<li>[Areas needing more practice]</li>
-</ul>
-</section>
-<section id="connections-to-policy" class="level2">
-<h2 class="anchored" data-anchor-id="connections-to-policy">Connections to Policy</h2>
-<ul>
-<li>[How this week’s content applies to real policy work]</li>
-</ul>
-</section>
-<section id="reflection" class="level2">
-<h2 class="anchored" data-anchor-id="reflection">Reflection</h2>
-<ul>
+<li>[Areas needing more practice] Branch control with github desktop ## Connections to Policy</li>
+<li>[How this week’s content applies to real policy work] Learning basics of professional version control ## Reflection</li>
 <li>[What was most interesting]</li>
-<li>[How I’ll apply this knowledge]</li>
+<li>[How I’ll apply this knowledge] Application to doing R as a group</li>
 </ul>
 
 

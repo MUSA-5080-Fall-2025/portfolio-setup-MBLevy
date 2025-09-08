@@ -123,21 +123,21 @@
     "href": "weekly-notes/week-01-notes.html",
     "title": "Week 1 Notes - Course Introduction",
     "section": "",
-    "text": "[List main concepts from lecture]\n[Technical skills covered] Main Class Tools -Github -Quarto -Similar to RMarkdown -Better site creation and language flexibility -Integration of code, text, and output (so basically RMarkdown) -Why? -Reproductable research -Professional Presentations -Career Relevance -“Industry standard” -Creates sites, pdfs, presentations -Formatting -Text -"
+    "text": "[List main concepts from lecture]\n[Technical skills covered] Main Class Tools\nGithub\nQuarto\n\nSimilar to RMarkdown\n\nBetter site creation and language flexibility\n\nIntegration of code, text, and output (so basically RMarkdown)\nWhy?\n\nReproductable research\nProfessional Presentations\n\nCareer Relevance\n\n“Industry standard”\nCreates sites, pdfs, presentations\n\nFormatting\n\nText\n\n\n\n\ntext formatting how to\n\n\n\nHeaders\n\n\n\n\nheader formatting how to\n\n\n\nLists\n\n\n\n\nlist formatting how to\n\n\n\nLinks & Images\n\n\n\n\nheader formatting how to"
   },
   {
     "objectID": "weekly-notes/week-01-notes.html#key-concepts-learned",
     "href": "weekly-notes/week-01-notes.html#key-concepts-learned",
     "title": "Week 1 Notes - Course Introduction",
     "section": "",
-    "text": "[List main concepts from lecture]\n[Technical skills covered] Main Class Tools -Github -Quarto -Similar to RMarkdown -Better site creation and language flexibility -Integration of code, text, and output (so basically RMarkdown) -Why? -Reproductable research -Professional Presentations -Career Relevance -“Industry standard” -Creates sites, pdfs, presentations -Formatting -Text -"
+    "text": "[List main concepts from lecture]\n[Technical skills covered] Main Class Tools\nGithub\nQuarto\n\nSimilar to RMarkdown\n\nBetter site creation and language flexibility\n\nIntegration of code, text, and output (so basically RMarkdown)\nWhy?\n\nReproductable research\nProfessional Presentations\n\nCareer Relevance\n\n“Industry standard”\nCreates sites, pdfs, presentations\n\nFormatting\n\nText\n\n\n\n\ntext formatting how to\n\n\n\nHeaders\n\n\n\n\nheader formatting how to\n\n\n\nLists\n\n\n\n\nlist formatting how to\n\n\n\nLinks & Images\n\n\n\n\nheader formatting how to"
   },
   {
     "objectID": "weekly-notes/week-01-notes.html#coding-techniques",
     "href": "weekly-notes/week-01-notes.html#coding-techniques",
     "title": "Week 1 Notes - Course Introduction",
     "section": "Coding Techniques",
-    "text": "Coding Techniques\n\n[New R functions or approaches]\n[Quarto features learned]"
+    "text": "Coding Techniques\n\n[New R functions or approaches]\n[Quarto features learned]\n\nTidyverse Review\n\nWhy Tibbles?\n\nSmarter printing\n\nEssential dplyr functions (you know these dummy)\n\nselect() – choose columns\nfilter() – choose rows i.e. youngCars &lt;- filter(carData, oldCars == \"Not Old\")\n& – syntax for AND\n| – syntax for OR\nmutate() – create new variables\n\nUse case_when() as if statement i.e. carData &lt;- mutate(carData, oldCars = case_when(age &gt; 20 ~ \"old\", TRUE ~ \"Not Old\"))\n\nsummarize() – create statistics\ngroup_by() – operate on groups condenses rows by column values (works with summarize() like pb & jelly)\n\nPiping\n\n%&gt;% – syntax for pipe\nread as “then”\nconnects lines of code to minimize outputs ## Questions & Challenges\n\n[What I didn’t fully understand]\n[Areas needing more practice] Branch control with github desktop ## Connections to Policy\n[How this week’s content applies to real policy work] Learning basics of professional version control ## Reflection\n[What was most interesting]\n[How I’ll apply this knowledge] Application to doing R as a group"
   },
   {
     "objectID": "weekly-notes/week-01-notes.html#questions-challenges",
