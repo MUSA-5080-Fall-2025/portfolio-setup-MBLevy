@@ -6,7 +6,28 @@ date: "2025-09-08"
 ## Key Concepts Learned
 - [List main concepts from lecture]
 - [Technical skills covered]
-
+**Main Class Tools**
+-Github
+-Quarto
+  -Similar to RMarkdown
+    -Better site creation and language flexibility
+  -Integration of code, text, and output (so basically RMarkdown)
+  -Why?
+    -Reproductable research
+    -Professional Presentations
+  -Career Relevance
+    -"Industry standard"
+    -Creates sites, pdfs, presentations
+  -Formatting
+    -Text
+      -![text formatting how to](/imgNotes/textFormat.png)
+    -Headers
+      -![header formatting how to](/imageNotes/headersFormat.png)
+    -Lists
+      -![list formatting how to](/imageNotes/listFormat.png)
+    -Links & Images
+      -![header formatting how to](/imageNotes/miscFormat.png)
+    
 ## Coding Techniques
 - [New R functions or approaches]
 - [Quarto features learned]
