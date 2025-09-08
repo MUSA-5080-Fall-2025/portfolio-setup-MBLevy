@@ -15,8 +15,10 @@ Advanced spatial analysis and data science for urban planning and public policy.
 - **Final Project:** Capstone modeling challenge
 
 ## About Me
-[Students will customize this section]
+**Hello!** I am Matthew Levy — a Master's of [City Planning](https://www.design.upenn.edu/city-regional-planning/graduate/graduate-city-and-regional-planning-programs) and [Urban Spatial Analytics](https://www.design.upenn.edu/urban-spatial-analytics/master-urban-spatial-analytics) student at the University of Pennsylvania. I grew up in Bexley, OH (an inner suburb of Columbus, Go Bucks!) and completed my undergrad at Indiana University, where I studied [Informatics](https://informatics.indiana.edu/) with a concentration in Geography.
+
+Outside of school, I love to read, bike, and eat. I am also a massive Packers fan, so I will always be down to sing the praises of the Green and Gold.
 
 ## Contact
-- Email: [your.email@upenn.edu]
-- GitHub: [@your-username]
+- Email: mblevy@upenn.edu
+- GitHub: MBLevy
