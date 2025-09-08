@@ -49,14 +49,20 @@ date: "2025-09-08"
   - `%>%` -- syntax for pipe
   - read as "then"
   - connects lines of code to minimize outputs
+  
 ## Questions & Challenges
+
 - [What I didn't fully understand]
 - [Areas needing more practice]
 Branch control with github desktop
+
 ## Connections to Policy
+
 - [How this week's content applies to real policy work]
 Learning basics of professional version control
+
 ## Reflection
+
 - [What was most interesting]
 - [How I'll apply this knowledge]
 Application to doing R as a group
