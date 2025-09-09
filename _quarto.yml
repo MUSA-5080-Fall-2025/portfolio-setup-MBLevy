@@ -8,12 +8,10 @@ website:
     left:
       - href: index.qmd
         text: Home
-        menu: 
-          - href: weekly-notes/
-            text: All Notes
+      - text: Weekly Notes
+        menu:
           - href: weekly-notes/week-01-notes.qmd
-            text: All Notes
-
+            text: Week 1
 format:
   html:
     theme: cosmo
