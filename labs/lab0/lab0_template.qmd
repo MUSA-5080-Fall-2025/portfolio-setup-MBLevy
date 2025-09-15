@@ -1,0 +1,227 @@
+---
+title: "Lab 0: Getting Started with dplyr"
+subtitle: "Your First Data Analysis"
+author: "Matthew"
+date: today
+format: 
+  html:
+    code-fold: false
+    toc: true
+    toc-location: left
+    theme: cosmo
+execute:
+  warning: false
+  message: false
+---
+
+# Overview
+
+Welcome to your first lab! In this (not graded) assignment, you'll practice the fundamental dplyr operations I overviewed in class using car sales data. This lab will help you get comfortable with:
+
+- Basic data exploration
+- Column selection and manipulation  
+- Creating new variables
+- Filtering data
+- Grouping and summarizing
+
+**Instructions:** Copy this template into your portfolio repository under a `lab_0/` folder, then complete each section with your code and answers. You will write the code under the comment section in each chunk.
+Be sure to also copy the data folder into your `lab_0` folder.
+
+# Setup
+
+```{r setup}
+# Load the tidyverse library
+library(tidyverse)
+
+# Read in the car sales data
+# Make sure the data file is in your lab_0/data/ folder
+carData <- read_csv("data/car_sales_data.csv")
+```
+
+# Exercise 1: Getting to Know Your Data
+
+## 1.1 Data Structure Exploration
+
+Explore the structure of your data and answer these questions:
+
+```{r explore-structure}
+# Use glimpse() to see the data structure
+glimpse(carData)
+
+# Check the column names
+colnames(carData)
+
+# Look at the first few rows
+head(carData)
+```
+
+**Questions to answer:**
+- How many rows and columns does the dataset have?
+- What types of variables do you see (numeric, character, etc.)?
+- Are there any column names that might cause problems? Why?
+
+**Your answers:**
+- Rows: 50,000
+- Columns: 7
+- Variable types: Half of the columns are characters (Manufacturer, Model, and Fuel type). The other half are doubles (Engine size, Mileage, Year of manufacture, and Price)
+- Problematic names: `Engine size`, `Fuel type`, and `Year of manufacture` are problematic because they contain spaces.
+
+## 1.2 Tibble vs Data Frame
+
+Compare how tibbles and data frames display:
+
+```{r tibble-vs-dataframe}
+# Look at the tibble version (what we have)
+carData
+
+# Convert to regular data frame and display
+car_df <- as.data.frame(carData)
+car_df
+```
+
+**Question:** What differences do you notice in how they print?
+
+**Your answer:** 
+The tibble version prints the first 10 rows in a much more readible format, whereas the data frame prints 142 rows (which could be messy depending on size of console frame)
+
+# Exercise 2: Basic Column Operations
+
+## 2.1 Selecting Columns
+
+Practice selecting different combinations of columns:
+
+```{r column-selection}
+# Select just Model and Mileage columns
+carData %>% select(Model, Mileage)
+
+# Select Manufacturer, Price, and Fuel type
+carData %>% select(Manufacturer, Price, `Fuel type`)
+
+# Challenge: Select all columns EXCEPT Engine Size
+carData %>% select(!`Engine size`)
+```
+
+## 2.2 Renaming Columns
+
+Let's fix a problematic column name:
+
+```{r rename-columns}
+# Rename 'Year of manufacture' to year
+carData <- carData %>% select(1:4, 'year' = yearManufactured, 6:7)
+
+# Check that it worked
+names(carData)
+```
+
+**Question:** Why did we need backticks around `Year of manufacture` but not around `year`?
+
+**Your answer:** Because of the space
+
+# Exercise 3: Creating New Columns
+
+## 3.1 Calculate Car Age
+
+```{r calculate-age}
+# Create an 'age' column (2025 minus year of manufacture)
+carData <- carData %>% mutate(age = 2025- year)
+# Create a mileage_per_year column  
+carData <- carData %>% mutate(mileagePerYear = Mileage/age)
+
+# Look at your new columns
+#select(carData, Model, year, age, Mileage, mileage_per_year)
+```
+
+## 3.2 Categorize Cars
+
+```{r categorize-cars}
+# Create a price_category column where if price is < 15000, its is coded as budget, between 15000 and 30000 is midrange and greater than 30000 is Luxury (use case_when)
+carData <- carData %>% mutate(priceCategory = case_when(
+  Price < 15000 ~ "budget",
+  Price <= 30000 & Price >= 15000 ~  "midrange",
+  Price > 30000 ~ "luxury"
+))
+
+# Check your categories select the new column and show it
+carData %>% select(priceCategory)
+```
+
+# Exercise 4: Filtering Practice
+
+## 4.1 Basic Filtering
+
+```{r basic-filtering}
+# Find all Toyota cars
+carData %>% filter(Manufacturer == "Toyota")
+
+# Find cars with mileage less than 30,000
+carData %>% filter(Mileage < 30000)
+
+# Find luxury cars (from price category) with low mileage
+carData %>% filter(priceCategory == "luxury")
+```
+
+## 4.2 Multiple Conditions
+
+```{r multiple-conditions}
+# Find cars that are EITHER Honda OR Nissan
+carData %>% filter(Manufacturer == "Honda" |
+                     Manufacturer == "Nissan") #No data
+
+# Find cars with price between $20,000 and $35,000
+carData %>% filter(Price >= 20000 & Price < 35000)
+
+# Find diesel cars less than 10 years old
+carData %>% filter(`Fuel type` == "Diesel" &
+                     age < 10)
+```
+
+**Question:** How many diesel cars are less than 10 years old?
+
+**Your answer:** 2,040
+
+# Exercise 5: Grouping and Summarizing
+
+## 5.1 Basic Summaries
+
+```{r basic-summaries}
+# Calculate average price by manufacturer
+avg_price_by_brand <- carData %>%
+  group_by(Manufacturer) %>%
+  summarize(avg_price = mean(Price, na.rm = TRUE))
+
+avg_price_by_brand
+
+# Calculate average mileage by fuel type
+avgMileageFuelType <- carData %>%
+  group_by(`Fuel type`) %>%
+  summarize(avgMileage = mean(Mileage, na.rm = TRUE))
+avgMileageFuelType
+# Count cars by manufacturer
+manufacturerCarCount <- carData %>%
+  group_by(Manufacturer) %>%
+  summarize(numCars = n())
+
+manufacturerCarCount
+```
+
+## 5.2 Categorical Summaries
+
+```{r categorical-summaries}
+# Frequency table for price categories
+priceFreq <- carData %>%
+  group_by(priceCategory) %>%
+  summarize(Frequency = n())
+priceFreq
+```
+
+
+# Submission Notes
+
+**To submit this lab:**
+1. Make sure your code runs without errors
+2. Fill in all the "[YOUR ANSWER]" sections and complete all of the empty code! 
+3. Save this file in your portfolio's `lab_0/` folder
+4. Commit and push to GitHub
+5. Check that it appears on your GitHub Pages portfolio site
+
+**Questions?** Post on the canvas discussion board or come to office hours!
