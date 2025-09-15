@@ -107,7 +107,7 @@ Let's fix a problematic column name:
 
 ```{r rename-columns}
 # Rename 'Year of manufacture' to year
-carData <- carData %>% select(1:4, 'year' = yearManufactured, 6:7)
+carData <- carData %>% select(1:4, 'year' = `Year of manufacture`, 6:7)
 
 # Check that it worked
 names(carData)

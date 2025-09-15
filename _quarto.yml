@@ -14,8 +14,8 @@ website:
             text: Week 1
       - text: Labs
         menu:
-          - href: labs/lab0/
-            text: Lab 0: dyplr Basics
+          - href: labs/lab0/lab0_template.qmd
+            text: Lab 0 dyplr Basics
 format:
   html:
     theme: cosmo
