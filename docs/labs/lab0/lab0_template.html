@@ -152,6 +152,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../../labs/lab0/lab0_template.html">
  <span class="dropdown-text">Lab 0 dyplr Basics</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../labs/lab1/assignment1_template.html">
+ <span class="dropdown-text">Lab 1: Census Data Exploration</span></a>
+  </li>  
     </ul>
   </li>
 </ul>
@@ -28910,7 +28914,7 @@ $ Price                 &lt;dbl&gt; 3074, 49704, 24072, 1705, 4101, 29204, 14350
 </div>
 </div>
 <p><strong>Question:</strong> What differences do you notice in how they print?</p>
-<p><strong>Your answer:</strong> The tibble version prints the first 10 rows in a much more readible format, whereas the data frame prints 142 rows (which could be messy depending on size of console frame)</p>
+<p><strong>Your answer:</strong> The tibble version prints the first 10 rows in a much more readible format, whereas the data frame prints 14200 rows (which could be messy depending on size of console frame, also could be more depending on your max print settings).</p>
 </section>
 </section>
 <section id="exercise-2-basic-column-operations" class="level1">
@@ -28980,7 +28984,7 @@ $ Price                 &lt;dbl&gt; 3074, 49704, 24072, 1705, 4101, 29204, 14350
 <p>Let’s fix a problematic column name:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rename 'Year of manufacture' to year</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>carData <span class="ot">&lt;-</span> carData <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="st">'year'</span> <span class="ot">=</span> <span class="st">`</span><span class="at">Year of manufacture</span><span class="st">`</span> , <span class="dv">6</span><span class="sc">:</span><span class="dv">7</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>carData <span class="ot">&lt;-</span> carData <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="st">'year'</span> <span class="ot">=</span> <span class="st">`</span><span class="at">Year of manufacture</span><span class="st">`</span>, <span class="dv">6</span><span class="sc">:</span><span class="dv">7</span>)</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Check that it worked</span></span>
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(carData)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>

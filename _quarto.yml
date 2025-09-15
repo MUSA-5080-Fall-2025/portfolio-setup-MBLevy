@@ -12,10 +12,13 @@ website:
         menu:
           - href: weekly-notes/week-01-notes.qmd
             text: Week 1
+          - href: weekly-notes/week2notes.qmd
+            text: Week 2
       - text: Labs
         menu:
           - href: labs/lab0/lab0_template.qmd
-            text: Lab 0 dyplr Basics
+            text: "Lab 0: dyplr Basics"
+         
 format:
   html:
     theme: cosmo

@@ -82,7 +82,7 @@ car_df
 **Question:** What differences do you notice in how they print?
 
 **Your answer:** 
-The tibble version prints the first 10 rows in a much more readible format, whereas the data frame prints 142 rows (which could be messy depending on size of console frame)
+The tibble version prints the first 10 rows in a much more readible format, whereas the data frame prints 14200 rows (which could be messy depending on size of console frame, also could be more depending on your max print settings).
 
 # Exercise 2: Basic Column Operations
 
