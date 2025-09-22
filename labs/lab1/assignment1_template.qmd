@@ -1,7 +1,7 @@
 ---
 title: "Assignment 1: Census Data Quality for Policy Decisions"
 subtitle: "Evaluating Data Reliability for Algorithmic Decision-Making"
-author: "Your Name Here"
+author: "Matthew Levy"
 date: today
 format: 
   html:
@@ -18,7 +18,7 @@ execute:
 
 ## Scenario
 
-You are a data analyst for the **[Your State] Department of Human Services**. The department is considering implementing an algorithmic system to identify communities that should receive priority for social service funding and outreach programs. Your supervisor has asked you to evaluate the quality and reliability of available census data to inform this decision.
+You are a data analyst for the **Pennsylvania Department of Human Services**. The department is considering implementing an algorithmic system to identify communities that should receive priority for social service funding and outreach programs. Your supervisor has asked you to evaluate the quality and reliability of available census data to inform this decision.
 
 Drawing on our Week 2 discussion of algorithmic bias, you need to assess not just what the data shows, but how reliable it is and what communities might be affected by data quality issues.
 
@@ -56,11 +56,12 @@ library(knitr)
 library(tidyverse)
 library(tidycensus)
 # Set your Census API key
-
+census_api_key("f6ac8f4f33d6431a4a6a8713369bc824e47dc1e4")
 # Choose your state for analysis - assign it to a variable called my_state
 ```
 
-**State Selection:** I have chosen **[Your State Name]** for this analysis because: [Brief explanation of why you chose this state]
+**State Selection:** I have chosen **Pennsylvania** for this analysis because: I want to get more familiar with the state in which I now live.
+
 
 # Part 2: County-Level Resource Assessment
 
@@ -79,11 +80,17 @@ library(tidycensus)
 
 ```{r county-data}
 # Write your get_acs() code here
+?get_acs
 
+dataPA <- get_acs(geography = "county", variables = c(popTotal = "B01003_001",
+                                                       medIncome = "B19013_001"),
+                    yaer = 2022, state = "PA", survey = "acs5", output = "wide")
+dataPA
 # Clean the county names to remove state name and "County" 
 # Hint: use mutate() with str_remove()
-
+dataPA <- dataPA %>% mutate(countyName = str_remove(NAME, " County, Pennsylvania")) 
 # Display the first few rows
+head(dataPA)
 ```
 
 ## 2.2 Data Quality Assessment
@@ -102,9 +109,15 @@ library(tidycensus)
 
 ```{r income-reliability}
 # Calculate MOE percentage and reliability categories using mutate()
-
+dataPA <- dataPA %>% mutate(moePercentage = (medIncomeM/medIncomeE)*100)
+dataPA <- dataPA %>% mutate(reliability = case_when(
+  moePercentage < 5 ~ "High Confidence",
+  moePercentage >= 5 & moePercentage <= 10 ~ "Moderate Confidence",
+  moePercentage > 10 ~ "Low Confidence"))
 # Create a summary showing count of counties in each reliability category
 # Hint: use count() and mutate() to add percentages
+count(dataPA, reliability)
+
 ```
 
 ## 2.3 High Uncertainty Counties

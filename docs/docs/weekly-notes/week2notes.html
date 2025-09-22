@@ -106,7 +106,7 @@ ul.task-list li input[type="checkbox"] {
  <span class="dropdown-text">Week 1</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../../weekly-notes/week2notes.qmd">
+    <a class="dropdown-item" href="../../weekly-notes/week-02-notes.html">
  <span class="dropdown-text">Week 2</span></a>
   </li>  
     </ul>
@@ -244,8 +244,24 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="when-algorithms-go-wrong" class="level3">
 <h3 class="anchored" data-anchor-id="when-algorithms-go-wrong">When Algorithms Go Wrong</h3>
-<p>Data Analytics is subjective! - Every step involves human choice - Data cleaning decisions - Data coding/classifications - Data collection (use of imperfect proxies) - Result interpretations - Variables chosen to be put in the model - Human values and biases are embedded!</p>
-<p>Bias is everywhere! - Healthcare algorithms have systematically discriminated against Black patients - Algorithms used healthcare costs as a proxy for need - Black patients typically incur lower costs due to systemic inequities in access - Resulted in the under-prioritization of Black patients despite equivalent levels of illness - Criminal Justice algorithms use biased (<strong><em>racist</em></strong>) policing data</p>
+<p>Data Analytics is subjective!</p>
+<ul>
+<li>Every step involves human choice
+<ul>
+<li>Data cleaning decisions</li>
+<li>Data coding/classifications</li>
+<li>Data collection (use of imperfect proxies)</li>
+<li>Result interpretations</li>
+<li>Variables chosen to be put in the model</li>
+</ul></li>
+<li>Human values and biases are embedded!</li>
+</ul>
+<p>Bias is everywhere!</p>
+<ul>
+<li>Healthcare algorithms have systematically discriminated against Black patients</li>
+<li>Algorithms used healthcare costs as a proxy for need - Black patients typically incur lower costs due to systemic inequities in access - Resulted in the under-prioritization of Black patients despite equivalent levels of illness</li>
+<li>Criminal Justice algorithms use biased (<strong><em>racist</em></strong>) policing data</li>
+</ul>
 </section>
 </section>
 <section id="part-2-active-learning" class="level2">
@@ -256,20 +272,85 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="part-3-census-data-foundations">Part 3: Census Data Foundations</h2>
 <section id="why-census-data-matters" class="level3">
 <h3 class="anchored" data-anchor-id="why-census-data-matters">Why Census Data Matters</h3>
-<p><strong>Census Data is the foundations for</strong> - Understanding community demos - Allocating government resources - Tracking neighborhood change - Designing “fair” algorithms</p>
+<p><strong>Census Data is the foundations for</strong></p>
+<ul>
+<li>Understanding community demos</li>
+<li>Allocating government resources</li>
+<li>Tracking neighborhood change</li>
+<li>Designing “fair” algorithms</li>
+</ul>
 <p><strong>Connection</strong>: The same demo data used in the census goes into many of the algorithms we analyzed</p>
-<p>Census vs American Community Survey (ACS) - Decennial Census - Everyone counted - 9 basic questions (age, race, sex, housing) - Constitutional requirement - Determines apportionment - ACS - 3% of households analyzed annually - Detailed questions (income, education, employment, housing costs) - Replaced the old “long form census” in 2005</p>
+<p>Census vs American Community Survey (ACS)</p>
+<ul>
+<li>Decennial Census
+<ul>
+<li>Everyone counted</li>
+<li>9 basic questions (age, race, sex, housing)</li>
+<li>Constitutional requirement</li>
+<li>Determines apportionment</li>
+</ul></li>
+<li>ACS
+<ul>
+<li>3% of households analyzed annually</li>
+<li>Detailed questions (income, education, employment, housing costs)</li>
+<li>Replaced the old “long form census” in 2005</li>
+</ul></li>
+</ul>
 <p>ACS Estimates - 1 year estimates (areas &gt; 65,000 ppl) - Most current data, too small of sample for most use - 5 year estimate (all areas) - Most reliable data, large sample - What we use most often - <strong>Key Point</strong>: All ACS data comes with <em>margins of error</em></p>
 <p>Most policy analysis occurs at county, census tract, and block groups levels</p>
-<p>2020 Census Innovation: Differential Privacy - The Challenge: Modern computing can re-identify individuals from census data - The Solutions: Add mathematical “noise” to protect privacy whilst preserving patterns - The Controversy: Some places now show pops living underwater or in other impossible places - Why this matters: Even “objective” data involves subjective choices abt privacy v accuracy - Also errors</p>
+<p>2020 Census Innovation: Differential Privacy</p>
+<ul>
+<li>The Challenge: Modern computing can re-identify individuals from census data</li>
+<li>The Solutions: Add mathematical “noise” to protect privacy whilst preserving patterns</li>
+<li>The Controversy: Some places now show pops living underwater or in other impossible places</li>
+<li>Why this matters: Even “objective” data involves subjective choices abt privacy v accuracy
+<ul>
+<li>Also errors</li>
+</ul></li>
+</ul>
 </section>
 <section id="accessing-census-data-in-r" class="level3">
 <h3 class="anchored" data-anchor-id="accessing-census-data-in-r">Accessing Census Data in R</h3>
 <p>We will use the <code>tidycensus</code> package</p>
 <p>Census data structure is as follows: - Data organized into tables - i.e.&nbsp;B19013: Median Household Income - Each table has multiple variables - B19013_001E: Median household income (estimate) - B19013_001M: Median household incomee (margin of errro)</p>
-<p>Working with margins of error - Every ACS estimate comes with uncertainty - Large MOE relative to estimate = less reliable - Small MOE relative to estimate = more reliable - In analysis: - Always report MOE alongside estimates - Be cautious comparing estimates with overlapping error margins - Consider using 5year estimates for greater reliability</p>
-<p>Two types of Census Data - Summary Tables (what we’ll mostly use) - Precalc statistics by geo - Good for mapping, geo comparison - PUMS - individual records - anonymous individual/HH responses - Good for custom analysis, regression models</p>
-<p>Data sources - TIGER/Line Files - geographic boundaries (.shp) - Historical Data Sources - <a href="nhgis.org">NHGIS</a>: Historical census data -Neighborhood Change Database -Longitudinal Tract Database: track changes over time</p>
+<p>Working with margins of error</p>
+<ul>
+<li>Every ACS estimate comes with uncertainty
+<ul>
+<li>Large MOE relative to estimate = less reliable</li>
+<li>Small MOE relative to estimate = more reliable</li>
+</ul></li>
+<li>In analysis:
+<ul>
+<li>Always report MOE alongside estimates</li>
+<li>Be cautious comparing estimates with overlapping error margins</li>
+<li>Consider using 5year estimates for greater reliability</li>
+</ul></li>
+</ul>
+<p>Two types of Census Data</p>
+<ul>
+<li>Summary Tables (what we’ll mostly use)
+<ul>
+<li>Precalc statistics by geo</li>
+<li>Good for mapping, geo comparison</li>
+</ul></li>
+<li>PUMS - individual records
+<ul>
+<li>anonymous individual/HH responses</li>
+<li>Good for custom analysis, regression models</li>
+</ul></li>
+</ul>
+<p>Data sources</p>
+<ul>
+<li>TIGER/Line Files
+<ul>
+<li>geographic boundaries (.shp)</li>
+</ul></li>
+<li>Historical Data Sources
+<ul>
+<li><a href="nhgis.org">NHGIS</a>: Historical census data -Neighborhood Change Database -Longitudinal Tract Database: track changes over time</li>
+</ul></li>
+</ul>
 </section>
 </section>
 <section id="part-4-hands-on-use" class="level2">
@@ -280,8 +361,21 @@ ul.task-list li input[type="checkbox"] {
 <figcaption>get_acs</figcaption>
 </figure>
 </div>
-<p>Output - <code>GEOID</code>: Geo identifier - <code>NAME</code>: Human-readable location name - <code>variable</code>: Census variable code - <code>estimate</code>: Actual value - <code>moe</code>: Margin of error</p>
+<p>Output</p>
+<ul>
+<li><code>GEOID</code>: Geo identifier</li>
+<li><code>NAME</code>: Human-readable location name</li>
+<li><code>variable</code>: Census variable code</li>
+<li><code>estimate</code>: Actual value</li>
+<li><code>moe</code>: Margin of error</li>
+</ul>
 <p><img src="imgNotes/outputWide.png" class="img-fluid" alt="shows multiple variables"> <img src="imgNotes/dataCleaningEss.png" class="img-fluid" alt="data cleaning essentials"> <img src="imgNotes/dataReliability.png" class="img-fluid" alt="calc data reliability"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="imgNotes/profTables.png" class="img-fluid figure-img"></p>
+<figcaption>Professional Tables</figcaption>
+</figure>
+</div>
 
 
 </section>
