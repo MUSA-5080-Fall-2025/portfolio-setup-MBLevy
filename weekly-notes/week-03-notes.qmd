@@ -1,0 +1,94 @@
+---
+title: "Week 2 Notes - Data Visualization & Exploratory Analysis"
+date: "2025-09-15"
+---
+
+# Data Visualization & Exploratory Analysis
+
+## Part 1: Why Visualization Matters
+
+**Anscombe's Quartet: The Famous Example**
+- Four datasets with identical summary statistics:
+  - Same means, variances, correlation, and regression line
+  -Completely different patterns when [visualized](https://duckduckgo.com/?q=anscombe%27s+quartet&iar=images&t=newext&atb=v414-1)
+
+**The Policy Implications**
+Why this matters for your work:
+
+- Summary statistics can hide critical patterns
+- Outliers may represent important communities
+- Relationships aren't always linear
+- Visual inspection reveals data quality issues
+- I.e. an average of two extremes within a population may look like an area has average value
+
+Ethical Data Communication
+
+- Only *27% of planners* warn users about unreliable ACS data — most don't reort MoE — many lack training on statistical uncertainty
+  - **This violates AICP code of ethics**
+- Your responsibility:
+  - Create honest, transparent visualizations
+  - Always assess and communicate data quality
+  - Consider who might be harmed by uncertain data
+
+
+Bad Visualizations Have Real Consequences
+
+- Common problems in government data presentation:
+  - Misleading scales or axes
+  - Cherry-picked time periods
+  - Hidden or ignored uncertainty
+  - Missing context about data reliability
+- **Real impact:** The Jurjevich et al. study found that *72% of Portland census tracts* had unreliable child poverty estimates, yet planners rarely communicated this uncertainty.
+- **Result:** Poor policy decisions based on misunderstood data
+
+
+## Part 2: Grammar of Graphics
+
+**The ggplot2 Philosophy**
+
+- Grammar of Graphics principles:
+  - Data -> Aesthetics -> Geometries -> Visual
+    - Data: your dataset
+    - Aesthetics: what variables map to visual properties
+    - Geometries: how to display the data (points, bars, lines, etc.)
+    - Additional layers: scales, themes, facets, annotations, etc.
+- Structure:
+  - `ggplot(data = dataset) + aes(x = var1, y = var2) + geom_something() + additional_layers()`
+
+Aesthetic Mappings: The Key to `ggplot2`
+
+- Aesthetics map data to visual properties
+  - `x,y`: position
+  - `color`: point/line color
+  - `fill`: area fill color
+  - `size`: point shape
+  - `alpha`: transparency
+  - **Note**: constants go outside `aes()`
+
+
+## Part 3: Exploratory Data Analysis
+
+The EDA Mindset:
+*The goal is to understand your data before making decisions or building models*
+
+1. What does the data look like? (distributions, missing values, etc.)
+2. What patterns exist? (relationships, clusters, trends)
+3. What's unusual? (outliers, anomalies, data quality)
+4. What questions does this raise? (hypotheses for further investigation)
+5. How reliable is this data?
+
+
+**EDA Workflow with Data Quality Focus**
+Enhanced process for policy analysis:
+
+1. Load and inspect - dimensions, variable types, missing data
+2. Assess reliability - examine margins of error, calculate coefficients of variation
+3. Visualize distributions - histograms, boxplots for each variable
+4. Explore relationships - scatter plots, correlations
+5. Identify patterns - grouping, clustering, geographical patterns
+6. Question anomalies - investigate outliers and unusual patterns
+7. Document limitations - prepare honest communication about data quality
+
+## Part 4: In Class Exercise
+
+**Look at in-class exercise for code follow along!**

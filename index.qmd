@@ -12,6 +12,7 @@ Advanced spatial analysis and data science for urban planning and public policy.
 ## Portfolio Structure
 - **Weekly Notes:** My learning reflections and key concepts
 - **Labs:** Completed assignments and analyses
+- **Exercise:** Completed assignments and analyses
 - **Final Project:** Capstone modeling challenge
 
 ## About Me
