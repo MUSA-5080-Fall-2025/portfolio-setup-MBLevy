@@ -139,5 +139,8 @@ Reminder:
   - Units: meters, feet, etc.
   - Good for: Local analysis, accurate measurements
   - Bad for: large areas, global datasets
-  
+
+***Important***
+Only use `st_set_crs()` if there is not already a coordinate reference system! 
+Use `st_transform()` to change!
 
