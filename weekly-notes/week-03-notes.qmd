@@ -1,6 +1,6 @@
 ---
-title: "Week 2 Notes - Data Visualization & Exploratory Analysis"
-date: "2025-09-15"
+title: "Week 3 Notes - Data Visualization & Exploratory Analysis"
+date: "2025-09-22"
 ---
 
 # Data Visualization & Exploratory Analysis

@@ -1,0 +1,143 @@
+---
+title: "Week 4 Notes - Spatial Data & GIS Operations in R"
+date: "2025-09-29"
+---
+
+# Spatial Data & GIS Operations in R
+
+**This lecture covers:**
+
+  - Spatial Data Fundamentals
+    - Vector data model and sf objects
+    - Reading and inspecting spatial data
+    - Basic sptial data operations
+  - Spatial Operations
+    - Spatial subsetting and filtering
+    - Spatial joins and relationships
+    - Measuring distances and areas
+  - Geometry Operations
+    - Buffers, intersections, unions
+    - Spatial aggregation
+  - Coordinate Systems
+    - Understanding projections and how to transform between them
+
+
+## Part 1: Why Spatial Analysis Matters
+
+We have been looking at census data and searching for patterns. We must add the spatial dimension to better understand.
+
+ - Real policy questions *need* spatial answers
+  - "Which communities have the lowest income?"
+    - Are they clustered? Isolated? Near resources?
+  - "Where should we located a new health clinic?"
+    - Optimize access for underserved populations
+    
+**Spatial Analysis and Algorithmic Bias**
+
+- Geographic bias in algorithms:
+  - Training data may under-/over-represent certain areas
+  - Spatial autocorrelation violates independence assumptions
+    - Think police data
+
+## Part 2: Spatial Data Fundamentals
+
+Vector Data Model
+
+- Real world -> Simplified geometric representations
+- Three basic types:
+  - Points: locations
+  - Lines: linear features
+  - Polygons: areas
+- Each feature has:
+  - Geometry: shape, location
+  - Attributions: describing data
+
+The `sf` package: simple features for R
+
+- Why sf?
+  - Modern replacement for older packages
+  - Integrates with tifyverse
+  - Follows international standards
+  - Fast and reliable
+- Spatial data is data.frame + geometry column
+
+Common spatial data formats:
+
+ - Shapefiles (.shp + supporting files)
+ - GeoJSON (.geojson)
+ - KML/KMZ (Google Earth)
+ - Database connections (PostGIS)
+ 
+## Part 3: Spatial Operations
+ 
+ Spatial subsetting
+ 
+ - Extract features based on spatial relationships
+ - key functions:
+  - `st_filter()`
+  - `st_intersects()`
+  - `st_touches()`
+  - `st_within()`
+- Example:
+  - `# Find census tracts within Allegheny County`
+  - `tracts_in_allegheny <- census_tracts %>% st_filter(allegheny, .predicate = st_within)`
+- Understanding the `.predicate` Parameter
+  - The `.predicate` tells `st_filter()` what spatial relationship to look for:
+    - r predicate-structure `# Basic structure: st_filter(data_to_filter, reference_geometry, .predicate = relationship) `
+  - Different questions need different relationships:
+    - “Which counties border Allegheny?” → `st_touches`
+    - “Which tracts are IN Allegheny?” → `st_within`
+    - “Which tracts overlap a metro area?” → `st_intersects`
+  -Default: If no `.predicate` specified, uses `st_intersects`
+![Table of predicate uses](imgNotes/predicate.png)
+
+Spatial Joins
+
+- Example:
+  - `# Each tract gets county attributes`
+  - `tracts_with_counties <- census_tracts %>% st_join(pa_counties)`
+
+Distance Calculations
+
+- First make centroid of polygon (if using polygons)
+  -I.e. `county_centers <- st_centroid(pa_counties)`
+- Then can use `st_distance`
+  - One argument means distance between object features
+    - Ex: `distance_matrix <- st_distance(county_centers)`
+  - Two arguments means distance between objects
+- Unit is in coordinate system
+
+
+Area Calculations
+
+- `pa_counties <- pa_counties %>% mutate( area_sqkm = as.numeric(st_area(.)) / 1000000  # Convert to sq km )`
+  - `.` is a lazy man's way to pass down piping
+
+## Part 4: Geometry Operations
+
+Filter vs intersection:
+![filter v intersection](imgNotes/filterIntersection.png)
+
+Union combines multiple feature into one (think dissolve)
+
+Spatial Aggregation
+
+
+## Part 5: Coordinate Reference Systems
+
+You know about coordinate references
+
+Reminder:
+
+- Geographic Coordiante Systems (GCS):
+  - Latitude/longitude coordinates
+  - Units: decimal degrees
+  - Good for: global datasets, web mapping
+  - Bad for: Area/distance calcs
+- Projected Coordinate Systems
+  - X/Y cooridates on a flat plane
+  - Units: meters, feet, etc.
+  - Good for: Local analysis, accurate measurements
+  - Bad for: large areas, global datasets
+  
+
