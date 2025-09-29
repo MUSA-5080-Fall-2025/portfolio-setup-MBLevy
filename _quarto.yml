@@ -20,10 +20,10 @@ website:
             text: "Lab 0: dyplr Basics"
           - href: labs/lab1/assignment1_template.qmd
             text: "Lab 1 Census Data Quality for Policy Decisions"
-      # - text: Exercises
-      #   menu:
-      #     - href: inClass/week3Exercise/week3_lab_exercise.qmd
-      #     - text: "Week 3 Exercise"
+      - text: Exercises
+        menu:
+          - href: inClass/week3Exercise/week3_lab_exercise.qmd
+          - text: "Week 3 Exercise"
 format:
   html:
     theme: cosmo
