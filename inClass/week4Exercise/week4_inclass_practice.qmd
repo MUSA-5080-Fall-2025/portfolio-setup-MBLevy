@@ -17,6 +17,8 @@ execute:
 ## Setup
 
 ```{r setup}
+
+
 library(sf)
 library(tidyverse)
 library(tigris)
@@ -25,12 +27,12 @@ library(scales)
 library(patchwork)
 library(here)
 # Set Census API key
-census_api_key("42bf8a20a3df1def380f330cf7edad0dd5842ce6")
+census_api_key("f6ac8f4f33d6431a4a6a8713369bc824e47dc1e4")
 
 # Load the data (same as lecture)
-pa_counties <- st_read(here("data/Pennsylvania_County_Boundaries.shp"))
-districts <- st_read(here("data/districts.geojson"))
-hospitals <- st_read(here("data/hospitals.geojson"))
+pa_counties <- st_read(here("inClass/week4Exercise/data/Pennsylvania_County_Boundaries.shp"))
+districts <- st_read(here("inClass/week4Exercise/data/districts.geojson"))
+hospitals <- st_read(here("inClass/week4Exercise/data/hospitals.geojson"))
 census_tracts <- tracts(state = "PA", cb = TRUE)
 metro_areas <- core_based_statistical_areas(cb = TRUE)
 

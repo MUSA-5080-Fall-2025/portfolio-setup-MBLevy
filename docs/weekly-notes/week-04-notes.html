@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-09-22">
+<meta name="dcterms.date" content="2025-09-29">
 
-<title>Week 3 Notes - Data Visualization &amp; Exploratory Analysis – Matthew Levy - MUSA 5080 Portfolio</title>
+<title>Week 4 Notes - Spatial Data &amp; GIS Operations in R – Matthew Levy - MUSA 5080 Portfolio</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -162,12 +162,13 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#data-visualization-exploratory-analysis" id="toc-data-visualization-exploratory-analysis" class="nav-link active" data-scroll-target="#data-visualization-exploratory-analysis">Data Visualization &amp; Exploratory Analysis</a>
+  <li><a href="#spatial-data-gis-operations-in-r" id="toc-spatial-data-gis-operations-in-r" class="nav-link active" data-scroll-target="#spatial-data-gis-operations-in-r">Spatial Data &amp; GIS Operations in R</a>
   <ul class="collapse">
-  <li><a href="#part-1-why-visualization-matters" id="toc-part-1-why-visualization-matters" class="nav-link" data-scroll-target="#part-1-why-visualization-matters">Part 1: Why Visualization Matters</a></li>
-  <li><a href="#part-2-grammar-of-graphics" id="toc-part-2-grammar-of-graphics" class="nav-link" data-scroll-target="#part-2-grammar-of-graphics">Part 2: Grammar of Graphics</a></li>
-  <li><a href="#part-3-exploratory-data-analysis" id="toc-part-3-exploratory-data-analysis" class="nav-link" data-scroll-target="#part-3-exploratory-data-analysis">Part 3: Exploratory Data Analysis</a></li>
-  <li><a href="#part-4-in-class-exercise" id="toc-part-4-in-class-exercise" class="nav-link" data-scroll-target="#part-4-in-class-exercise">Part 4: In Class Exercise</a></li>
+  <li><a href="#part-1-why-spatial-analysis-matters" id="toc-part-1-why-spatial-analysis-matters" class="nav-link" data-scroll-target="#part-1-why-spatial-analysis-matters">Part 1: Why Spatial Analysis Matters</a></li>
+  <li><a href="#part-2-spatial-data-fundamentals" id="toc-part-2-spatial-data-fundamentals" class="nav-link" data-scroll-target="#part-2-spatial-data-fundamentals">Part 2: Spatial Data Fundamentals</a></li>
+  <li><a href="#part-3-spatial-operations" id="toc-part-3-spatial-operations" class="nav-link" data-scroll-target="#part-3-spatial-operations">Part 3: Spatial Operations</a></li>
+  <li><a href="#part-4-geometry-operations" id="toc-part-4-geometry-operations" class="nav-link" data-scroll-target="#part-4-geometry-operations">Part 4: Geometry Operations</a></li>
+  <li><a href="#part-5-coordinate-reference-systems" id="toc-part-5-coordinate-reference-systems" class="nav-link" data-scroll-target="#part-5-coordinate-reference-systems">Part 5: Coordinate Reference Systems</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -177,7 +178,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Week 3 Notes - Data Visualization &amp; Exploratory Analysis</h1>
+<h1 class="title">Week 4 Notes - Spatial Data &amp; GIS Operations in R</h1>
 </div>
 
 
@@ -188,7 +189,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 22, 2025</p>
+      <p class="date">September 29, 2025</p>
     </div>
   </div>
   
@@ -200,101 +201,179 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="data-visualization-exploratory-analysis" class="level1">
-<h1>Data Visualization &amp; Exploratory Analysis</h1>
-<section id="part-1-why-visualization-matters" class="level2">
-<h2 class="anchored" data-anchor-id="part-1-why-visualization-matters">Part 1: Why Visualization Matters</h2>
-<p><strong>Anscombe’s Quartet: The Famous Example</strong> - Four datasets with identical summary statistics: - Same means, variances, correlation, and regression line -Completely different patterns when <a href="https://duckduckgo.com/?q=anscombe%27s+quartet&amp;iar=images&amp;t=newext&amp;atb=v414-1">visualized</a></p>
-<p><strong>The Policy Implications</strong> Why this matters for your work:</p>
+<section id="spatial-data-gis-operations-in-r" class="level1">
+<h1>Spatial Data &amp; GIS Operations in R</h1>
+<p><strong>This lecture covers:</strong></p>
 <ul>
-<li>Summary statistics can hide critical patterns</li>
-<li>Outliers may represent important communities</li>
-<li>Relationships aren’t always linear</li>
-<li>Visual inspection reveals data quality issues</li>
-<li>I.e. an average of two extremes within a population may look like an area has average value</li>
-</ul>
-<p>Ethical Data Communication</p>
+<li>Spatial Data Fundamentals
 <ul>
-<li>Only <em>27% of planners</em> warn users about unreliable ACS data — most don’t reort MoE — many lack training on statistical uncertainty
-<ul>
-<li><strong>This violates AICP code of ethics</strong></li>
+<li>Vector data model and sf objects</li>
+<li>Reading and inspecting spatial data</li>
+<li>Basic sptial data operations</li>
 </ul></li>
-<li>Your responsibility:
+<li>Spatial Operations
 <ul>
-<li>Create honest, transparent visualizations</li>
-<li>Always assess and communicate data quality</li>
-<li>Consider who might be harmed by uncertain data</li>
+<li>Spatial subsetting and filtering</li>
+<li>Spatial joins and relationships</li>
+<li>Measuring distances and areas</li>
 </ul></li>
-</ul>
-<p>Bad Visualizations Have Real Consequences</p>
+<li>Geometry Operations
 <ul>
-<li>Common problems in government data presentation:
-<ul>
-<li>Misleading scales or axes</li>
-<li>Cherry-picked time periods</li>
-<li>Hidden or ignored uncertainty</li>
-<li>Missing context about data reliability</li>
+<li>Buffers, intersections, unions</li>
+<li>Spatial aggregation</li>
 </ul></li>
-<li><strong>Real impact:</strong> The Jurjevich et al.&nbsp;study found that <em>72% of Portland census tracts</em> had unreliable child poverty estimates, yet planners rarely communicated this uncertainty.</li>
-<li><strong>Result:</strong> Poor policy decisions based on misunderstood data</li>
-</ul>
-</section>
-<section id="part-2-grammar-of-graphics" class="level2">
-<h2 class="anchored" data-anchor-id="part-2-grammar-of-graphics">Part 2: Grammar of Graphics</h2>
-<p><strong>The ggplot2 Philosophy</strong></p>
+<li>Coordinate Systems
 <ul>
-<li>Grammar of Graphics principles:
-<ul>
-<li>Data -&gt; Aesthetics -&gt; Geometries -&gt; Visual
-<ul>
-<li>Data: your dataset</li>
-<li>Aesthetics: what variables map to visual properties</li>
-<li>Geometries: how to display the data (points, bars, lines, etc.)</li>
-<li>Additional layers: scales, themes, facets, annotations, etc.</li>
-</ul></li>
-</ul></li>
-<li>Structure:
-<ul>
-<li><code>ggplot(data = dataset) + aes(x = var1, y = var2) + geom_something() + additional_layers()</code></li>
+<li>Understanding projections and how to transform between them</li>
 </ul></li>
 </ul>
-<p>Aesthetic Mappings: The Key to <code>ggplot2</code></p>
+<section id="part-1-why-spatial-analysis-matters" class="level2">
+<h2 class="anchored" data-anchor-id="part-1-why-spatial-analysis-matters">Part 1: Why Spatial Analysis Matters</h2>
+<p>We have been looking at census data and searching for patterns. We must add the spatial dimension to better understand.</p>
 <ul>
-<li>Aesthetics map data to visual properties
+<li>Real policy questions <em>need</em> spatial answers</li>
+<li>“Which communities have the lowest income?”
 <ul>
-<li><code>x,y</code>: position</li>
-<li><code>color</code>: point/line color</li>
-<li><code>fill</code>: area fill color</li>
-<li><code>size</code>: point shape</li>
-<li><code>alpha</code>: transparency</li>
-<li><strong>Note</strong>: constants go outside <code>aes()</code></li>
+<li>Are they clustered? Isolated? Near resources?</li>
+</ul></li>
+<li>“Where should we located a new health clinic?”
+<ul>
+<li>Optimize access for underserved populations</li>
+</ul></li>
+</ul>
+<p><strong>Spatial Analysis and Algorithmic Bias</strong></p>
+<ul>
+<li>Geographic bias in algorithms:
+<ul>
+<li>Training data may under-/over-represent certain areas</li>
+<li>Spatial autocorrelation violates independence assumptions
+<ul>
+<li>Think police data</li>
+</ul></li>
 </ul></li>
 </ul>
 </section>
-<section id="part-3-exploratory-data-analysis" class="level2">
-<h2 class="anchored" data-anchor-id="part-3-exploratory-data-analysis">Part 3: Exploratory Data Analysis</h2>
-<p>The EDA Mindset: <em>The goal is to understand your data before making decisions or building models</em></p>
-<ol type="1">
-<li>What does the data look like? (distributions, missing values, etc.)</li>
-<li>What patterns exist? (relationships, clusters, trends)</li>
-<li>What’s unusual? (outliers, anomalies, data quality)</li>
-<li>What questions does this raise? (hypotheses for further investigation)</li>
-<li>How reliable is this data?</li>
-</ol>
-<p><strong>EDA Workflow with Data Quality Focus</strong> Enhanced process for policy analysis:</p>
-<ol type="1">
-<li>Load and inspect - dimensions, variable types, missing data</li>
-<li>Assess reliability - examine margins of error, calculate coefficients of variation</li>
-<li>Visualize distributions - histograms, boxplots for each variable</li>
-<li>Explore relationships - scatter plots, correlations</li>
-<li>Identify patterns - grouping, clustering, geographical patterns</li>
-<li>Question anomalies - investigate outliers and unusual patterns</li>
-<li>Document limitations - prepare honest communication about data quality</li>
-</ol>
+<section id="part-2-spatial-data-fundamentals" class="level2">
+<h2 class="anchored" data-anchor-id="part-2-spatial-data-fundamentals">Part 2: Spatial Data Fundamentals</h2>
+<p>Vector Data Model</p>
+<ul>
+<li>Real world -&gt; Simplified geometric representations</li>
+<li>Three basic types:
+<ul>
+<li>Points: locations</li>
+<li>Lines: linear features</li>
+<li>Polygons: areas</li>
+</ul></li>
+<li>Each feature has:
+<ul>
+<li>Geometry: shape, location</li>
+<li>Attributions: describing data</li>
+</ul></li>
+</ul>
+<p>The <code>sf</code> package: simple features for R</p>
+<ul>
+<li>Why sf?
+<ul>
+<li>Modern replacement for older packages</li>
+<li>Integrates with tifyverse</li>
+<li>Follows international standards</li>
+<li>Fast and reliable</li>
+</ul></li>
+<li>Spatial data is data.frame + geometry column</li>
+</ul>
+<p>Common spatial data formats:</p>
+<ul>
+<li>Shapefiles (.shp + supporting files)</li>
+<li>GeoJSON (.geojson)</li>
+<li>KML/KMZ (Google Earth)</li>
+<li>Database connections (PostGIS)</li>
+</ul>
 </section>
-<section id="part-4-in-class-exercise" class="level2">
-<h2 class="anchored" data-anchor-id="part-4-in-class-exercise">Part 4: In Class Exercise</h2>
-<p><strong>Look at in-class exercise for code follow along!</strong></p>
+<section id="part-3-spatial-operations" class="level2">
+<h2 class="anchored" data-anchor-id="part-3-spatial-operations">Part 3: Spatial Operations</h2>
+<p>Spatial subsetting</p>
+<ul>
+<li>Extract features based on spatial relationships</li>
+<li>key functions:</li>
+<li><code>st_filter()</code></li>
+<li><code>st_intersects()</code></li>
+<li><code>st_touches()</code></li>
+<li><code>st_within()</code></li>
+<li>Example:
+<ul>
+<li><code># Find census tracts within Allegheny County</code></li>
+<li><code>tracts_in_allegheny &lt;- census_tracts %&gt;% st_filter(allegheny, .predicate = st_within)</code></li>
+</ul></li>
+<li>Understanding the <code>.predicate</code> Parameter
+<ul>
+<li>The <code>.predicate</code> tells <code>st_filter()</code> what spatial relationship to look for:
+<ul>
+<li>r predicate-structure <code># Basic structure: st_filter(data_to_filter, reference_geometry, .predicate = relationship)</code></li>
+</ul></li>
+<li>Different questions need different relationships:
+<ul>
+<li>“Which counties border Allegheny?” → <code>st_touches</code></li>
+<li>“Which tracts are IN Allegheny?” → <code>st_within</code></li>
+<li>“Which tracts overlap a metro area?” → <code>st_intersects</code> -Default: If no <code>.predicate</code> specified, uses <code>st_intersects</code> <img src="imgNotes/predicate.png" class="img-fluid" alt="Table of predicate uses"></li>
+</ul></li>
+</ul></li>
+</ul>
+<p>Spatial Joins</p>
+<ul>
+<li>Example:
+<ul>
+<li><code># Each tract gets county attributes</code></li>
+<li><code>tracts_with_counties &lt;- census_tracts %&gt;% st_join(pa_counties)</code></li>
+</ul></li>
+</ul>
+<p>Distance Calculations</p>
+<ul>
+<li>First make centroid of polygon (if using polygons) -I.e. <code>county_centers &lt;- st_centroid(pa_counties)</code></li>
+<li>Then can use <code>st_distance</code>
+<ul>
+<li>One argument means distance between object features
+<ul>
+<li>Ex: <code>distance_matrix &lt;- st_distance(county_centers)</code></li>
+</ul></li>
+<li>Two arguments means distance between objects</li>
+</ul></li>
+<li>Unit is in coordinate system</li>
+</ul>
+<p>Area Calculations</p>
+<ul>
+<li><code>pa_counties &lt;- pa_counties %&gt;% mutate( area_sqkm = as.numeric(st_area(.)) / 1000000  # Convert to sq km )</code>
+<ul>
+<li><code>.</code> is a lazy man’s way to pass down piping</li>
+</ul></li>
+</ul>
+</section>
+<section id="part-4-geometry-operations" class="level2">
+<h2 class="anchored" data-anchor-id="part-4-geometry-operations">Part 4: Geometry Operations</h2>
+<p>Filter vs intersection: <img src="imgNotes/filterIntersection.png" class="img-fluid" alt="filter v intersection"></p>
+<p>Union combines multiple feature into one (think dissolve)</p>
+<p>Spatial Aggregation</p>
+</section>
+<section id="part-5-coordinate-reference-systems" class="level2">
+<h2 class="anchored" data-anchor-id="part-5-coordinate-reference-systems">Part 5: Coordinate Reference Systems</h2>
+<p>You know about coordinate references</p>
+<p>Reminder:</p>
+<ul>
+<li>Geographic Coordiante Systems (GCS):
+<ul>
+<li>Latitude/longitude coordinates</li>
+<li>Units: decimal degrees</li>
+<li>Good for: global datasets, web mapping</li>
+<li>Bad for: Area/distance calcs</li>
+</ul></li>
+<li>Projected Coordinate Systems
+<ul>
+<li>X/Y cooridates on a flat plane</li>
+<li>Units: meters, feet, etc.</li>
+<li>Good for: Local analysis, accurate measurements</li>
+<li>Bad for: large areas, global datasets</li>
+</ul></li>
+</ul>
+<p><strong><em>Important</em></strong> Only use <code>st_set_crs()</code> if there is not already a coordinate reference system! Use <code>st_transform()</code> to change!</p>
 
 
 </section>
