@@ -158,7 +158,6 @@ dataPA
 
 # Format as table with kable() - include appropriate column names and caption
 
-?kable
 #Creating a kable table to show unreliability
 #First must create table ordered by MoE
 highUncertainty <- dataPA %>% 
@@ -252,7 +251,6 @@ demos <- demos %>% rename(whiteE = B03002_003E, whiteM = B03002_003M,
 demos <- demos %>% mutate(whitePerc = 100*(whiteE/totalE),
                           aaPerc = 100*(aaE/totalE), hispPerc = 100*(hispE/totalE))
 # Add readable tract and county name columns using str_extract() or similar
-?str_extract
 
 #Get Census track name and county name through regex
 demos <- demos %>% mutate(
@@ -270,8 +268,7 @@ demos <- demos %>% mutate(
 ```{r demographic-analysis}
 # Find the tract with the highest percentage of Hispanic/Latino residents
 # Hint: use arrange() and slice() to get the top tract
-?arrange
-?slice
+
 
 highestHispLat <-demos %>% arrange(desc(hispPerc)) %>% slice(1) %>% select(countyName, tractName)
 print(highestHispLat)
@@ -282,11 +279,12 @@ sumDemos <- demos %>% group_by(countyName) %>% summarise(
   avgWhitePerc = mean(whitePerc, na.rm = TRUE), avgAAPerc = mean(aaPerc, na.rm = TRUE),
   avgHispLatPerc = mean(hispPerc, na.rm = TRUE)
 )
-?summarise
 
 # Create a nicely formatted table of your results using kable()
 kable(sumDemos,
-      col.names = c("County", "Average CT % White Residents", "Average CT % Black Residents",
+      col.names = c("County",
+                    "Average CT % White Residents",
+                    "Average CT % Black Residents",
                     "Average CT % Hispanic/Latine Residents"),
       caption = "A comparison of Average Census Track Demographics in Greene and Philadelphia County, Pennsylvania",
       format.args = list(big.mark = ","))
@@ -343,7 +341,7 @@ highMoESummary <- demos %>% summarise(
 # Create a professional table showing the patterns
 kable(highMoESummary,
       col.names = c("Average Population", "Average % White Residents", "Average % Black Residents", "Average % Hispanic/Latine Residents"),
-      caption = "Characteristics of High Margin of Error Census Tracts in Greene and Philadelphia County, Pennsylvaia",
+           caption = "Characteristics of High Margin of Error Census Tracts in Greene and Philadelphia County, Pennsylvaia",
       format.args = list(big.mark = ","))
 ```
 
@@ -396,10 +394,11 @@ kable(sumTable,
       caption = "Algorithmic Recommendations for 5-Year ACS Income Data for Pennsylvania Counties",
       format.args = list(big.mark = ",")
       )
-`kable(highMoESummary,
+kable(highMoESummary,
       col.names = c("Average Population", "Average % White Residents",
                     "Average % Black Residents", "Average % Hispanic/Latine Residents"),
-      caption = "Characteristics of High Margin of Error Census Tracts in Greene and Philadelphia County, Pennsylvaia",
+      caption = 
+        "Characteristics of High Margin of Error Census Tracts in Greene and Philadelphia County, Pennsylvaia",
       format.args = list(big.mark = ","))
 ```
 
