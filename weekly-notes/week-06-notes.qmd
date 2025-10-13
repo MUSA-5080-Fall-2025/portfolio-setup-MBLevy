@@ -1,0 +1,37 @@
+---
+title: "Week 6 Notes - Spatial Machine Learning & Advanced Regression"
+date: "2025-10-13"
+---
+
+# Spatial Machine Learning & Advanced Regression
+
+## Building model
+
+See week 6 in class code
+
+## Part 1: Expanding Reg Toolkit
+
+**Interaction Effects**
+The Question
+
+- Does the effect of one variable depend on the level of another variable?
+  - i.e. Does sq footage matter more in wealthier neighboorhoods
+
+Polynomial Terms: Non-Linear Relationships
+
+- When straight lines don't fit
+  - Signs of Non-Linearity:
+    -Curved residual plots
+    - Diminishing returns
+    - Accelerating effects
+    - U-shaped or inverted-U patterns
+    - Theoretical reasons
+
+## Incorporating Geography
+
+**Tobler's First Law of Geography**:
+“Everything is related to everything else, but near things are more related than distant things”
+
+
+
+

@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="quarto-1.8.23" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+
+<meta name="author" content="Matthew Levy" />
+<meta name="dcterms.date" content="2025-10-13" />
+
+<title>Assignment 2: Spatial Analysis and Visualization – Matthew Levy - MUSA 5080 Portfolio</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<!-- htmldependencies:E3FAD763 -->
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="/index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="/index.html">
+    <span class="navbar-title">Matthew Levy - MUSA 5080 Portfolio</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+  aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation"
+  onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="/index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-weekly-notes" role="link" data-bs-toggle="dropdown" aria-expanded="false" >
+ <span class="menu-text">Weekly Notes</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-weekly-notes">    
+        <li>
+    <a class="dropdown-item" href="/weekly-notes/week-01-notes.html">
+ <span class="dropdown-text">Week 1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="/weekly-notes/week-02-notes.html">
+ <span class="dropdown-text">Week 2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="/weekly-notes/week-03-notes.html">
+ <span class="dropdown-text">Week 3</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="/weekly-notes/week-04-notes.html">
+ <span class="dropdown-text">Week 4</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="/weekly-notes/week-05-notes.html">
+ <span class="dropdown-text">Week 5</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="/weekly-notes/week-06-notes.qmd">
+ <span class="dropdown-text">Week 5</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-labs" role="link" data-bs-toggle="dropdown" aria-expanded="false" >
+ <span class="menu-text">Labs</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-labs">    
+        <li>
+    <a class="dropdown-item" href="/labs/lab0/lab0_template.html">
+ <span class="dropdown-text">Lab 0: dyplr Basics</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="/labs/lab1/assignment1_template.html">
+ <span class="dropdown-text">Lab 1 Census Data Quality for Policy Decisions</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="/labs/lab2/Levy-Matthew-Assignment2.html">
+ <span class="dropdown-text">Lab 2 Spatial Analysis and Visualization</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div id="quarto-toc-target"></div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" ></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Assignment 2: Spatial Analysis and Visualization</h1>
+<p class="subtitle lead">Healthcare Access and Equity in Pennsylvania</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Matthew Levy </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 13, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+<nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#assignment-overview" id="toc-assignment-overview">Assignment Overview</a></li>
+  <li><a href="#part-1-healthcare-access-for-vulnerable-populations" id="toc-part-1-healthcare-access-for-vulnerable-populations">Part 1: Healthcare Access for Vulnerable Populations</a>
+  <ul>
+  <li><a href="#research-question" id="toc-research-question">Research Question</a></li>
+  <li><a href="#required-analysis-steps" id="toc-required-analysis-steps">Required Analysis Steps</a></li>
+  </ul></li>
+  <li><a href="#part-2-comprehensive-visualization" id="toc-part-2-comprehensive-visualization">Part 2: Comprehensive Visualization</a>
+  <ul>
+  <li><a href="#map-1-county-level-choropleth" id="toc-map-1-county-level-choropleth">Map 1: County-Level Choropleth</a></li>
+  <li><a href="#map-2-detailed-vulnerability-map" id="toc-map-2-detailed-vulnerability-map">Map 2: Detailed Vulnerability Map</a></li>
+  <li><a href="#chart-distribution-analysis" id="toc-chart-distribution-analysis">Chart: Distribution Analysis</a></li>
+  </ul></li>
+  <li><a href="#part-3-bring-your-own-data-analysis" id="toc-part-3-bring-your-own-data-analysis">Part 3: Bring Your Own Data Analysis</a>
+  <ul>
+  <li><a href="#challenge-options" id="toc-challenge-options">Challenge Options</a></li>
+  <li><a href="#data-sources" id="toc-data-sources">Data Sources</a></li>
+  <li><a href="#recommended-starting-points" id="toc-recommended-starting-points">Recommended Starting Points</a></li>
+  <li><a href="#your-analysis" id="toc-your-analysis">Your Analysis</a></li>
+  </ul></li>
+  <li><a href="#finally---a-few-comments-about-your-incorporation-of-feedback" id="toc-finally---a-few-comments-about-your-incorporation-of-feedback">Finally - A few comments about your incorporation of feedback!</a></li>
+  <li><a href="#submission-requirements" id="toc-submission-requirements">Submission Requirements</a></li>
+  </ul>
+</nav>
+<section id="assignment-overview" class="level2">
+<h2>Assignment Overview</h2>
+<p><strong>Learning Objectives:</strong> - Apply spatial operations to answer policy-relevant research questions - Integrate census demographic data with spatial analysis - Create publication-quality visualizations and maps - Work with spatial data from multiple sources - Communicate findings effectively for policy audiences</p>
+<hr />
+</section>
+<section id="part-1-healthcare-access-for-vulnerable-populations" class="level2">
+<h2>Part 1: Healthcare Access for Vulnerable Populations</h2>
+<section id="research-question" class="level3">
+<h3>Research Question</h3>
+<p><strong>Which Pennsylvania counties have the highest proportion of vulnerable populations (elderly + low-income) living far from hospitals?</strong></p>
+<p>Your analysis should identify counties that should be priorities for healthcare investment and policy intervention.</p>
+</section>
+<section id="required-analysis-steps" class="level3">
+<h3>Required Analysis Steps</h3>
+<p>Complete the following analysis, documenting each step with code and brief explanations:</p>
+<section id="step-1-data-collection-5-points" class="level4">
+<h4>Step 1: Data Collection (5 points)</h4>
+<p>Load the required spatial data: - Pennsylvania county boundaries - Pennsylvania hospitals (from lecture data) - Pennsylvania census tracts</p>
+<p><strong>Your Task:</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load required packages</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidycensus)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tigris)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Load spatial data</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">#census_api_key(&quot;YOUR KEY&quot;)</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Check that all data loaded correctly</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Read a shapefile</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>countiesPA <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">&quot;data/Pennsylvania_County_Boundaries.shp&quot;</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `Pennsylvania_County_Boundaries&#39; from data source 
+  `C:\Users\matth\Documents\pennFall25\PPA\portfolioSetup\labs\lab2\data\Pennsylvania_County_Boundaries.shp&#39; 
+  using driver `ESRI Shapefile&#39;
+Simple feature collection with 67 features and 19 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -8963377 ymin: 4825316 xmax: -8314404 ymax: 5201413
+Projected CRS: WGS 84 / Pseudo-Mercator</code></pre>
+</div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read GeoJSON</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>hospitals <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">&quot;data/hospitals.geojson&quot;</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `hospitals&#39; from data source 
+  `C:\Users\matth\Documents\pennFall25\PPA\portfolioSetup\labs\lab2\data\hospitals.geojson&#39; 
+  using driver `GeoJSON&#39;
+Simple feature collection with 223 features and 11 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: -80.49621 ymin: 39.75163 xmax: -74.86704 ymax: 42.13403
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#tracts</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>ctPA <span class="ot">&lt;-</span> <span class="fu">tracts</span>(<span class="at">state =</span> <span class="st">&quot;PA&quot;</span>, <span class="at">cb =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |=                                                                     |   1%
+  |                                                                            
+  |=                                                                     |   2%
+  |                                                                            
+  |==                                                                    |   2%
+  |                                                                            
+  |==                                                                    |   3%
+  |                                                                            
+  |===                                                                   |   4%
+  |                                                                            
+  |====                                                                  |   5%
+  |                                                                            
+  |====                                                                  |   6%
+  |                                                                            
+  |=====                                                                 |   7%
+  |                                                                            
+  |======                                                                |   8%
+  |                                                                            
+  |======                                                                |   9%
+  |                                                                            
+  |=======                                                               |  10%
+  |                                                                            
+  |========                                                              |  11%
+  |                                                                            
+  |=========                                                             |  12%
+  |                                                                            
+  |=========                                                             |  13%
+  |                                                                            
+  |==========                                                            |  14%
+  |                                                                            
+  |==========                                                            |  15%
+  |                                                                            
+  |===========                                                           |  16%
+  |                                                                            
+  |============                                                          |  17%
+  |                                                                            
+  |=============                                                         |  18%
+  |                                                                            
+  |=============                                                         |  19%
+  |                                                                            
+  |==============                                                        |  20%
+  |                                                                            
+  |===============                                                       |  21%
+  |                                                                            
+  |===============                                                       |  22%
+  |                                                                            
+  |================                                                      |  23%
+  |                                                                            
+  |=================                                                     |  24%
+  |                                                                            
+  |=================                                                     |  25%
+  |                                                                            
+  |==================                                                    |  26%
+  |                                                                            
+  |===================                                                   |  27%
+  |                                                                            
+  |===================                                                   |  28%
+  |                                                                            
+  |====================                                                  |  29%
+  |                                                                            
+  |=====================                                                 |  30%
+  |                                                                            
+  |=====================                                                 |  31%
+  |                                                                            
+  |=======================                                               |  32%
+  |                                                                            
+  |=======================                                               |  33%
+  |                                                                            
+  |========================                                              |  34%
+  |                                                                            
+  |=========================                                             |  35%
+  |                                                                            
+  |=========================                                             |  36%
+  |                                                                            
+  |==========================                                            |  37%
+  |                                                                            
+  |==========================                                            |  38%
+  |                                                                            
+  |===========================                                           |  39%
+  |                                                                            
+  |============================                                          |  39%
+  |                                                                            
+  |============================                                          |  40%
+  |                                                                            
+  |=============================                                         |  41%
+  |                                                                            
+  |==============================                                        |  42%
+  |                                                                            
+  |==============================                                        |  43%
+  |                                                                            
+  |===============================                                       |  44%
+  |                                                                            
+  |================================                                      |  45%
+  |                                                                            
+  |================================                                      |  46%
+  |                                                                            
+  |=================================                                     |  47%
+  |                                                                            
+  |==================================                                    |  48%
+  |                                                                            
+  |==================================                                    |  49%
+  |                                                                            
+  |===================================                                   |  50%
+  |                                                                            
+  |====================================                                  |  51%
+  |                                                                            
+  |=====================================                                 |  52%
+  |                                                                            
+  |=====================================                                 |  53%
+  |                                                                            
+  |======================================                                |  54%
+  |                                                                            
+  |=======================================                               |  56%
+  |                                                                            
+  |========================================                              |  57%
+  |                                                                            
+  |=========================================                             |  58%
+  |                                                                            
+  |=========================================                             |  59%
+  |                                                                            
+  |==========================================                            |  60%
+  |                                                                            
+  |===========================================                           |  61%
+  |                                                                            
+  |===========================================                           |  62%
+  |                                                                            
+  |============================================                          |  63%
+  |                                                                            
+  |=============================================                         |  64%
+  |                                                                            
+  |==============================================                        |  65%
+  |                                                                            
+  |===============================================                       |  67%
+  |                                                                            
+  |===============================================                       |  68%
+  |                                                                            
+  |================================================                      |  69%
+  |                                                                            
+  |=================================================                     |  70%
+  |                                                                            
+  |==================================================                    |  71%
+  |                                                                            
+  |==================================================                    |  72%
+  |                                                                            
+  |===================================================                   |  73%
+  |                                                                            
+  |====================================================                  |  74%
+  |                                                                            
+  |====================================================                  |  75%
+  |                                                                            
+  |=====================================================                 |  76%
+  |                                                                            
+  |======================================================                |  77%
+  |                                                                            
+  |======================================================                |  78%
+  |                                                                            
+  |=======================================================               |  79%
+  |                                                                            
+  |========================================================              |  80%
+  |                                                                            
+  |=========================================================             |  81%
+  |                                                                            
+  |==========================================================            |  82%
+  |                                                                            
+  |==========================================================            |  83%
+  |                                                                            
+  |===========================================================           |  84%
+  |                                                                            
+  |============================================================          |  85%
+  |                                                                            
+  |============================================================          |  86%
+  |                                                                            
+  |=============================================================         |  87%
+  |                                                                            
+  |==============================================================        |  88%
+  |                                                                            
+  |==============================================================        |  89%
+  |                                                                            
+  |===============================================================       |  90%
+  |                                                                            
+  |================================================================      |  91%
+  |                                                                            
+  |=================================================================     |  92%
+  |                                                                            
+  |==================================================================    |  94%
+  |                                                                            
+  |==================================================================    |  95%
+  |                                                                            
+  |===================================================================   |  96%
+  |                                                                            
+  |====================================================================  |  97%
+  |                                                                            
+  |====================================================================  |  98%
+  |                                                                            
+  |===================================================================== |  99%
+  |                                                                            
+  |======================================================================| 100%</code></pre>
+</div>
+</div>
+<p><strong>Questions to answer:</strong></p>
+<ul>
+<li>How many hospitals are in your dataset?</li>
+<li>How many census tracts?</li>
+<li>What coordinate reference system is each dataset in?</li>
+</ul>
+<p>There are 233 hospitals and 3,445 census tracts. The hospital and counties are loaded in with WGS84 as their coordinate systems, whilst the census tracts have NAD83.</p>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># st_crs(ctPA)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># st_crs(countiesPA)</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># st_crs(hospitals)</span></span></code></pre></div>
+</div>
+<hr />
+</section>
+<section id="step-2-get-demographic-data" class="level4">
+<h4>Step 2: Get Demographic Data</h4>
+<p>Use <code>tidycensus</code> to download tract-level demographic data for Pennsylvania.</p>
+<p><strong>Required variables:</strong> - Total population - Median household income - Population 65 years and over (you may need to sum multiple age categories)</p>
+<p><strong>Your Task:</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get demographic data from ACS</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>acs_vars_2023 <span class="ot">&lt;-</span> <span class="fu">load_variables</span>(<span class="dv">2023</span>, <span class="st">&quot;acs5&quot;</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                                <span class="at">cache =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>dataPA <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">geography =</span> <span class="st">&quot;tract&quot;</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">c</span>(<span class="at">popTotal =</span> <span class="st">&quot;B01003_001&quot;</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">medIncome =</span> <span class="st">&quot;B19013_001&quot;</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">male65 =</span> <span class="st">&quot;B01001A_014&quot;</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                <span class="at">male75 =</span> <span class="st">&quot;B01001A_015&quot;</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">male85 =</span> <span class="st">&quot;B01001A_016&quot;</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                <span class="at">woman65 =</span> <span class="st">&quot;B01001A_029&quot;</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                <span class="at">woman75 =</span> <span class="st">&quot;B01001A_030&quot;</span>,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>                <span class="at">woman85 =</span> <span class="st">&quot;B01001A_031&quot;</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>                ),</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2023</span>, <span class="at">state =</span> <span class="st">&quot;PA&quot;</span>, <span class="at">survey =</span> <span class="st">&quot;acs5&quot;</span>,</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="st">&quot;wide&quot;</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>dataPA <span class="ot">&lt;-</span> dataPA <span class="sc">%&gt;%</span> </span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">o65E =</span> <span class="fu">rowSums</span>(<span class="fu">across</span>(<span class="fu">c</span>(</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>      male65E, male75E, male85E, woman65E,</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>      woman75E, woman85E))),</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">o65M =</span> <span class="fu">rowSums</span>(<span class="fu">across</span>(<span class="fu">c</span>(</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>      male65M, male75M, male85M, woman65M,</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>      woman75M, woman85M</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>  )))) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(male65E, male75E, male85E,</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>                  woman65E,woman75E, woman85E,</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>                  male65M, male75M, male85M,</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>                  woman65M, woman75M, woman85M))</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Join to tract boundaries</span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>ctPA <span class="ot">&lt;-</span> ctPA <span class="sc">%&gt;%</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(dataPA, <span class="at">by =</span> <span class="st">&quot;GEOID&quot;</span>)</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co">#Number of NAs, median income</span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="co"># length(ctPA$medIncomeE[is.na(ctPA$medIncomeE)])</span></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="co"># median(ctPA$medIncomeE, na.rm = TRUE)</span></span></code></pre></div>
+</div>
+<p><strong>Questions to answer:</strong> - What year of ACS data are you using? - How many tracts have missing income data? - What is the median income across all PA census tracts?</p>
+<p>I am using 5 year ACS data pertaining to total population, median income, and age. Out of the 3,445 census tracts, only 65 are missing their median income data. The median income of the remaining 3380 tracts is $72,943.50.</p>
+<hr />
+</section>
+<section id="step-3-define-vulnerable-populations" class="level4">
+<h4>Step 3: Define Vulnerable Populations</h4>
+<p>Identify census tracts with vulnerable populations based on TWO criteria: 1. Low median household income (choose an appropriate threshold) 2. Significant elderly population (choose an appropriate threshold)</p>
+<p><strong>Your Task:</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for vulnerable tracts based on your criteria</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>incCrit <span class="ot">&lt;-</span> (<span class="dv">36777</span><span class="sc">+</span><span class="dv">29187</span>)<span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>ctPA <span class="ot">&lt;-</span> ctPA <span class="sc">%&gt;%</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">eldPercE =</span> o65E<span class="sc">/</span>popTotalE,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">vuln =</span> <span class="fu">case_when</span>(</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>           medIncomeE <span class="sc">&lt;=</span> incCrit <span class="sc">|</span> eldPercE <span class="sc">&gt;=</span> .<span class="dv">2</span> <span class="sc">~</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>           <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">FALSE</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>         ))</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>ctVuln <span class="ot">&lt;-</span> ctPA <span class="sc">%&gt;%</span> <span class="fu">filter</span>(vuln)</span></code></pre></div>
+</div>
+<p><strong>Questions to answer:</strong> - What income threshold did you choose and why? - What elderly population threshold did you choose and why? - How many tracts meet your vulnerability criteria? - What percentage of PA census tracts are considered vulnerable by your definition?</p>
+<p>My income threshold was the average of the <a href="https://www.pa.gov/agencies/dhs/resources/data-reports/federal-poverty-income-guidelines"><em>HealthChoices Income Requirements</em></a> for households of 2 and 3 in Pennsylvania. The <a href="https://www.indexmundi.com/facts/united-states/quick-facts/pennsylvania/average-household-size#map">average household</a> size in the state is between 2 and 3, but not close enough to either bound to round to the whole number. To discern my elderly threshold, I first created an an elderly percentage column in order to ensure that less-populated counties could be more fairly represented. Then I settled on 20% of the populated being elderly as my baseline, as one-in-five people being elderly seems like quite the community strain. 1,369 census tracts meant my vulnerability requirements, which is about 49.74% of the state’s tracts.</p>
+<hr />
+</section>
+<section id="step-4-calculate-distance-to-hospitals" class="level4">
+<h4>Step 4: Calculate Distance to Hospitals</h4>
+<p>For each vulnerable tract, calculate the distance to the nearest hospital.</p>
+<p><strong>Your Task:</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform to appropriate projected CRS</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">#South PA NAD83</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>ctPA <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(ctPA, <span class="dv">2272</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>hospitals <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(hospitals, <span class="dv">2272</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>countiesPA <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(countiesPA, <span class="dv">2272</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># st_crs(hospitals)</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate distance from each tract centroid to nearest hospital</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>ctCent <span class="ot">&lt;-</span> <span class="fu">st_centroid</span>(ctPA, <span class="dv">2272</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>ctCent2 <span class="ot">&lt;-</span> ctCent <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">hospDist =</span> (<span class="fu">apply</span>(<span class="fu">st_distance</span>(.,hospitals),</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>                   <span class="dv">1</span>,</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>                   min))<span class="sc">/</span><span class="dv">5280</span>)</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="co"># mean(ctCent2$hospDist)</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="co"># max(ctCent2$hospDist)</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a><span class="co"># nrow(ctCent2[ctCent2$hospDist &gt; 15 &amp; ctCent2$vuln,])</span></span></code></pre></div>
+</div>
+<p><strong>Requirements:</strong> - Use an appropriate projected coordinate system for Pennsylvania - Calculate distances in miles - Explain why you chose your projection</p>
+<p><strong>Questions to answer:</strong> - What is the average distance to the nearest hospital for vulnerable tracts? - What is the maximum distance? - How many vulnerable tracts are more than 15 miles from the nearest hospital?</p>
+<p>I chose the South Pennsylvania NAD83 projection because the study area is Pennsylvania and minimal distortions will occur from choosing one of the two state coordinate reference systems. The average distance is 4.41 miles. The maximum distance is 32.84 miles. There are 57 tracts that are both vulnerable (by my index of either 20% elderly or below an average income of $32,982) and more than 15 miles away from a hospital.</p>
+<hr />
+</section>
+<section id="step-5-identify-underserved-areas" class="level4">
+<h4>Step 5: Identify Underserved Areas</h4>
+<p>Define “underserved” as vulnerable tracts that are more than 15 miles from the nearest hospital.</p>
+<p><strong>Your Task:</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb11"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create underserved variable</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>ctCent2 <span class="ot">&lt;-</span> ctCent2 <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">underserved =</span> <span class="fu">case_when</span>(</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  hospDist <span class="sc">&gt;</span> <span class="dv">15</span> <span class="sc">~</span> <span class="cn">TRUE</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">FALSE</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co"># nrow(ctCent2[ctCent2$underserved &amp; ctCent2$vuln,])/nrow(ctCent2[ctCent2$vuln,])</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co"># nrow(ctCent2[ctCent2$vuln,])</span></span></code></pre></div>
+</div>
+<p><strong>Questions to answer:</strong> - How many tracts are underserved? - What percentage of vulnerable tracts are underserved? - Does this surprise you? Why or why not?</p>
+<p>Out of the 1,369 vulnerable census tracts in Pennsylvania, only 57 of them are under-served in terms of distance from a hospital (over 15 miles away). This is not even 5% (~4.16%) of vulnerable tracts.</p>
+<p>The number being <em>that</em> low surprises me; however, the number being low does not. I figured many of the older tracts may be located in some suburban and urban tracts and many of the poorer tracts located in urban tracts. A 15 mile radius is large enough to mean that any tract located near an urban center will most likely be near a hospital.</p>
+<hr />
+</section>
+<section id="step-6-aggregate-to-county-level" class="level4">
+<h4>Step 6: Aggregate to County Level</h4>
+<p>Use spatial joins and aggregation to calculate county-level statistics about vulnerable populations and hospital access.</p>
+<p><strong>Your Task:</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Spatial join tracts to counties</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>countyAgg <span class="ot">&lt;-</span> ctCent2 <span class="sc">%&gt;%</span> <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(COUNTYFP) <span class="sc">%&gt;%</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">totalPop =</span> <span class="fu">sum</span>(popTotalE),</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">weightedMedIncome =</span> (<span class="fu">sum</span>(popTotalE<span class="sc">*</span>medIncomeE, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)<span class="sc">/</span><span class="fu">sum</span>(popTotalE)),</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">o65 =</span> <span class="fu">sum</span>(o65E),</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">o65Perc =</span> o65<span class="sc">/</span>totalPop,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">avgDist =</span> <span class="fu">mean</span>(hospDist),</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">vulnTracts =</span> <span class="fu">sum</span>(vuln),</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">vulnPerc =</span> <span class="dv">100</span><span class="sc">*</span>(<span class="fu">sum</span>(vuln)<span class="sc">/</span><span class="fu">n</span>()),</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">underservedTracts =</span> <span class="fu">sum</span>(underserved),</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">underservedPerc =</span> <span class="dv">100</span><span class="sc">*</span> (<span class="fu">sum</span>(underserved <span class="sc">&amp;</span> vuln)<span class="sc">/</span><span class="fu">sum</span>(vuln)),</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">vulnHospDist =</span> <span class="fu">mean</span>(<span class="fu">ifelse</span>(vuln, hospDist, <span class="cn">NA</span>), <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">vulnPop =</span> <span class="fu">sum</span>(<span class="fu">ifelse</span>(vuln, popTotalE, <span class="dv">0</span>)),</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">vulnUndservPop =</span> <span class="fu">sum</span>(<span class="fu">ifelse</span>(vuln <span class="sc">&amp;</span> underserved, popTotalE, <span class="dv">0</span>)),</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">vulnUndservPerc =</span> <span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span>(vulnUndservPop<span class="sc">/</span>totalPop),<span class="dv">2</span>)</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Aggregate statistics by county</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>countySummary <span class="ot">&lt;-</span> countiesPA <span class="sc">%&gt;%</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">COUNTYFP =</span> FIPS_COUNT) <span class="sc">%&gt;%</span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(countyAgg, <span class="at">by =</span> <span class="st">&quot;COUNTYFP&quot;</span>)</span></code></pre></div>
+</div>
+<p><strong>Required county-level statistics:</strong> - Number of vulnerable tracts - Number of underserved tracts<br />
+- Percentage of vulnerable tracts that are underserved - Average distance to nearest hospital for vulnerable tracts - Total vulnerable population</p>
+<p><strong>Questions to answer:</strong> - Which 5 counties have the highest percentage of underserved vulnerable tracts? - Which counties have the most vulnerable people living far from hospitals? - Are there any patterns in where underserved counties are located?</p>
+<ul>
+<li>Sullivan, Cameron, Forest, Pike, and Juniata county are the 5 counties with the highest percentage fo their vulnerable tracts also being underserved.</li>
+<li><h2 id="clearfield-pike-and-bradford-counties-have-the-most-underserved-vulnerable-populations-having-an-estimated-18790-17101-and-13162-underserved-and-vulnerable-residents-in-the-same-order.">Clearfield, Pike, and Bradford counties have the most underserved vulnerable populations, having an estimated 18790, 17101, and 13162 underserved and vulnerable residents (in the same order).</h2></li>
+</ul>
+</section>
+<section id="step-7-create-summary-table" class="level4">
+<h4>Step 7: Create Summary Table</h4>
+<p>Create a professional table showing the top 10 priority counties for healthcare investment.</p>
+<p><strong>Your Task:</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb13"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create and format priority counties table</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>priority <span class="ot">&lt;-</span> countySummary <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(COUNTY_NAM, totalPop, vulnUndservPop, vulnUndservPerc ,vulnHospDist) <span class="sc">%&gt;%</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(vulnUndservPerc)) <span class="sc">%&gt;%</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() </span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>priority<span class="sc">$</span>vulnUndservPerc <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="fu">as.character</span>(priority<span class="sc">$</span>vulnUndservPerc), <span class="st">&quot;%&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>priority<span class="sc">$</span>vulnHospDist <span class="ot">&lt;-</span> <span class="fu">round</span>(priority<span class="sc">$</span>vulnHospDist,<span class="dv">2</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(priority[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, ],</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;County&quot;</span>, <span class="st">&quot;County Population&quot;</span>, <span class="st">&quot;Vulnerable &amp; Underserved Population&quot;</span>,</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>                    <span class="st">&quot;Vulnerable &amp; Underserved Population Percent&quot;</span>,</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>                    <span class="st">&quot;Average Distance to Hospital for Vulnerable Population (miles)&quot;</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>                    ),</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">caption =</span> <span class="st">&quot;Top Ten Counties for Healthcare Investment PA&quot;</span>,</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">&quot;,&quot;</span>))</span></code></pre></div>
+<div class="cell-output-display">
+<table class="caption-top">
+<caption>Top Ten Counties for Healthcare Investment PA</caption>
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 10%" />
+<col style="width: 20%" />
+<col style="width: 25%" />
+<col style="width: 36%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">County</th>
+<th style="text-align: right;">County Population</th>
+<th style="text-align: right;">Vulnerable &amp; Underserved Population</th>
+<th style="text-align: left;">Vulnerable &amp; Underserved Population Percent</th>
+<th style="text-align: right;">Average Distance to Hospital for Vulnerable Population (miles)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">SULLIVAN</td>
+<td style="text-align: right;">5,849</td>
+<td style="text-align: right;">5,849</td>
+<td style="text-align: left;">100%</td>
+<td style="text-align: right;">22.67</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CAMERON</td>
+<td style="text-align: right;">4,475</td>
+<td style="text-align: right;">4,475</td>
+<td style="text-align: left;">100%</td>
+<td style="text-align: right;">19.07</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">FOREST</td>
+<td style="text-align: right;">6,785</td>
+<td style="text-align: right;">2,573</td>
+<td style="text-align: left;">37.92%</td>
+<td style="text-align: right;">18.13</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PIKE</td>
+<td style="text-align: right;">59,691</td>
+<td style="text-align: right;">17,101</td>
+<td style="text-align: left;">28.65%</td>
+<td style="text-align: right;">17.86</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">JUNIATA</td>
+<td style="text-align: right;">23,419</td>
+<td style="text-align: right;">5,638</td>
+<td style="text-align: left;">24.07%</td>
+<td style="text-align: right;">14.61</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CLEARFIELD</td>
+<td style="text-align: right;">78,902</td>
+<td style="text-align: right;">18,790</td>
+<td style="text-align: left;">23.81%</td>
+<td style="text-align: right;">13.55</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BRADFORD</td>
+<td style="text-align: right;">59,971</td>
+<td style="text-align: right;">13,162</td>
+<td style="text-align: left;">21.95%</td>
+<td style="text-align: right;">10.98</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TIOGA</td>
+<td style="text-align: right;">41,078</td>
+<td style="text-align: right;">8,054</td>
+<td style="text-align: left;">19.61%</td>
+<td style="text-align: right;">10.67</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">WYOMING</td>
+<td style="text-align: right;">26,075</td>
+<td style="text-align: right;">4,185</td>
+<td style="text-align: left;">16.05%</td>
+<td style="text-align: right;">11.86</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">HUNTINGDON</td>
+<td style="text-align: right;">43,844</td>
+<td style="text-align: right;">6,413</td>
+<td style="text-align: left;">14.63%</td>
+<td style="text-align: right;">11.58</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>Requirements:</strong> - Use <code>knitr::kable()</code> or similar for formatting - Include descriptive column names - Format numbers appropriately (commas for population, percentages, etc.) - Add an informative caption - Sort by priority (you decide the metric)</p>
+<hr />
+</section>
+</section>
+</section>
+<section id="part-2-comprehensive-visualization" class="level2">
+<h2>Part 2: Comprehensive Visualization</h2>
+<p>Using the skills from Week 3 (Data Visualization), create publication-quality maps and charts.</p>
+<section id="map-1-county-level-choropleth" class="level3">
+<h3>Map 1: County-Level Choropleth</h3>
+<p>Create a choropleth map showing healthcare access challenges at the county level.</p>
+<p><strong>Your Task:</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb14"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create county-level access map</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data=</span> countySummary, <span class="fu">aes</span>(<span class="at">fill =</span> vulnUndservPerc)) <span class="sc">+</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> hospitals, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">alpha =</span> .<span class="dv">5</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">show.legend =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Percent of Vulnerable Tracts that are 15 mi from Nearest Hospital&quot;</span>) <span class="sc">+</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">caption =</span> <span class="st">&quot;Data sourced from the ACS&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;%&quot;</span>)</span></code></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img src="Levy-Matthew-Assignment2_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672" /></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Requirements:</strong> - Fill counties by percentage of vulnerable tracts that are underserved - Include hospital locations as points - Use an appropriate color scheme - Include clear title, subtitle, and caption - Use <code>theme_void()</code> or similar clean theme - Add a legend with formatted labels</p>
+<hr />
+</section>
+<section id="map-2-detailed-vulnerability-map" class="level3">
+<h3>Map 2: Detailed Vulnerability Map</h3>
+<p>Create a map highlighting underserved vulnerable tracts.</p>
+<p><strong>Your Task:</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb15"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create detailed tract-level map</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Get underserved info to tract shapefile</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>ctCent2 <span class="ot">&lt;-</span> ctCent2 <span class="sc">%&gt;%</span> <span class="fu">select</span>(TRACTCE, hospDist, underserved) <span class="sc">%&gt;%</span> <span class="fu">st_drop_geometry</span>()</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>ctPA <span class="ot">&lt;-</span> ctPA <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(ctCent2, <span class="at">by =</span> <span class="st">&quot;TRACTCE&quot;</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co">#Get shapefile of only underserved vulnerable tracts</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>ctVulnUndServ <span class="ot">&lt;-</span> ctPA <span class="sc">%&gt;%</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(vuln <span class="sc">&amp;</span> underserved)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> ctPA, <span class="at">color =</span> <span class="st">&quot;grey&quot;</span>,</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>          <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> ctVulnUndServ, <span class="at">fill =</span> <span class="st">&quot;darkgreen&quot;</span>) <span class="sc">+</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> countiesPA, <span class="at">fill =</span> <span class="st">&quot;transparent&quot;</span>) <span class="sc">+</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> hospitals, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>,</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>          <span class="at">alpha =</span> .<span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Underserved Vulnerable PA Tracts&quot;</span>) <span class="sc">+</span></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">caption =</span> <span class="st">&quot;Data sourced from the ACS&quot;</span>)</span></code></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img src="Levy-Matthew-Assignment2_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672" /></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Requirements:</strong> - Show underserved vulnerable tracts in a contrasting color - Include county boundaries for context - Show hospital locations - Use appropriate visual hierarchy (what should stand out?) - Include informative title and subtitle</p>
+<hr />
+</section>
+<section id="chart-distribution-analysis" class="level3">
+<h3>Chart: Distribution Analysis</h3>
+<p>Create a visualization showing the distribution of distances to hospitals for vulnerable populations.</p>
+<p><strong>Your Task:</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb16"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create distribution visualization</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(countySummary, <span class="fu">aes</span>(<span class="at">x =</span> vulnPop<span class="sc">/</span><span class="dv">1000</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                          <span class="at">y =</span> vulnHospDist)) <span class="sc">+</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Vulnerable Population (1000s)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">&quot;Nearest Hospital Distance (Miles)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Distance to Hosptial and PA County Vulnerable Population&quot;</span>)</span></code></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img src="Levy-Matthew-Assignment2_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672" /></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">&quot;The relationship between Pennsylvania county vulnerable populations and average distance from each county&#39;s census tracts to the nearest hospital. In this study, vulnerable populations are aggregated up from census tracts that are either 20% elderly (over the age of 65) or have an average income less than $32,982.&quot;</span>)  </span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] &quot;The relationship between Pennsylvania county vulnerable populations and average distance from each county&#39;s census tracts to the nearest hospital. In this study, vulnerable populations are aggregated up from census tracts that are either 20% elderly (over the age of 65) or have an average income less than $32,982.&quot;</code></pre>
+</div>
+</div>
+<p><strong>Suggested chart types:</strong> - Histogram or density plot of distances - Box plot comparing distances across regions - Bar chart of underserved tracts by county - Scatter plot of distance vs. vulnerable population size</p>
+<p><strong>Requirements:</strong> - Clear axes labels with units - Appropriate title - Professional formatting - Brief interpretation (1-2 sentences as a caption or in text)</p>
+<hr />
+</section>
+</section>
+<section id="part-3-bring-your-own-data-analysis" class="level2">
+<h2>Part 3: Bring Your Own Data Analysis</h2>
+<p>Choose your own additional spatial dataset and conduct a supplementary analysis.</p>
+<section id="challenge-options" class="level3">
+<h3>Challenge Options</h3>
+<p>Choose ONE of the following challenge exercises, or propose your own research question using OpenDataPhilly data (https://opendataphilly.org/datasets/).</p>
+<p><strong>Note these are just loose suggestions to spark ideas - follow or make your own as the data permits and as your ideas evolve. This analysis should include bringing in your own dataset, ensuring the projection/CRS of your layers align and are appropriate for the analysis (not lat/long or geodetic coordinate systems). The analysis portion should include some combination of spatial and attribute operations to answer a relatively straightforward question</strong></p>
+<hr />
+<section id="education-youth-services" class="level4">
+<h4>Education &amp; Youth Services</h4>
+<p><strong>Option A: Educational Desert Analysis</strong> - <strong>Data:</strong> Schools, Libraries, Recreation Centers, Census tracts (child population) - <strong>Question:</strong> “Which neighborhoods lack adequate educational infrastructure for children?” - <strong>Operations:</strong> Buffer schools/libraries (0.5 mile walking distance), identify coverage gaps, overlay with child population density - <strong>Policy relevance:</strong> School district planning, library placement, after-school program siting</p>
+<p><strong>Option B: School Safety Zones</strong> - <strong>Data:</strong> Schools, Crime Incidents, Bike Network - <strong>Question:</strong> “Are school zones safe for walking/biking, or are they crime hotspots?” - <strong>Operations:</strong> Buffer schools (1000ft safety zone), spatial join with crime incidents, assess bike infrastructure coverage - <strong>Policy relevance:</strong> Safe Routes to School programs, crossing guard placement</p>
+<hr />
+</section>
+<section id="environmental-justice" class="level4">
+<h4>Environmental Justice</h4>
+<p><strong>Option C: Green Space Equity</strong> - <strong>Data:</strong> Parks, Street Trees, Census tracts (race/income demographics) - <strong>Question:</strong> “Do low-income and minority neighborhoods have equitable access to green space?” - <strong>Operations:</strong> Buffer parks (10-minute walk = 0.5 mile), calculate tree canopy or park acreage per capita, compare by demographics - <strong>Policy relevance:</strong> Climate resilience, environmental justice, urban forestry investment —</p>
+</section>
+<section id="public-safety-justice" class="level4">
+<h4>Public Safety &amp; Justice</h4>
+<p><strong>Option D: Crime &amp; Community Resources</strong> - <strong>Data:</strong> Crime Incidents, Recreation Centers, Libraries, Street Lights - <strong>Question:</strong> “Are high-crime areas underserved by community resources?” - <strong>Operations:</strong> Aggregate crime counts to census tracts or neighborhoods, count community resources per area, spatial correlation analysis - <strong>Policy relevance:</strong> Community investment, violence prevention strategies —</p>
+</section>
+<section id="infrastructure-services" class="level4">
+<h4>Infrastructure &amp; Services</h4>
+<p><strong>Option E: Polling Place Accessibility</strong> - <strong>Data:</strong> Polling Places, SEPTA stops, Census tracts (elderly population, disability rates) - <strong>Question:</strong> “Are polling places accessible for elderly and disabled voters?” - <strong>Operations:</strong> Buffer polling places and transit stops, identify vulnerable populations, find areas lacking access - <strong>Policy relevance:</strong> Voting rights, election infrastructure, ADA compliance</p>
+<hr />
+</section>
+<section id="health-wellness" class="level4">
+<h4>Health &amp; Wellness</h4>
+<p><strong>Option F: Recreation &amp; Population Health</strong> - <strong>Data:</strong> Recreation Centers, Playgrounds, Parks, Census tracts (demographics) - <strong>Question:</strong> “Is lack of recreation access associated with vulnerable populations?” - <strong>Operations:</strong> Calculate recreation facilities per capita by neighborhood, buffer facilities for walking access, overlay with demographic indicators - <strong>Policy relevance:</strong> Public health investment, recreation programming, obesity prevention</p>
+<hr />
+</section>
+<section id="emergency-services" class="level4">
+<h4>Emergency Services</h4>
+<p><strong>Option G: EMS Response Coverage</strong> - <strong>Data:</strong> Fire Stations, EMS stations, Population density, High-rise buildings - <strong>Question:</strong> “Are population-dense areas adequately covered by emergency services?” - <strong>Operations:</strong> Create service area buffers (5-minute drive = ~2 miles), assess population coverage, identify gaps in high-density areas - <strong>Policy relevance:</strong> Emergency preparedness, station siting decisions</p>
+<hr />
+</section>
+<section id="arts-culture" class="level4">
+<h4>Arts &amp; Culture</h4>
+<p><strong>Option H: Cultural Asset Distribution</strong> - <strong>Data:</strong> Public Art, Museums, Historic sites/markers, Neighborhoods - <strong>Question:</strong> “Do all neighborhoods have equitable access to cultural amenities?” - <strong>Operations:</strong> Count cultural assets per neighborhood, normalize by population, compare distribution across demographic groups - <strong>Policy relevance:</strong> Cultural equity, tourism, quality of life, neighborhood identity</p>
+<hr />
+</section>
+</section>
+<section id="data-sources" class="level3">
+<h3>Data Sources</h3>
+<p><strong>OpenDataPhilly:</strong> https://opendataphilly.org/datasets/ - Most datasets available as GeoJSON, Shapefile, or CSV with coordinates - Always check the Metadata for a data dictionary of the fields.</p>
+<p><strong>Additional Sources:</strong> - <strong>Pennsylvania Open Data:</strong> https://data.pa.gov/ - <strong>Census Bureau (via tidycensus):</strong> Demographics, economic indicators, commute patterns - <strong>TIGER/Line (via tigris):</strong> Geographic boundaries</p>
+</section>
+<section id="recommended-starting-points" class="level3">
+<h3>Recommended Starting Points</h3>
+<p><strong>If you’re feeling confident:</strong> Choose an advanced challenge with multiple data layers. <strong>If you are a beginner, choose something more manageable that helps you understand the basics</strong></p>
+<p><strong>If you have a different idea:</strong> Propose your own question! Just make sure: - You can access the spatial data - You can perform at least 2 spatial operations</p>
+</section>
+<section id="your-analysis" class="level3">
+<h3>Your Analysis</h3>
+<p><strong>Your Task:</strong></p>
+<ol type="1">
+<li><strong>Find and load additional data</strong>
+<ul>
+<li>Document your data source</li>
+<li>Check and standardize the CRS</li>
+<li>Provide basic summary statistics</li>
+</ul></li>
+</ol>
+<div class="cell">
+<div class="sourceCode" id="cb19"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load your additional dataset</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>transitRoutes <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">&quot;data/Transit_Routes_(Spring_2025).shp&quot;</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `Transit_Routes_(Spring_2025)&#39; from data source 
+  `C:\Users\matth\Documents\pennFall25\PPA\portfolioSetup\labs\lab2\data\Transit_Routes_(Spring_2025).shp&#39; 
+  using driver `ESRI Shapefile&#39;
+Simple feature collection with 178 features and 18 fields
+Geometry type: MULTILINESTRING
+Dimension:     XY
+Bounding box:  xmin: -8441925 ymin: 4837473 xmax: -8321361 ymax: 4914725
+Projected CRS: WGS 84 / Pseudo-Mercator</code></pre>
+</div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>transit <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">&quot;data/Transit_Stops_(Spring_2025).shp&quot;</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `Transit_Stops_(Spring_2025)&#39; from data source 
+  `C:\Users\matth\Documents\pennFall25\PPA\portfolioSetup\labs\lab2\data\Transit_Stops_(Spring_2025).shp&#39; 
+  using driver `ESRI Shapefile&#39;
+Simple feature collection with 22478 features and 9 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: -8441879 ymin: 4837473 xmax: -8321600 ymax: 4914600
+Projected CRS: WGS 84 / Pseudo-Mercator</code></pre>
+</div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>bike <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">&quot;data/Bike_Network.shp&quot;</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `Bike_Network&#39; from data source 
+  `C:\Users\matth\Documents\pennFall25\PPA\portfolioSetup\labs\lab2\data\Bike_Network.shp&#39; 
+  using driver `ESRI Shapefile&#39;
+Simple feature collection with 5225 features and 8 fields
+Geometry type: LINESTRING
+Dimension:     XY
+Bounding box:  xmin: -8378937 ymin: 4847835 xmax: -8345146 ymax: 4883978
+Projected CRS: WGS 84 / Pseudo-Mercator</code></pre>
+</div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>bike <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(bike, <span class="dv">2272</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>transit <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(transit, <span class="dv">2272</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>transitRoutes <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(transitRoutes, <span class="dv">2272</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>ctPA2 <span class="ot">&lt;-</span> <span class="fu">tracts</span>(<span class="at">state =</span> <span class="st">&quot;PA&quot;</span>, <span class="at">cb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>ctPA2 <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(ctPA2, <span class="dv">2272</span>)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>dataPA2 <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">geography =</span> <span class="st">&quot;tract&quot;</span>,</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">variables =</span> <span class="fu">c</span>(<span class="at">popTotal =</span> <span class="st">&quot;B01003_001&quot;</span>,</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>                <span class="at">popAA =</span> <span class="st">&quot;B01001B_001&quot;</span>,</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>                <span class="at">popLh =</span> <span class="st">&quot;B01001I_001&quot;</span>,</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>                <span class="at">medIncome =</span> <span class="st">&quot;B19013_001&quot;</span>,</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>                <span class="at">male65 =</span> <span class="st">&quot;B01001A_014&quot;</span>,</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>                <span class="at">male75 =</span> <span class="st">&quot;B01001A_015&quot;</span>,</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>                <span class="at">male85 =</span> <span class="st">&quot;B01001A_016&quot;</span>,</span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>                <span class="at">woman65 =</span> <span class="st">&quot;B01001A_029&quot;</span>,</span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>                <span class="at">woman75 =</span> <span class="st">&quot;B01001A_030&quot;</span>,</span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>                <span class="at">woman85 =</span> <span class="st">&quot;B01001A_031&quot;</span></span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>                ),</span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2023</span>, <span class="at">state =</span> <span class="st">&quot;PA&quot;</span>, <span class="at">survey =</span> <span class="st">&quot;acs5&quot;</span>,</span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="st">&quot;wide&quot;</span>)</span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>dataPA2 <span class="ot">&lt;-</span> dataPA2 <span class="sc">%&gt;%</span> </span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">o65E =</span> <span class="fu">rowSums</span>(<span class="fu">across</span>(<span class="fu">c</span>(</span>
+<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>      male65E, male75E, male85E, woman65E,</span>
+<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>      woman75E, woman85E))),</span>
+<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">o65M =</span> <span class="fu">rowSums</span>(<span class="fu">across</span>(<span class="fu">c</span>(</span>
+<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>      male65M, male75M, male85M, woman65M,</span>
+<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>      woman75M, woman85M</span>
+<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a>  )))) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(male65E, male75E, male85E,</span>
+<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a>                  woman65E,woman75E, woman85E,</span>
+<span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a>                  male65M, male75M, male85M,</span>
+<span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a>                  woman65M, woman75M, woman85M))</span>
+<span id="cb25-38"><a href="#cb25-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-39"><a href="#cb25-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Join to tract boundaries</span></span>
+<span id="cb25-40"><a href="#cb25-40" aria-hidden="true" tabindex="-1"></a>ctPA2 <span class="ot">&lt;-</span> ctPA2 <span class="sc">%&gt;%</span></span>
+<span id="cb25-41"><a href="#cb25-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(dataPA2, <span class="at">by =</span> <span class="st">&quot;GEOID&quot;</span>)</span>
+<span id="cb25-42"><a href="#cb25-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-43"><a href="#cb25-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-44"><a href="#cb25-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-45"><a href="#cb25-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-46"><a href="#cb25-46" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb25-47"><a href="#cb25-47" aria-hidden="true" tabindex="-1"></a><span class="co">#Standardizing measurements for demos</span></span>
+<span id="cb25-48"><a href="#cb25-48" aria-hidden="true" tabindex="-1"></a>ctPA2 <span class="ot">&lt;-</span> ctPA2 <span class="sc">%&gt;%</span></span>
+<span id="cb25-49"><a href="#cb25-49" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate</span>(<span class="at">percAA =</span> <span class="dv">100</span> <span class="sc">*</span> (popAAE<span class="sc">/</span>popTotalE),</span>
+<span id="cb25-50"><a href="#cb25-50" aria-hidden="true" tabindex="-1"></a>         <span class="at">percLH =</span> <span class="dv">100</span><span class="sc">*</span>(popLhE<span class="sc">/</span>popTotalE),</span>
+<span id="cb25-51"><a href="#cb25-51" aria-hidden="true" tabindex="-1"></a>         <span class="at">percOld =</span> <span class="dv">100</span><span class="sc">*</span>(o65E<span class="sc">/</span>popTotalE))</span>
+<span id="cb25-52"><a href="#cb25-52" aria-hidden="true" tabindex="-1"></a><span class="co"># head(transit)</span></span>
+<span id="cb25-53"><a href="#cb25-53" aria-hidden="true" tabindex="-1"></a><span class="co"># head(transitRoutes)</span></span>
+<span id="cb25-54"><a href="#cb25-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-55"><a href="#cb25-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-56"><a href="#cb25-56" aria-hidden="true" tabindex="-1"></a><span class="co">#Prep to join</span></span>
+<span id="cb25-57"><a href="#cb25-57" aria-hidden="true" tabindex="-1"></a>transitRouteGeoless <span class="ot">&lt;-</span> transitRoutes <span class="sc">%&gt;%</span> <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb25-58"><a href="#cb25-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Mode, LineAbbr, LineName)</span>
+<span id="cb25-59"><a href="#cb25-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-60"><a href="#cb25-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-61"><a href="#cb25-61" aria-hidden="true" tabindex="-1"></a><span class="co">#Adding Consistency to Line Abbr</span></span>
+<span id="cb25-62"><a href="#cb25-62" aria-hidden="true" tabindex="-1"></a>transitRouteGeoless<span class="sc">$</span>LineAbbr[transitRouteGeoless<span class="sc">$</span>LineAbbr <span class="sc">==</span> <span class="st">&quot;T1 (10)&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;T1&quot;</span></span>
+<span id="cb25-63"><a href="#cb25-63" aria-hidden="true" tabindex="-1"></a>transitRouteGeoless<span class="sc">$</span>LineAbbr[transitRouteGeoless<span class="sc">$</span>LineAbbr <span class="sc">==</span> <span class="st">&quot;G (15)&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;G1&quot;</span></span>
+<span id="cb25-64"><a href="#cb25-64" aria-hidden="true" tabindex="-1"></a>transitRouteGeoless<span class="sc">$</span>LineAbbr[transitRouteGeoless<span class="sc">$</span>LineAbbr <span class="sc">==</span> <span class="st">&quot;63 (G)&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;63&quot;</span></span>
+<span id="cb25-65"><a href="#cb25-65" aria-hidden="true" tabindex="-1"></a>transitRouteGeoless<span class="sc">$</span>LineAbbr[transitRouteGeoless<span class="sc">$</span>LineAbbr <span class="sc">==</span> <span class="st">&quot;51 (L)&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;51&quot;</span></span>
+<span id="cb25-66"><a href="#cb25-66" aria-hidden="true" tabindex="-1"></a>transitRouteGeoless<span class="sc">$</span>LineAbbr[transitRouteGeoless<span class="sc">$</span>LineAbbr <span class="sc">==</span> <span class="st">&quot;41 (J)&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;41&quot;</span></span>
+<span id="cb25-67"><a href="#cb25-67" aria-hidden="true" tabindex="-1"></a>transitRouteGeoless<span class="sc">$</span>LineAbbr[transitRouteGeoless<span class="sc">$</span>LineAbbr <span class="sc">==</span> <span class="st">&quot;81 (XH)&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;81&quot;</span></span>
+<span id="cb25-68"><a href="#cb25-68" aria-hidden="true" tabindex="-1"></a>transitRouteGeoless<span class="sc">$</span>LineAbbr[transitRouteGeoless<span class="sc">$</span>LineAbbr <span class="sc">==</span> <span class="st">&quot;82 (R)&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;82&quot;</span></span>
+<span id="cb25-69"><a href="#cb25-69" aria-hidden="true" tabindex="-1"></a>transitRouteGeoless<span class="sc">$</span>LineAbbr[transitRouteGeoless<span class="sc">$</span>LineAbbr <span class="sc">==</span> <span class="st">&quot;71 (H)&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;71&quot;</span></span>
+<span id="cb25-70"><a href="#cb25-70" aria-hidden="true" tabindex="-1"></a>transitRouteGeoless<span class="sc">$</span>LineAbbr[transitRouteGeoless<span class="sc">$</span>LineAbbr <span class="sc">==</span> <span class="st">&quot;BSO&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;B1 OWL&quot;</span></span>
+<span id="cb25-71"><a href="#cb25-71" aria-hidden="true" tabindex="-1"></a>transitRouteGeoless<span class="sc">$</span>LineAbbr[transitRouteGeoless<span class="sc">$</span>LineAbbr <span class="sc">==</span> <span class="st">&quot;MFO&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;L1 OWL&quot;</span></span>
+<span id="cb25-72"><a href="#cb25-72" aria-hidden="true" tabindex="-1"></a>transitRouteGeoless<span class="sc">$</span>LineAbbr[transitRouteGeoless<span class="sc">$</span>LineAbbr <span class="sc">==</span> <span class="st">&quot;T2 (34)&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;T2&quot;</span></span>
+<span id="cb25-73"><a href="#cb25-73" aria-hidden="true" tabindex="-1"></a>transitRouteGeoless<span class="sc">$</span>LineAbbr[transitRouteGeoless<span class="sc">$</span>LineAbbr <span class="sc">==</span> <span class="st">&quot;T3 (13)&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;T3&quot;</span></span>
+<span id="cb25-74"><a href="#cb25-74" aria-hidden="true" tabindex="-1"></a>transitRouteGeoless<span class="sc">$</span>LineAbbr[transitRouteGeoless<span class="sc">$</span>LineAbbr <span class="sc">==</span> <span class="st">&quot;T4 (11)&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;T4&quot;</span></span>
+<span id="cb25-75"><a href="#cb25-75" aria-hidden="true" tabindex="-1"></a>transitRouteGeoless<span class="sc">$</span>LineAbbr[transitRouteGeoless<span class="sc">$</span>LineAbbr <span class="sc">==</span> <span class="st">&quot;T5 (36)&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;T5&quot;</span></span>
+<span id="cb25-76"><a href="#cb25-76" aria-hidden="true" tabindex="-1"></a>transitRouteGeoless<span class="sc">$</span>LineAbbr[transitRouteGeoless<span class="sc">$</span>LineAbbr <span class="sc">==</span> <span class="st">&quot;G (15)&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;G1&quot;</span></span>
+<span id="cb25-77"><a href="#cb25-77" aria-hidden="true" tabindex="-1"></a>transitRouteGeoless<span class="sc">$</span>LineAbbr[transitRouteGeoless<span class="sc">$</span>LineAbbr <span class="sc">==</span> <span class="st">&quot;D1 BUS&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;D1 Bus&quot;</span></span>
+<span id="cb25-78"><a href="#cb25-78" aria-hidden="true" tabindex="-1"></a>transitRouteGeoless<span class="sc">$</span>LineAbbr[transitRouteGeoless<span class="sc">$</span>LineAbbr <span class="sc">==</span> <span class="st">&quot;D2 BUS&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;D2 Bus&quot;</span></span>
+<span id="cb25-79"><a href="#cb25-79" aria-hidden="true" tabindex="-1"></a>transitRouteGeoless<span class="sc">$</span>LineAbbr[transitRouteGeoless<span class="sc">$</span>LineAbbr <span class="sc">==</span> <span class="st">&quot;M&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;M1&quot;</span></span>
+<span id="cb25-80"><a href="#cb25-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-81"><a href="#cb25-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-82"><a href="#cb25-82" aria-hidden="true" tabindex="-1"></a>transit <span class="ot">&lt;-</span> transit <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(transitRouteGeoless, <span class="at">by =</span> <span class="st">&quot;LineAbbr&quot;</span>)</span>
+<span id="cb25-83"><a href="#cb25-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-84"><a href="#cb25-84" aria-hidden="true" tabindex="-1"></a>busStop <span class="ot">&lt;-</span> transit <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Mode <span class="sc">==</span> <span class="st">&quot;Bus&quot;</span>)</span>
+<span id="cb25-85"><a href="#cb25-85" aria-hidden="true" tabindex="-1"></a>metroStop <span class="ot">&lt;-</span> transit <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">&quot;Metro&quot;</span>,Mode))</span>
+<span id="cb25-86"><a href="#cb25-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-87"><a href="#cb25-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-88"><a href="#cb25-88" aria-hidden="true" tabindex="-1"></a><span class="co">#Checking for mismatched lines</span></span>
+<span id="cb25-89"><a href="#cb25-89" aria-hidden="true" tabindex="-1"></a><span class="co"># stops &lt;- transit %&gt;% filter(is.na(Mode))</span></span>
+<span id="cb25-90"><a href="#cb25-90" aria-hidden="true" tabindex="-1"></a><span class="co"># unique(stops$LineAbbr)</span></span></code></pre></div>
+</div>
+<p><strong>Questions to answer:</strong> - What dataset did you choose and why? - What is the data source and date? - How many features does it contain? - What CRS is it in? Did you need to transform it?</p>
+<p>I am using <a href="https://gis-septa.hub.arcgis.com/datasets/b227f3ddbe3e47b4bcc7b7c65ef2cef6_0/explore?location=40.076978%2C-75.278141%2C9.97">SEPTA’s transit dataset</a>, which was created by SEPTA and last updated on March 10, 2025. The transit data contains 22,478 features. I chose to work with this data because of my interest in transit equity/justice. They were originally in WGS84, so I transformed it to South Pennsylvania’s NAD83 to be consistent with my previous work in this assignment.</p>
+<hr />
+<ol start="2" type="1">
+<li><strong>Pose a research question</strong></li>
+</ol>
+<p>Do vulnerable and minority tracts have equitable access to the metro and safe (protected) bike lanes?</p>
+<hr />
+<ol start="3" type="1">
+<li><strong>Conduct spatial analysis</strong></li>
+</ol>
+<p>Use at least TWO spatial operations to answer your research question.</p>
+<p><strong>Required operations (choose 2+):</strong> - Buffers - Spatial joins - Spatial filtering with predicates - Distance calculations - Intersections or unions - Point-in-polygon aggregation</p>
+<p><strong>Your Task:</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb26"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">#get philadelphia county</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>phl <span class="ot">&lt;-</span> countiesPA <span class="sc">%&gt;%</span> <span class="fu">filter</span>(FIPS_COUNT <span class="sc">==</span> <span class="st">&quot;101&quot;</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Limit all shapefiles to both desired type and desired location (philadelphia)</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>ctPHL <span class="ot">&lt;-</span> ctPA2 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(COUNTYFP <span class="sc">==</span> <span class="st">&quot;101&quot;</span>)</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>metroStopPHL <span class="ot">&lt;-</span> metroStop <span class="sc">%&gt;%</span> <span class="fu">st_filter</span>(phl, <span class="at">.predicate =</span> st_intersects)</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>busStopPHL <span class="ot">&lt;-</span> busStop <span class="sc">%&gt;%</span> <span class="fu">st_filter</span>(phl, <span class="at">.predicate =</span> st_intersects)</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="co"># unique(bike$TYPE)</span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>sepBike <span class="ot">&lt;-</span> bike <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">&quot;Separated&quot;</span>,TYPE))</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a><span class="co">#Get centroids to calc distance between census tracts and transit ooptions</span></span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>phlCTCent <span class="ot">&lt;-</span> <span class="fu">st_centroid</span>(ctPHL, <span class="dv">2272</span>)</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>phlCTCent <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(phlCTCent, <span class="dv">2272</span>)</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>phlCTCent <span class="ot">&lt;-</span> phlCTCent <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">metroDist =</span> (<span class="fu">apply</span>(<span class="fu">st_distance</span>(.,metroStopPHL),</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>                   <span class="dv">1</span>,</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>                   min))<span class="sc">/</span><span class="dv">5280</span>,</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">busDist =</span> (<span class="fu">apply</span>(<span class="fu">st_distance</span>(.,busStopPHL),</span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>                   <span class="dv">1</span>,</span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>                   min))<span class="sc">/</span><span class="dv">5280</span>,</span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">bikeDist =</span> (<span class="fu">apply</span>(<span class="fu">st_distance</span>(.,sepBike),</span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>                   <span class="dv">1</span>,</span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>                   min))<span class="sc">/</span><span class="dv">5280</span></span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-33"><a href="#cb26-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-34"><a href="#cb26-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-35"><a href="#cb26-35" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;GGally&quot;</span>)</span>
+<span id="cb26-36"><a href="#cb26-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-37"><a href="#cb26-37" aria-hidden="true" tabindex="-1"></a><span class="co">#Put desried variables into its own tibble for scatterplot matrix</span></span>
+<span id="cb26-38"><a href="#cb26-38" aria-hidden="true" tabindex="-1"></a>vars <span class="ot">&lt;-</span> phlCTCent <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="st">&quot;African-American %&quot;</span> <span class="ot">=</span> percAA,</span>
+<span id="cb26-39"><a href="#cb26-39" aria-hidden="true" tabindex="-1"></a>                             <span class="st">&quot;Latino/Hispanic %&quot;</span> <span class="ot">=</span> percLH,</span>
+<span id="cb26-40"><a href="#cb26-40" aria-hidden="true" tabindex="-1"></a>                             <span class="st">&quot;Elderly %&quot;</span> <span class="ot">=</span> percOld,</span>
+<span id="cb26-41"><a href="#cb26-41" aria-hidden="true" tabindex="-1"></a>                             <span class="st">&quot;Median Income&quot;</span> <span class="ot">=</span> medIncomeE,</span>
+<span id="cb26-42"><a href="#cb26-42" aria-hidden="true" tabindex="-1"></a>                             <span class="st">&quot;Miles to Metro&quot;</span> <span class="ot">=</span> metroDist,</span>
+<span id="cb26-43"><a href="#cb26-43" aria-hidden="true" tabindex="-1"></a>                             <span class="st">&quot;Miles to Bus&quot;</span> <span class="ot">=</span> busDist,</span>
+<span id="cb26-44"><a href="#cb26-44" aria-hidden="true" tabindex="-1"></a>                             <span class="st">&quot;Miles to Sep Bikelane&quot;</span> <span class="ot">=</span> bikeDist) <span class="sc">%&gt;%</span></span>
+<span id="cb26-45"><a href="#cb26-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>()</span>
+<span id="cb26-46"><a href="#cb26-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-47"><a href="#cb26-47" aria-hidden="true" tabindex="-1"></a><span class="co">#Scatterplot Matrix</span></span>
+<span id="cb26-48"><a href="#cb26-48" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(vars, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb26-49"><a href="#cb26-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Matrix of Vulnerability Indicators and Access to Alternative Transit&quot;</span>) <span class="sc">+</span></span>
+<span id="cb26-50"><a href="#cb26-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">caption =</span> <span class="st">&quot;Data sourced from OpenDataPhilly and the ACS&quot;</span>)</span></code></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img src="Levy-Matthew-Assignment2_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672" /></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Adding distance vars to census tract shapefiles for map</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Did not use a spatial join bc an oddly shaped tract can theoretically have a centroid outside of its</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#boundaries (e.g. if it is shaped like a &#39;C&#39;)</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>dist <span class="ot">&lt;-</span> phlCTCent <span class="sc">%&gt;%</span> <span class="fu">select</span>(metroDist, busDist, bikeDist, TRACTCE) <span class="sc">%&gt;%</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>()</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>ctPHL <span class="ot">&lt;-</span> ctPHL <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(dist, <span class="at">by =</span> <span class="st">&quot;TRACTCE&quot;</span>)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="co">#Map</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> ctPHL, <span class="fu">aes</span>(<span class="at">fill =</span> percAA)) <span class="sc">+</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> sepBike, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span> <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">&quot;Black Residents Percent&quot;</span>,</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">&quot;Data sourced from OpenDataPhilly and the ACS&quot;</span>) <span class="sc">+</span></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Philadelphia Income by Census Tract and Access to Separated Bike Lanes&quot;</span>)</span></code></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img src="Levy-Matthew-Assignment2_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid" width="672" /></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">#summary stats</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(vars)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> African-American % Latino/Hispanic %   Elderly %      Median Income   
+ Min.   :  0.000    Min.   : 0.000    Min.   : 0.000   Min.   : 13721  
+ 1st Qu.:  9.164    1st Qu.: 3.579    1st Qu.: 0.726   1st Qu.: 42469  
+ Median : 29.468    Median : 6.867    Median : 3.689   Median : 60817  
+ Mean   : 39.835    Mean   :13.608    Mean   : 6.849   Mean   : 66877  
+ 3rd Qu.: 75.069    3rd Qu.:15.062    3rd Qu.:10.182   3rd Qu.: 85298  
+ Max.   :100.000    Max.   :94.412    Max.   :51.263   Max.   :192727  
+ NA&#39;s   :17         NA&#39;s   :17        NA&#39;s   :17       NA&#39;s   :27      
+ Miles to Metro      Miles to Bus      Miles to Sep Bikelane
+ Min.   :0.005674   Min.   :0.001602   Min.   :0.0005466    
+ 1st Qu.:0.254574   1st Qu.:0.035219   1st Qu.:0.3335425    
+ Median :0.630312   Median :0.063175   Median :0.7684063    
+ Mean   :1.405345   Mean   :0.104072   Mean   :1.2078553    
+ 3rd Qu.:1.774397   3rd Qu.:0.150305   3rd Qu.:1.7762018    
+ Max.   :8.096933   Max.   :0.786101   Max.   :5.8042876    
+                                                            </code></pre>
+</div>
+</div>
+<p><strong>Analysis requirements:</strong> - Clear code comments explaining each step - Appropriate CRS transformations - Summary statistics or counts - At least one map showing your findings - Brief interpretation of results (3-5 sentences)</p>
+<p><strong>Your interpretation:</strong> Whilst my scatterplot matrix did not show any extraordinarily strong correlation between my variables and distance metrics, I found that visualizing the different transportation types with different variables provided interesting results. The strongest instance of this is my map of separated bike lanes overlaying a chloropleth of percentage of Black residency in tracts, which is notably negatively correlated. Another interesting note is that the shape of most variable-distance relationships were negatively sloped or curved; however, median income’s relationship tended to look more like normal distribution (not that it was normally distributed).</p>
+</section>
+</section>
+<section id="finally---a-few-comments-about-your-incorporation-of-feedback" class="level2">
+<h2>Finally - A few comments about your incorporation of feedback!</h2>
+<p>Take a few moments to clean up your markdown document and then write a line or two or three about how you may have incorporated feedback that you recieved after your first assignment.</p>
+<p>My biggest incorporation of feedback was in cleaning and commenting out my Quarto doc. I now ensured that my offline rendering worked before trying to upload to git.</p>
+<hr />
+</section>
+<section id="submission-requirements" class="level2">
+<h2>Submission Requirements</h2>
+<p><strong>What to submit:</strong></p>
+<ol type="1">
+<li><strong>Rendered HTML document posted to your course portfolio</strong> with all code, outputs, maps, and text
+<ul>
+<li>Use <code>embed-resources: true</code> in YAML so it’s a single file</li>
+<li>All code should run without errors</li>
+<li>All maps and charts should display correctly</li>
+</ul></li>
+</ol>
+<p><strong>File naming:</strong> <code>LastName_FirstName_Assignment2.html</code> and <code>LastName_FirstName_Assignment2.qmd</code></p>
+<hr />
+<div id="quarto-navigation-envelope" class="hidden">
+<p><span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyLXRpdGxl">Matthew Levy - MUSA 5080 Portfolio</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXItdGl0bGU=">Matthew Levy - MUSA 5080 Portfolio</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6SG9tZQ==">Home</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6L2luZGV4Lmh0bWw=">/index.html</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6V2Vla2x5IE5vdGVz">Weekly Notes</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6V2VlayAx">Week 1</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6L3dlZWtseS1ub3Rlcy93ZWVrLTAxLW5vdGVzLmh0bWw=">/weekly-notes/week-01-notes.html</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6V2VlayAy">Week 2</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6L3dlZWtseS1ub3Rlcy93ZWVrLTAyLW5vdGVzLmh0bWw=">/weekly-notes/week-02-notes.html</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6V2VlayAz">Week 3</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6L3dlZWtseS1ub3Rlcy93ZWVrLTAzLW5vdGVzLmh0bWw=">/weekly-notes/week-03-notes.html</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6V2VlayA0">Week 4</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6L3dlZWtseS1ub3Rlcy93ZWVrLTA0LW5vdGVzLmh0bWw=">/weekly-notes/week-04-notes.html</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6V2VlayA1">Week 5</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6L3dlZWtseS1ub3Rlcy93ZWVrLTA1LW5vdGVzLmh0bWw=">/weekly-notes/week-05-notes.html</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6L3dlZWtseS1ub3Rlcy93ZWVrLTA2LW5vdGVzLnFtZA==">/weekly-notes/week-06-notes.qmd</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6TGFicw==">Labs</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6TGFiIDA6IGR5cGxyIEJhc2ljcw==">Lab 0: dyplr Basics</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6L2xhYnMvbGFiMC9sYWIwX3RlbXBsYXRlLmh0bWw=">/labs/lab0/lab0_template.html</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6TGFiIDEgQ2Vuc3VzIERhdGEgUXVhbGl0eSBmb3IgUG9saWN5IERlY2lzaW9ucw==">Lab 1 Census Data Quality for Policy Decisions</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6L2xhYnMvbGFiMS9hc3NpZ25tZW50MV90ZW1wbGF0ZS5odG1s">/labs/lab1/assignment1_template.html</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6TGFiIDIgU3BhdGlhbCBBbmFseXNpcyBhbmQgVmlzdWFsaXphdGlvbg==">Lab 2 Spatial Analysis and Visualization</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXI6L2xhYnMvbGFiMi9MZXZ5LU1hdHRoZXctQXNzaWdubWVudDIuaHRtbA==">/labs/lab2/Levy-Matthew-Assignment2.html</span></p>
+</div>
+<div id="quarto-meta-markdown" class="hidden">
+<p><span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLW1ldGF0aXRsZQ==">Assignment 2: Spatial Analysis and Visualization – Matthew Levy - MUSA 5080 Portfolio</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLXR3aXR0ZXJjYXJkdGl0bGU=">Assignment 2: Spatial Analysis and Visualization – Matthew Levy - MUSA 5080 Portfolio</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLW9nY2FyZHRpdGxl">Assignment 2: Spatial Analysis and Visualization – Matthew Levy - MUSA 5080 Portfolio</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLW1ldGFzaXRlbmFtZQ==">Matthew Levy - MUSA 5080 Portfolio</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLXR3aXR0ZXJjYXJkZGVzYw==">Healthcare Access and Equity in Pennsylvania</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLW9nY2FyZGRkZXNj">Healthcare Access and Equity in Pennsylvania</span></p>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id = "quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+</body>
+
+</html>
