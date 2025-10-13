@@ -1,0 +1,195 @@
+---
+title: "Week 5 Notes - Introduction to Linear Regression"
+date: "2025-10-06"
+---
+
+While you may have learned abut linear regression before (I know I have), this class is different because it focuses on ***prediciton***
+
+# Part 1: The Statistical Learning Framework
+
+**General Problem**
+
+- We observe data and believe there's some relationship
+ - *Statistical learning* = a set of approaches for estimated said relationship
+
+Why estimate?
+
+- **Prediction**
+  - Estimate y for new observations
+  - Don't necessarily care about the exact form of f
+  - Focus: accuracy of predictions
+- **Inference**
+  - Understand how X affects Y
+  - Which predictors matter
+  - Nature of relationship
+  - Focus: interpreting model
+
+How do we estimate?
+
+- **Parametri Methodsc**
+  - Make an assumption about the functional form (e.g., linear)
+  - Reduces problem to estimating a few parameters
+  - Easier to interpret
+  - *This is what we’ll focus on*
+- **Non-Parametric Methods**
+  - Don't assume a specific form
+  - More flexible
+  - Require more data
+  - Harder to interpret
+
+![Parametric v Non-Parametric](imgNotes/week4-1.png)
+
+## Parametric Approach: Linear Regression
+
+**The assumption:** Relationship between X and Y is linear
+![Parametric approach formula](imgNotes/week4-2.png)
+**The task:** Estimate the β coefficients using sample data
+**The method:** Ordinary least sqaures (OLS)
+
+Why linear regression?
+
+- Advantages:
+  - Simple and interpretable
+  - Well-understood properties
+  - Works remarkably well for many problems
+  - Foundation for more complex methods
+- Limitations:
+  - Assumes linearity (we’ll test this)
+  - Sensitive to outliers
+  - Makes several assumptions (we’ll check these)
+
+
+# Part 2: Two Different Goals
+
+The same model serves different purposes:
+
+- Inference:
+  - “Does education affect income?”
+  - Focus on coefficients
+  - Statistical significance matters
+  - Understand mechanisms
+- Prediction:
+  - “What’s County Y’s income?”
+  - Focus on accuracy
+  - Prediction intervals matter
+  - Don’t need to understand why
+
+# Part 3: Building Your First Model
+
+- `lm()` creates a linear model
+  - `lm(formula = medianIncomeE ~ totalPopE, data = dataPA)
+    - y (medianIncome) as a variable of x (totalPop)
+
+The “Holy Grail” Concept
+
+- Our estimates are just that: estimates of the true (unknown) parameters
+- Key insight:
+  - Red line = true relationship (unknowable)
+  - Blue line = our estimate from this sample
+  - Different samples → slightly different blue lines
+  - Standard errors quantify this uncertainty
+![holy grail](imgNotes/week4-3.png)
+
+# Part 4: Model Evaluation
+
+How Good is this model?
+
+- Two key questions:
+  - How well does it fit the data we used? (in-sample fit)
+  - How well would it predict new data? (out-of-sample performance)
+- THese are not the same!
+
+
+**In-Sample Fit: R²**
+
+`R² = 0.208` means “21% of variation in income is explained by population”
+
+- Is this good?
+  - Depends on your goal!
+  - For prediction: Moderate
+  - For inference: Shows population matters, but other factors exist
+
+R² alone doesn’t tell us if the model is trustworthy
+
+**Overfitting**
+
+Three scenarios:
+
+- Underfitting: Model too simple (high bias)
+- Good fit: Captures pattern without noise
+- Overfitting: Memorizes training data (high variance)
+
+![overfitting](imgNotes/week4-4.png)
+The Solution?
+![Train/Test Split](imgNotes/week4-5.png)
+Train/test is *fine* but not the best
+
+- Variance due to possibilities of subsections chosen
+
+**Cross-Validation** is better for this reason
+![cross-validation](imgNotes/week4-6.png)
+
+- Checks if some subsets stand out more than others
+
+![cross-validation action](imgNotes/week4-7.png)
+# Part 5: Checking Assumptions
+
+
+## When Can We Trust This Model?
+
+- Linear regression makes assumptions. If violated:
+  - Coefficients may be biased
+  - Standard errors wrong
+  - Predictions unreliable
+-We must check diagnostics before trusting any model
+![assumption 1: linearity](imgNotes/week4-8.png)
+Reading Residual Plots
+
+- Good
+  - Random scatter
+  - Points around 0
+  - Constant spread
+- Bad
+  - Curved pattern
+  - Model missing something
+  - Predictions biased
+
+
+![assumption 2: Constant Variance ](imgNotes/week4-9.png)
+![Heteroscedasticity](imgNotes/week4-10.png)
+**Formal Test: Breusch-*Pagan**
+
+Interpretation:
+- p > 0.05: Constant variance assumption OK
+- p < 0.05: Evidence of heteroscedasticity
+
+If detected, solutions:
+
+- Transform Y (try log(income))
+- Robust standard errors
+- Add missing variables
+- Accept it (point predictions still OK for prediction goals)
+
+
+**Assumption: Normality of Residuals**
+
+What we assume: Residuals are normally distributed
+Why it matters:
+
+- Less critical for point predictions (unbiased regardless)
+- Important for confidence intervals and prediction intervals
+- Needed for valid hypothesis tests (t-tests, F-tests)
+
+QQPlot to test
+![qqplot](imgNotes/week4-11.png)
+
+![assumption 3: No multicollinearity](imgNotes/week4-12.png)
+![assumption 4: No infliuential outliers](imgNotes/week 4-13.png)
+
+
+# Part 6: Improving the Model
+
+Adding more predictors
+Log Transformations
+Categorical variables (R creates dummy variables automatically)
+
