@@ -619,4 +619,3 @@ My biggest incorporation of feedback was in cleaning and commenting out my Quart
 **File naming:** `LastName_FirstName_Assignment2.html` and `LastName_FirstName_Assignment2.qmd`
 
 ---
-
