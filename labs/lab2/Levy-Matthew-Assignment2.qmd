@@ -58,6 +58,9 @@ library(tigris)
 
 #census_api_key("YOUR KEY")
 
+#Did not work
+#options(tigris_use_cache = TRUE)
+#options(tigris_progress = FALSE)  # Suppress tigris progress bars
 
 
 # Check that all data loaded correctly
@@ -69,7 +72,8 @@ countiesPA <- st_read("data/Pennsylvania_County_Boundaries.shp")
 hospitals <- st_read("data/hospitals.geojson")
 
 #tracts
-ctPA <- tracts(state = "PA", cb = TRUE)
+ctPA <- tracts(state = "PA", cb = TRUE, 
+               progress = FALSE)
 ```
 
 There are 233 hospitals and 3,445 census tracts. The hospital and counties are loaded in with WGS84 as their coordinate systems, whilst the census tracts have NAD83.
