@@ -1,0 +1,81 @@
+---
+title: "Week 7 Notes - Spatial Machine Learning & Advanced Regression"
+date: "2025-10-20"
+---
+## Pre-lecture notes: Quarto Slides for Midterm
+
+- echo = TRUE displays code chunk in quarto
+- eval = FALSE prevents code chunk from running
+
+# Model Diagnostics & Spatial Autocorrelation
+
+## Understanding Spatial Patterns in Errors
+
+**What are model errors?**
+
+
+![prediciton error](imgNotes/week7-1.png)
+**Good v Bad Errors**
+
+- Random errors (good)
+  - No systematic pattern
+  - Scattered across space
+  - Prediction equally good everywhere
+  - Model captures key relationships
+- Clustered errors (bad)
+  - Spatial pattern visible
+  - Under/over-predict in areas
+  - Model misses something about location
+  - Need more spatial features!
+
+How do we test this?
+Look for *spatial autocorrelation* in the errors
+
+`Library(spdep1)` is core library
+
+## Moran's I
+
+### What is Moran's I
+**Moran's I** measures spatial autocorrelation
+Range: -1 to 1
+
+- +1 = Perfect positive correlation (clustering)
+- 0 = Random spatial pattern
+- -1 = Perfect negative correlation (dispersion)
+
+![Moran's I equation](imgNotes/week7-2.png)
+
+The intuition behind it
+The formula is really just asking:
+    “When I’m above/below average, are my neighbors also above/below average?”
+
+Breaking it down:
+
+1.(xi−x¯) = How far am I from the mean?
+2. (xj−x¯) = How far is my neighbor from the mean?
+3. Multiply them:
+  - If both positive or both negative → positive product (similar)
+  - If opposite signs → negative product (dissimilar)
+4. Sum across all neighbor pairs and normalize
+
+### Defining Neighbors
+**Different ways to define spatial relationships**
+
+- Contiguity: Polygons that share a border
+- Distance: All within X meters, fixed threshold
+- k-Nearest: Closest k points, adaptive distace
+
+### Spatial Lag
+spatial lag = avg value of neighbors
+
+### What does Moran's I Explain?
+![explanation](imgNotes/week7-3.png)
+Because this class is focused on prediction, we should not be using spatial lag
+
+- Simultaneity Problem
+  - Including *WY* (neighbor prices) creates circular logic
+  - My price affects neighbors → neighbors affect me
+  - OLS estimates are biased and inconsistent
+
+
+
