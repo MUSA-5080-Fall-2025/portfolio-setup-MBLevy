@@ -22,6 +22,12 @@ website:
             text: Week 5
           - href: weekly-notes/week-06-notes.qmd
             text: Week 6
+          - href: weekly-notes/week-07-notes.qmd
+            text: Week 7
+          - href: weekly-notes/week-09-notes.qmd
+            text: Week 9
+          - href: weekly-notes/week-10-notes.qmd
+            text: Week 10
       - text: Labs
         menu:
           - href: labs/lab0/lab0_template.qmd

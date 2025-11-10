@@ -760,7 +760,7 @@
     "href": "labs/lab2/Levy-Matthew-Assignment2.html#part-1-healthcare-access-for-vulnerable-populations",
     "title": "Assignment 2: Spatial Analysis and Visualization",
     "section": "Part 1: Healthcare Access for Vulnerable Populations",
-    "text": "Part 1: Healthcare Access for Vulnerable Populations\n\nResearch Question\nWhich Pennsylvania counties have the highest proportion of vulnerable populations (elderly + low-income) living far from hospitals?\nYour analysis should identify counties that should be priorities for healthcare investment and policy intervention.\n\n\nRequired Analysis Steps\nComplete the following analysis, documenting each step with code and brief explanations:\n\nStep 1: Data Collection (5 points)\nLoad the required spatial data: - Pennsylvania county boundaries - Pennsylvania hospitals (from lecture data) - Pennsylvania census tracts\nYour Task:\n\n# Load required packages\nlibrary(knitr)\nlibrary(tidyverse)\nlibrary(tidycensus)\nlibrary(sf)\nlibrary(ggplot2)\nlibrary(tigris)\n# Load spatial data\n\n#census_api_key(\"YOUR KEY\")\n#options(tigris_use_cache = TRUE)\n#options(tigris_progress = FALSE)  # Suppress tigris progress bars\n\n\n# Check that all data loaded correctly\n\n# Read a shapefile\ncountiesPA &lt;- st_read(\"data/Pennsylvania_County_Boundaries.shp\")\n\nReading layer `Pennsylvania_County_Boundaries' from data source \n  `C:\\Users\\matth\\Documents\\pennFall25\\PPA\\portfolioSetup\\labs\\lab2\\data\\Pennsylvania_County_Boundaries.shp' \n  using driver `ESRI Shapefile'\nSimple feature collection with 67 features and 19 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: -8963377 ymin: 4825316 xmax: -8314404 ymax: 5201413\nProjected CRS: WGS 84 / Pseudo-Mercator\n\n# Read GeoJSON\nhospitals &lt;- st_read(\"data/hospitals.geojson\")\n\nReading layer `hospitals' from data source \n  `C:\\Users\\matth\\Documents\\pennFall25\\PPA\\portfolioSetup\\labs\\lab2\\data\\hospitals.geojson' \n  using driver `GeoJSON'\nSimple feature collection with 223 features and 11 fields\nGeometry type: POINT\nDimension:     XY\nBounding box:  xmin: -80.49621 ymin: 39.75163 xmax: -74.86704 ymax: 42.13403\nGeodetic CRS:  WGS 84\n\n#tracts\nctPA &lt;- tracts(state = \"PA\", cb = TRUE, \n               progress = FALSE)\n\nThere are 233 hospitals and 3,445 census tracts. The hospital and counties are loaded in with WGS84 as their coordinate systems, whilst the census tracts have NAD83.\n\n# st_crs(ctPA)\n# st_crs(countiesPA)\n# st_crs(hospitals)\n\n\n\n\nStep 2: Get Demographic Data\nUse tidycensus to download tract-level demographic data for Pennsylvania.\nYour Task:\n\n# Get demographic data from ACS\nacs_vars_2023 &lt;- load_variables(2023, \"acs5\",\n                                cache = TRUE)\n\ndataPA &lt;- get_acs(\n  geography = \"tract\",\n  variables = c(popTotal = \"B01003_001\",\n                medIncome = \"B19013_001\",\n                male65 = \"B01001A_014\",\n                male75 = \"B01001A_015\",\n                male85 = \"B01001A_016\",\n                woman65 = \"B01001A_029\",\n                woman75 = \"B01001A_030\",\n                woman85 = \"B01001A_031\"\n                ),\n  year = 2023, state = \"PA\", survey = \"acs5\",\n  output = \"wide\")\n\ndataPA &lt;- dataPA %&gt;% \n  mutate(o65E = rowSums(across(c(\n      male65E, male75E, male85E, woman65E,\n      woman75E, woman85E))),\n    o65M = rowSums(across(c(\n      male65M, male75M, male85M, woman65M,\n      woman75M, woman85M\n  )))) %&gt;% select(-c(male65E, male75E, male85E,\n                  woman65E,woman75E, woman85E,\n                  male65M, male75M, male85M,\n                  woman65M, woman75M, woman85M))\n\n# Join to tract boundaries\nctPA &lt;- ctPA %&gt;%\n  left_join(dataPA, by = \"GEOID\")\n\n#Number of NAs, median income\n# length(ctPA$medIncomeE[is.na(ctPA$medIncomeE)])\n# median(ctPA$medIncomeE, na.rm = TRUE)\n\nI am using 5 year ACS data pertaining to total population, median income, and age. Out of the 3,445 census tracts, only 65 are missing their median income data. The median income of the remaining 3380 tracts is $72,943.50.\n\n\n\nStep 3: Define Vulnerable Populations\nIdentify census tracts with vulnerable populations based on TWO criteria: 1. Low median household income (choose an appropriate threshold) 2. Significant elderly population (choose an appropriate threshold)\nYour Task:\n\n# Filter for vulnerable tracts based on your criteria\n\nincCrit &lt;- (36777+29187)/2\n\nctPA &lt;- ctPA %&gt;%\n  mutate(eldPercE = o65E/popTotalE,\n         vuln = case_when(\n           medIncomeE &lt;= incCrit | eldPercE &gt;= .2 ~ TRUE,\n           TRUE ~ FALSE\n         ))\n\nctVuln &lt;- ctPA %&gt;% filter(vuln)\n\nMy income threshold was the average of the HealthChoices Income Requirements for households of 2 and 3 in Pennsylvania. The average household size in the state is between 2 and 3, but not close enough to either bound to round to the whole number. To discern my elderly threshold, I first created an an elderly percentage column in order to ensure that less-populated counties could be more fairly represented. Then I settled on 20% of the populated being elderly as my baseline, as one-in-five people being elderly seems like quite the community strain. 1,369 census tracts meant my vulnerability requirements, which is about 49.74% of the state’s tracts.\n\n\n\nStep 4: Calculate Distance to Hospitals\nFor each vulnerable tract, calculate the distance to the nearest hospital.\nYour Task:\n\n# Transform to appropriate projected CRS\n\n#South PA NAD83\nctPA &lt;- st_transform(ctPA, 2272)\nhospitals &lt;- st_transform(hospitals, 2272)\ncountiesPA &lt;- st_transform(countiesPA, 2272)\n# st_crs(hospitals)\n\n\n# Calculate distance from each tract centroid to nearest hospital\n\nctCent &lt;- st_centroid(ctPA, 2272)\n\nctCent2 &lt;- ctCent %&gt;% mutate(\n  hospDist = (apply(st_distance(.,hospitals),\n                   1,\n                   min))/5280)\n\n# mean(ctCent2$hospDist)\n# max(ctCent2$hospDist)\n# nrow(ctCent2[ctCent2$hospDist &gt; 15 & ctCent2$vuln,])\n\nI chose the South Pennsylvania NAD83 projection because the study area is Pennsylvania and minimal distortions will occur from choosing one of the two state coordinate reference systems. The average distance is 4.41 miles. The maximum distance is 32.84 miles. There are 57 tracts that are both vulnerable (by my index of either 20% elderly or below an average income of $32,982) and more than 15 miles away from a hospital.\n\n\n\nStep 5: Identify Underserved Areas\nDefine “underserved” as vulnerable tracts that are more than 15 miles from the nearest hospital.\nYour Task:\n\n# Create underserved variable\n\nctCent2 &lt;- ctCent2 %&gt;% mutate(underserved = case_when(\n  hospDist &gt; 15 ~ TRUE,\n  TRUE ~ FALSE\n))\n\n\n\n# nrow(ctCent2[ctCent2$underserved & ctCent2$vuln,])/nrow(ctCent2[ctCent2$vuln,])\n# nrow(ctCent2[ctCent2$vuln,])\n\nOut of the 1,369 vulnerable census tracts in Pennsylvania, only 57 of them are under-served in terms of distance from a hospital (over 15 miles away). This is not even 5% (~4.16%) of vulnerable tracts.\nThe number being that low surprises me; however, the number being low does not. I figured many of the older tracts may be located in some suburban and urban tracts and many of the poorer tracts located in urban tracts. A 15 mile radius is large enough to mean that any tract located near an urban center will most likely be near a hospital.\n\n\n\nStep 6: Aggregate to County Level\nUse spatial joins and aggregation to calculate county-level statistics about vulnerable populations and hospital access.\nYour Task:\n\n# Spatial join tracts to counties\n\ncountyAgg &lt;- ctCent2 %&gt;% st_drop_geometry() %&gt;%\n  group_by(COUNTYFP) %&gt;%\n  summarise(\n    totalPop = sum(popTotalE),\n    weightedMedIncome = (sum(popTotalE*medIncomeE, na.rm = TRUE)/sum(popTotalE)),\n    o65 = sum(o65E),\n    o65Perc = o65/totalPop,\n    avgDist = mean(hospDist),\n    vulnTracts = sum(vuln),\n    vulnPerc = 100*(sum(vuln)/n()),\n    underservedTracts = sum(underserved),\n    underservedPerc = 100* (sum(underserved & vuln)/sum(vuln)),\n    vulnHospDist = mean(ifelse(vuln, hospDist, NA), na.rm = TRUE),\n    vulnPop = sum(ifelse(vuln, popTotalE, 0)),\n    vulnUndservPop = sum(ifelse(vuln & underserved, popTotalE, 0)),\n    vulnUndservPerc = round(100*(vulnUndservPop/totalPop),2)\n  )\n\n# Aggregate statistics by county\ncountySummary &lt;- countiesPA %&gt;%\n  mutate(COUNTYFP = FIPS_COUNT) %&gt;%\n  left_join(countyAgg, by = \"COUNTYFP\")\n\n\n\n\nStep 7: Create Summary Table\nCreate a professional table showing the top 10 priority counties for healthcare investment.\nYour Task:\n\n# Create and format priority counties table\npriority &lt;- countySummary %&gt;%\n  select(COUNTY_NAM, totalPop, vulnUndservPop, vulnUndservPerc ,vulnHospDist) %&gt;%\n  arrange(desc(vulnUndservPerc)) %&gt;%\n  st_drop_geometry() \n\npriority$vulnUndservPerc &lt;- paste(as.character(priority$vulnUndservPerc), \"%\", sep = \"\")\npriority$vulnHospDist &lt;- round(priority$vulnHospDist,2)\n\n\nkable(priority[1:10, ],\n      col.names = c(\"County\", \"County Population\", \"Vulnerable & Underserved Population\",\n                    \"Vulnerable & Underserved Population Percent\",\n                    \"Average Distance to Hospital for Vulnerable Population (miles)\"\n                    ),\n      caption = \"Top Ten Counties for Healthcare Investment PA\",\n      format.args = list(big.mark = \",\"))\n\n\nTop Ten Counties for Healthcare Investment PA\n\n\n\n\n\n\n\n\n\nCounty\nCounty Population\nVulnerable & Underserved Population\nVulnerable & Underserved Population Percent\nAverage Distance to Hospital for Vulnerable Population (miles)\n\n\n\n\nSULLIVAN\n5,849\n5,849\n100%\n22.67\n\n\nCAMERON\n4,475\n4,475\n100%\n19.07\n\n\nFOREST\n6,785\n2,573\n37.92%\n18.13\n\n\nPIKE\n59,691\n17,101\n28.65%\n17.86\n\n\nJUNIATA\n23,419\n5,638\n24.07%\n14.61\n\n\nCLEARFIELD\n78,902\n18,790\n23.81%\n13.55\n\n\nBRADFORD\n59,971\n13,162\n21.95%\n10.98\n\n\nTIOGA\n41,078\n8,054\n19.61%\n10.67\n\n\nWYOMING\n26,075\n4,185\n16.05%\n11.86\n\n\nHUNTINGDON\n43,844\n6,413\n14.63%\n11.58"
+    "text": "Part 1: Healthcare Access for Vulnerable Populations\n\nResearch Question\nWhich Pennsylvania counties have the highest proportion of vulnerable populations (elderly + low-income) living far from hospitals?\nYour analysis should identify counties that should be priorities for healthcare investment and policy intervention.\n\n\nRequired Analysis Steps\nComplete the following analysis, documenting each step with code and brief explanations:\n\nStep 1: Data Collection (5 points)\nLoad the required spatial data: - Pennsylvania county boundaries - Pennsylvania hospitals (from lecture data) - Pennsylvania census tracts\nYour Task:\n\n# Load required packages\nlibrary(knitr)\nlibrary(tidyverse)\nlibrary(tidycensus)\nlibrary(sf)\nlibrary(ggplot2)\nlibrary(tigris)\n# Load spatial data\n\n#census_api_key(\"YOUR KEY\")\n\n#Did not work\n#options(tigris_use_cache = TRUE)\n#options(tigris_progress = FALSE)  # Suppress tigris progress bars\n\n\n# Check that all data loaded correctly\n\n# Read a shapefile\ncountiesPA &lt;- st_read(\"data/Pennsylvania_County_Boundaries.shp\")\n\nReading layer `Pennsylvania_County_Boundaries' from data source \n  `C:\\Users\\matth\\Documents\\pennFall25\\PPA\\portfolioSetup\\labs\\lab2\\data\\Pennsylvania_County_Boundaries.shp' \n  using driver `ESRI Shapefile'\nSimple feature collection with 67 features and 19 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: -8963377 ymin: 4825316 xmax: -8314404 ymax: 5201413\nProjected CRS: WGS 84 / Pseudo-Mercator\n\n# Read GeoJSON\nhospitals &lt;- st_read(\"data/hospitals.geojson\")\n\nReading layer `hospitals' from data source \n  `C:\\Users\\matth\\Documents\\pennFall25\\PPA\\portfolioSetup\\labs\\lab2\\data\\hospitals.geojson' \n  using driver `GeoJSON'\nSimple feature collection with 223 features and 11 fields\nGeometry type: POINT\nDimension:     XY\nBounding box:  xmin: -80.49621 ymin: 39.75163 xmax: -74.86704 ymax: 42.13403\nGeodetic CRS:  WGS 84\n\n#tracts\nctPA &lt;- tracts(state = \"PA\", cb = TRUE, \n               progress = FALSE)\n\nThere are 233 hospitals and 3,445 census tracts. The hospital and counties are loaded in with WGS84 as their coordinate systems, whilst the census tracts have NAD83.\n\n# st_crs(ctPA)\n# st_crs(countiesPA)\n# st_crs(hospitals)\n\n\n\n\nStep 2: Get Demographic Data\nUse tidycensus to download tract-level demographic data for Pennsylvania.\nYour Task:\n\n# Get demographic data from ACS\nacs_vars_2023 &lt;- load_variables(2023, \"acs5\",\n                                cache = TRUE)\n\ndataPA &lt;- get_acs(\n  geography = \"tract\",\n  variables = c(popTotal = \"B01003_001\",\n                medIncome = \"B19013_001\",\n                male65 = \"B01001A_014\",\n                male75 = \"B01001A_015\",\n                male85 = \"B01001A_016\",\n                woman65 = \"B01001A_029\",\n                woman75 = \"B01001A_030\",\n                woman85 = \"B01001A_031\"\n                ),\n  year = 2023, state = \"PA\", survey = \"acs5\",\n  output = \"wide\")\n\ndataPA &lt;- dataPA %&gt;% \n  mutate(o65E = rowSums(across(c(\n      male65E, male75E, male85E, woman65E,\n      woman75E, woman85E))),\n    o65M = rowSums(across(c(\n      male65M, male75M, male85M, woman65M,\n      woman75M, woman85M\n  )))) %&gt;% select(-c(male65E, male75E, male85E,\n                  woman65E,woman75E, woman85E,\n                  male65M, male75M, male85M,\n                  woman65M, woman75M, woman85M))\n\n# Join to tract boundaries\nctPA &lt;- ctPA %&gt;%\n  left_join(dataPA, by = \"GEOID\")\n\n#Number of NAs, median income\n# length(ctPA$medIncomeE[is.na(ctPA$medIncomeE)])\n# median(ctPA$medIncomeE, na.rm = TRUE)\n\nI am using 5 year ACS data pertaining to total population, median income, and age. Out of the 3,445 census tracts, only 65 are missing their median income data. The median income of the remaining 3380 tracts is $72,943.50.\n\n\n\nStep 3: Define Vulnerable Populations\nIdentify census tracts with vulnerable populations based on TWO criteria: 1. Low median household income (choose an appropriate threshold) 2. Significant elderly population (choose an appropriate threshold)\nYour Task:\n\n# Filter for vulnerable tracts based on your criteria\n\nincCrit &lt;- (36777+29187)/2\n\nctPA &lt;- ctPA %&gt;%\n  mutate(eldPercE = o65E/popTotalE,\n         vuln = case_when(\n           medIncomeE &lt;= incCrit | eldPercE &gt;= .2 ~ TRUE,\n           TRUE ~ FALSE\n         ))\n\nctVuln &lt;- ctPA %&gt;% filter(vuln)\n\nMy income threshold was the average of the HealthChoices Income Requirements for households of 2 and 3 in Pennsylvania. The average household size in the state is between 2 and 3, but not close enough to either bound to round to the whole number. To discern my elderly threshold, I first created an an elderly percentage column in order to ensure that less-populated counties could be more fairly represented. Then I settled on 20% of the populated being elderly as my baseline, as one-in-five people being elderly seems like quite the community strain. 1,369 census tracts meant my vulnerability requirements, which is about 49.74% of the state’s tracts.\n\n\n\nStep 4: Calculate Distance to Hospitals\nFor each vulnerable tract, calculate the distance to the nearest hospital.\nYour Task:\n\n# Transform to appropriate projected CRS\n\n#South PA NAD83\nctPA &lt;- st_transform(ctPA, 2272)\nhospitals &lt;- st_transform(hospitals, 2272)\ncountiesPA &lt;- st_transform(countiesPA, 2272)\n# st_crs(hospitals)\n\n\n# Calculate distance from each tract centroid to nearest hospital\n\nctCent &lt;- st_centroid(ctPA, 2272)\n\nctCent2 &lt;- ctCent %&gt;% mutate(\n  hospDist = (apply(st_distance(.,hospitals),\n                   1,\n                   min))/5280)\n\n# mean(ctCent2$hospDist)\n# max(ctCent2$hospDist)\n# nrow(ctCent2[ctCent2$hospDist &gt; 15 & ctCent2$vuln,])\n\nI chose the South Pennsylvania NAD83 projection because the study area is Pennsylvania and minimal distortions will occur from choosing one of the two state coordinate reference systems. The average distance is 4.41 miles. The maximum distance is 32.84 miles. There are 57 tracts that are both vulnerable (by my index of either 20% elderly or below an average income of $32,982) and more than 15 miles away from a hospital.\n\n\n\nStep 5: Identify Underserved Areas\nDefine “underserved” as vulnerable tracts that are more than 15 miles from the nearest hospital.\nYour Task:\n\n# Create underserved variable\n\nctCent2 &lt;- ctCent2 %&gt;% mutate(underserved = case_when(\n  hospDist &gt; 15 ~ TRUE,\n  TRUE ~ FALSE\n))\n\n\n\n# nrow(ctCent2[ctCent2$underserved & ctCent2$vuln,])/nrow(ctCent2[ctCent2$vuln,])\n# nrow(ctCent2[ctCent2$vuln,])\n\nOut of the 1,369 vulnerable census tracts in Pennsylvania, only 57 of them are under-served in terms of distance from a hospital (over 15 miles away). This is not even 5% (~4.16%) of vulnerable tracts.\nThe number being that low surprises me; however, the number being low does not. I figured many of the older tracts may be located in some suburban and urban tracts and many of the poorer tracts located in urban tracts. A 15 mile radius is large enough to mean that any tract located near an urban center will most likely be near a hospital.\n\n\n\nStep 6: Aggregate to County Level\nUse spatial joins and aggregation to calculate county-level statistics about vulnerable populations and hospital access.\nYour Task:\n\n# Spatial join tracts to counties\n\ncountyAgg &lt;- ctCent2 %&gt;% st_drop_geometry() %&gt;%\n  group_by(COUNTYFP) %&gt;%\n  summarise(\n    totalPop = sum(popTotalE),\n    weightedMedIncome = (sum(popTotalE*medIncomeE, na.rm = TRUE)/sum(popTotalE)),\n    o65 = sum(o65E),\n    o65Perc = o65/totalPop,\n    avgDist = mean(hospDist),\n    vulnTracts = sum(vuln),\n    vulnPerc = 100*(sum(vuln)/n()),\n    underservedTracts = sum(underserved),\n    underservedPerc = 100* (sum(underserved & vuln)/sum(vuln)),\n    vulnHospDist = mean(ifelse(vuln, hospDist, NA), na.rm = TRUE),\n    vulnPop = sum(ifelse(vuln, popTotalE, 0)),\n    vulnUndservPop = sum(ifelse(vuln & underserved, popTotalE, 0)),\n    vulnUndservPerc = round(100*(vulnUndservPop/totalPop),2)\n  )\n\n# Aggregate statistics by county\ncountySummary &lt;- countiesPA %&gt;%\n  mutate(COUNTYFP = FIPS_COUNT) %&gt;%\n  left_join(countyAgg, by = \"COUNTYFP\")\n\n\n\n\nStep 7: Create Summary Table\nCreate a professional table showing the top 10 priority counties for healthcare investment.\nYour Task:\n\n# Create and format priority counties table\npriority &lt;- countySummary %&gt;%\n  select(COUNTY_NAM, totalPop, vulnUndservPop, vulnUndservPerc ,vulnHospDist) %&gt;%\n  arrange(desc(vulnUndservPerc)) %&gt;%\n  st_drop_geometry() \n\npriority$vulnUndservPerc &lt;- paste(as.character(priority$vulnUndservPerc), \"%\", sep = \"\")\npriority$vulnHospDist &lt;- round(priority$vulnHospDist,2)\n\n\nkable(priority[1:10, ],\n      col.names = c(\"County\", \"County Population\", \"Vulnerable & Underserved Population\",\n                    \"Vulnerable & Underserved Population Percent\",\n                    \"Average Distance to Hospital for Vulnerable Population (miles)\"\n                    ),\n      caption = \"Top Ten Counties for Healthcare Investment PA\",\n      format.args = list(big.mark = \",\"))\n\n\nTop Ten Counties for Healthcare Investment PA\n\n\n\n\n\n\n\n\n\nCounty\nCounty Population\nVulnerable & Underserved Population\nVulnerable & Underserved Population Percent\nAverage Distance to Hospital for Vulnerable Population (miles)\n\n\n\n\nSULLIVAN\n5,849\n5,849\n100%\n22.67\n\n\nCAMERON\n4,475\n4,475\n100%\n19.07\n\n\nFOREST\n6,785\n2,573\n37.92%\n18.13\n\n\nPIKE\n59,691\n17,101\n28.65%\n17.86\n\n\nJUNIATA\n23,419\n5,638\n24.07%\n14.61\n\n\nCLEARFIELD\n78,902\n18,790\n23.81%\n13.55\n\n\nBRADFORD\n59,971\n13,162\n21.95%\n10.98\n\n\nTIOGA\n41,078\n8,054\n19.61%\n10.67\n\n\nWYOMING\n26,075\n4,185\n16.05%\n11.86\n\n\nHUNTINGDON\n43,844\n6,413\n14.63%\n11.58"
   },
   {
     "objectID": "labs/lab2/Levy-Matthew-Assignment2.html#part-2-comprehensive-visualization",
@@ -817,5 +817,768 @@
     "title": "Week 6 Notes - Spatial Machine Learning & Advanced Regression",
     "section": "",
     "text": "Tobler’s First Law of Geography: “Everything is related to everything else, but near things are more related than distant things”"
+  },
+  {
+    "objectID": "weekly-notes/week-10-notes.html",
+    "href": "weekly-notes/week-10-notes.html",
+    "title": "Week 10 Notes - Logistic Regression for Binary Outcomes",
+    "section": "",
+    "text": "Part 1: Introduction to Logistic Regression\nPredicting a probability, and, thus, a binary outcome\n  When do we use logistic regression?\n\nBinary Classification!\n\nCriminal Justice\n\nWill somone reoffend?\n\nHealth\n\nWIll patient develop disease?\n\nEconomics\n\nWill load default?\n\nUrban Planning\n\nWill HH participate in program?\n\n\n\n\n\n\nlgit\n\n\n\n\nPart 2: Building Logistic Models\n    ## The Fundamental Challenge\nThis is where logistic regression gets interesting (and complicated):\nThe model gives us probabilities, but we need to make binary decisions.\nQuestion: What probability threshold should we use to classify?\n\nThreshold = 0.5? (common default)\nThreshold = 0.3? (more aggressive - flag more as spam)\nThreshold = 0.7? (more conservative - only flag obvious spam)\n\nThe answer depends on:\n\nCost of false positives (marking legitimate email as spam)\nCost of false negatives (missing actual spam)\nThese costs are rarely equal!\n\n\n\nPart 3a: Confusion Matrices\n  \n\n\nPart 4: The Threshold Decision\nWhy Threshold Choice Matters\nRemember: The model gives us probabilities. We decide what probability triggers action.\nThreshold = 0.3 (low bar) - More emails marked as spam - Higher sensitivity (catch more spam) - Lower specificity (more false alarms)\nThreshold = 0.7 (high bar) - Fewer emails marked as spam - Lower sensitivity (miss some spam) - Higher specificity (fewer false alarms)\nThere is no “right” answer - it depends on the costs of each type of error\n\n\nPart 5: ROC Curves\nROC = Receiver Operating Characteristic\nWhat it shows:\n\nEvery possible threshold\nTrade-off between True Positive Rate (Sensitivity) and False Positive Rate (1 - Specificity)\nOverall model discrimination ability\n\nHow to read it:\n\nX-axis: False Positive Rate (1 - Specificity)\nY-axis: True Positive Rate (Sensitivity)\nDiagonal line: Random guessing\nTop-left corner: Perfect prediction\n\nAUC (Area Under the Curve) summarizes overall model performance:\n\nAUC = 1.0: Perfect classifier\nAUC = 0.9-1.0: Excellent\nAUC = 0.8-0.9: Good\nAUC = 0.7-0.8: Acceptable\nAUC = 0.6-0.7: Poor\nAUC = 0.5: No better than random guessing\nAUC &lt; 0.5: Worse than random (your model is backwards!)\n\nOur spam filter AUC = r round(auc_value, 3)\nInterpretation: The model has good discrimination ability, but…\n\nAUC doesn’t tell us which threshold to use\nAUC doesn’t account for class imbalance\nAUC doesn’t show us equity implications\n\n\n\n\nrocCurve\n\n\n\n\nPart 6: Equity Considerations\n\n\n\ncore prob"
+  },
+  {
+    "objectID": "inClass/week9/test.html",
+    "href": "inClass/week9/test.html",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "",
+    "text": "Modified Schedule - Dr. Delmelle at CPLN Virtual Open House until ~ 10:30AM\nAt your table, discuss:"
+  },
+  {
+    "objectID": "inClass/week9/test.html#the-sales-pitch",
+    "href": "inClass/week9/test.html#the-sales-pitch",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "The Sales Pitch",
+    "text": "The Sales Pitch\nWhat vendors and police departments claim:\n\nEfficiency: “Deploy limited resources where they’re needed most”\nObjectivity: “Remove human bias from decision-making”\n\nProactivity: “Prevent crime before it happens”\nData-driven: “Let the data tell us where crime will occur”\n\nSounds great, right?\n. . .\nBut these claims rest on critical assumptions:\n\nThat crime data accurately reflects crime (it doesn’t)\nThat past patterns predict future crime (they might just predict policing)\nThat we can separate “good” from “bad” data (we often can’t)\nThat technical solutions can fix social problems (they can’t)"
+  },
+  {
+    "objectID": "inClass/week9/test.html#the-technical-evolution",
+    "href": "inClass/week9/test.html#the-technical-evolution",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "The Technical Evolution",
+    "text": "The Technical Evolution\n\n\n\n\n\n\n\n\n\nGeneration\nMethod\nData Used\nExample\n\n\n\n\n1st: Hotspots\nKernel Density\nPast crime locations\nKDE maps\n\n\n2nd: Risk Terrain\nLogistic Reg.\nCrime + features\nRTM software\n\n\n3rd: ML\nRandom Forest, Neural Nets\nEverything\nPredPol, Palantir\n\n\n4th: Person-Based\nNetwork analysis\nSocial connections\nStrategic Subject List\n\n\n\nEach generation claims to be more “objective” and “accurate”\nBut what if they’re all built on the same flawed foundation?"
+  },
+  {
+    "objectID": "inClass/week9/test.html#what-is-dirty-data",
+    "href": "inClass/week9/test.html#what-is-dirty-data",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "What Is “Dirty Data”?",
+    "text": "What Is “Dirty Data”?\nTraditional definition (data mining):\n\nMissing data\nIncorrect data\n\nNon-standardized formats\n\nExtended definition (Richardson et al. 2019):\n\n“Data derived from or influenced by corrupt, biased, and unlawful practices, including data that has been intentionally manipulated or ‘juked,’ as well as data that is distorted by individual and societal biases.”"
+  },
+  {
+    "objectID": "inClass/week9/test.html#the-many-forms-of-dirty-data",
+    "href": "inClass/week9/test.html#the-many-forms-of-dirty-data",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "The Many Forms of Dirty Data",
+    "text": "The Many Forms of Dirty Data\n1. Fabricated/Manipulated Data\n\nFalse arrests (planted evidence)\nDowngraded crime classifications to “juke the stats”\nPressuring victims not to file reports\n\n2. Systematically Biased Data\n\nOver-policing of certain communities → more recorded “crime”\nUnder-policing of white-collar crime → appears less common\nRacial profiling → disproportionate stops/arrests\n\n3. Missing/Incomplete Data\n\nUnreported crimes (especially in over-policed areas with low police trust)\nIgnored complaints\nIncomplete records\n\n4. Proxy Problems\n\nArrests ≠ crimes committed\nCalls for service ≠ actual need\nGang database ≠ actual gang membership"
+  },
+  {
+    "objectID": "inClass/week9/test.html#case-study-1-juking-the-stats---the-wire-and-baltimore",
+    "href": "inClass/week9/test.html#case-study-1-juking-the-stats---the-wire-and-baltimore",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Case Study 1: “Juking the Stats” - The Wire and Baltimore",
+    "text": "Case Study 1: “Juking the Stats” - The Wire and Baltimore\nFrom TV to Reality:\nThe Wire (2004): “If the crime rate doesn’t fall, you most certainly will”\nBaltimore Reality (2008-2018):\n\n14,000+ serious assaults misrecorded as minor offenses\nExtensive Gun Trace Task Force corruption\nOfficers robbing residents, planting evidence\nFalse arrests, fabricated reports\nData manipulation to show “success”\n\nResult: 55+ potential lawsuits, thousands of convictions questioned\nQuestion: What happens when this data trains a predictive algorithm?"
+  },
+  {
+    "objectID": "inClass/week9/test.html#case-study-2-compstat-and-nypd",
+    "href": "inClass/week9/test.html#case-study-2-compstat-and-nypd",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Case Study 2: CompStat and NYPD",
+    "text": "Case Study 2: CompStat and NYPD\nThe Promise: Data-driven accountability, crime reduction\nThe Reality Revealed:\n\n100+ retired NYPD captains surveyed: Intense pressure led to stat manipulation\nSerious crimes downgraded to meet targets\nOfficers planting drugs to meet arrest quotas\nCommanders persuading victims not to file reports\n\nThe Dual Strategy:\n\nDowngrade serious crimes (reported to FBI) → claim success\nIncrease minor arrests (stops, summonses) → show “control”\n\n2013: Independent audit confirmed systematic data problems"
+  },
+  {
+    "objectID": "inClass/week9/test.html#the-feedback-loop-diagram",
+    "href": "inClass/week9/test.html#the-feedback-loop-diagram",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "The Feedback Loop Diagram",
+    "text": "The Feedback Loop Diagram\nThe Confirmation Bias Loop:\n\nAlgorithm learns: “Crime happens in neighborhood X”\nPolice sent to neighborhood X\nMore arrests in neighborhood X (regardless of actual crime)\n\nAlgorithm “confirmed”: “We were right about neighborhood X!”\nCycle intensifies"
+  },
+  {
+    "objectID": "inClass/week9/test.html#vendor-claims-about-bias-mitigation",
+    "href": "inClass/week9/test.html#vendor-claims-about-bias-mitigation",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Vendor Claims About Bias Mitigation",
+    "text": "Vendor Claims About Bias Mitigation\nPredPol claims:\n\n“Uses ONLY 3 data points—crime type, crime location, and crime date/time”\n\nHunchLab claims:\n\n“We would not use data that relates people to predict places—no arrests, no social media, no gang status”\n\nBoth exclude: Arrest data, stop data, traffic stops\nBoth include: Crime reports, calls for service"
+  },
+  {
+    "objectID": "inClass/week9/test.html#why-cleaning-the-data-isnt-enough",
+    "href": "inClass/week9/test.html#why-cleaning-the-data-isnt-enough",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Why “Cleaning” The Data Isn’t Enough",
+    "text": "Why “Cleaning” The Data Isn’t Enough\nProblem 1: Crime reports reflect police decisions\n\nOfficer decides what to investigate\nOfficer decides what to classify as “crime”\n\nOfficer decides what to document\n\nProblem 2: Calls for service reflect community bias\n\nNeighbors calling police on Black people barbecuing\n“Suspicious activity” = person of color in “wrong” neighborhood\nGentrification → increased 311 calls on existing residents\n\nProblem 3: What counts as “clean” data?\n\nIf drug arrests are racially biased, exclude them ✓\nBut isn’t burglary enforcement also biased? What about assault?\nWhere do you draw the line?"
+  },
+  {
+    "objectID": "inClass/week9/test.html#the-impossibility-of-neutral-crime-data",
+    "href": "inClass/week9/test.html#the-impossibility-of-neutral-crime-data",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "The Impossibility of Neutral Crime Data",
+    "text": "The Impossibility of Neutral Crime Data\nCrime data is ALWAYS:\n\nSocially constructed - Societies define what counts as “crime”\nSelectively enforced - More resources to some neighborhoods\nOrganizationally filtered - Police priorities, department culture\nPolitically shaped - “Tough on crime” eras, moral panics\nTechnically mediated - 911 systems, CAD software, databases\n\nThere is no “view from nowhere”\nCrime data doesn’t reveal “crime” - it reveals policing patterns"
+  },
+  {
+    "objectID": "inClass/week9/test.html#comparison-what-gets-policed-vs.-what-gets-committed",
+    "href": "inClass/week9/test.html#comparison-what-gets-policed-vs.-what-gets-committed",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Comparison: What Gets Policed vs. What Gets Committed",
+    "text": "Comparison: What Gets Policed vs. What Gets Committed\n\n\n\nType\nFrequency\nPolicing Intensity\nIn Predictive Models?\n\n\n\n\nViolent Crime\nModerate\nHigh\n✓ Yes\n\n\nProperty Crime\nHigh\nHigh\n✓ Yes\n\n\nDrug Offenses\nVery High\nRacially Disparate\nSome exclude\n\n\nWhite-Collar Crime\nVery High\nVery Low\n✗ Rarely\n\n\nWage Theft\nExceeds all robbery\nAlmost None\n✗ Never\n\n\nCorporate Fraud\n$300B+ annually\nMinimal\n✗ Never\n\n\n\nQuestion: What would predictive policing look like if we predicted white-collar crime with the same intensity?\nSee: White Collar Crime Risk Zones - A satirical map"
+  },
+  {
+    "objectID": "inClass/week9/test.html#the-missing-data-problem",
+    "href": "inClass/week9/test.html#the-missing-data-problem",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "The “Missing” Data Problem",
+    "text": "The “Missing” Data Problem\nWhat crime data DOESN’T capture:\n\nLess than half of violent crimes reported to police (DOJ estimates)\nEven fewer property crimes reported\nGroups with less favorable views of police less likely to report\nCrimes in areas with low police presence go unrecorded\n\nExample - LAPD 2005-2012:\n\n14,000 serious assaults misclassified as minor offenses\nError not discovered until 2015\nLAPD already working with PredPol by then\nWas this data used? No evidence either way.\n\nIf you can’t trust the labels, you can’t trust the model."
+  },
+  {
+    "objectID": "inClass/week9/test.html#who-bears-the-costs",
+    "href": "inClass/week9/test.html#who-bears-the-costs",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Who Bears the Costs?",
+    "text": "Who Bears the Costs?\n\n\nFalse Positives (Predicted High Risk, No Crime Occurs)\nCost to individuals:\n\nIncreased police presence/harassment\nStops, searches without cause\nTrauma, stress\nMissed opportunities (late to work, etc.)\nNormalized surveillance\n\nCost to communities:\n\nBroken trust with police\nReduced reporting of actual crimes\nEconomic harm (businesses avoid area)\nQuality of life degradation\n\n\nFalse Negatives (Predicted Low Risk, Crime Occurs)\nCost to individuals:\n\nInadequate police response\nVictimization\nProperty loss\nSafety concerns\n\nCost to communities:\n\nUnequal protection\nPerception of being “written off”\nActual under-policing\n\nWho experiences each?\n\nFP: Predominantly Black/Brown communities\nFN: Also often Black/Brown communities (just different ones)"
+  },
+  {
+    "objectID": "inClass/week9/test.html#what-consent-decrees-cover-and-dont-cover",
+    "href": "inClass/week9/test.html#what-consent-decrees-cover-and-dont-cover",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "What Consent Decrees Cover (And Don’t Cover)",
+    "text": "What Consent Decrees Cover (And Don’t Cover)\nTypical Reforms Required:\n\nTraining on constitutional policing\nEarly intervention systems for problem officers\nRevised use-of-force policies\nCommunity oversight\nData collection improvements\n\nWhat They DON’T Typically Address:\n\nHistorical data generated during unconstitutional periods\nOngoing use of that data in algorithms\nData sharing with other jurisdictions\nVendor accountability for bias mitigation\nPublic transparency about predictive systems"
+  },
+  {
+    "objectID": "inClass/week9/test.html#the-chicago-consent-decree-2019",
+    "href": "inClass/week9/test.html#the-chicago-consent-decree-2019",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "The Chicago Consent Decree (2019)",
+    "text": "The Chicago Consent Decree (2019)\nWhat it includes:\n\nCPD must collect better data\nCommunity oversight board\nConstitutional policing training\nUse of force reforms\n\nWhat community organizations noted is MISSING:\n\nNo restrictions on use of SSL\nNo prohibition on using data from 2011-2017 (period of documented violations)\nNo requirements for predictive policing oversight\nLimited transparency about algorithms\n\nIn 2019: CPD contracted with UChicago Crime Lab to “update” predictive approaches\nQuestion: Using which data?"
+  },
+  {
+    "objectID": "inClass/week9/test.html#questions-to-ask-about-any-predictive-policing-system",
+    "href": "inClass/week9/test.html#questions-to-ask-about-any-predictive-policing-system",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Questions to Ask About Any Predictive Policing System",
+    "text": "Questions to Ask About Any Predictive Policing System\n\n1. Data Provenance\n\nWhat time period does training data cover?\nWere there civil rights investigations during that period?\nWere there documented cases of data manipulation?\nWhat evidence exists that data is accurate?\n\n\n\n2. Variable Selection\n\nWhat specific variables are used?\nHow might each variable embed bias?\nWhat’s excluded and why?\nWho made these choices?"
+  },
+  {
+    "objectID": "inClass/week9/test.html#questions-continued",
+    "href": "inClass/week9/test.html#questions-continued",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Questions (Continued)",
+    "text": "Questions (Continued)\n\n3. Validation\n\nHow is accuracy measured?\nWhat counts as “success”?\nAre error rates reported by neighborhood?\nWho experiences false positives vs. false negatives?\n\n\n\n4. Deployment\n\nHow do predictions translate to action?\nWhat discretion do officers have?\nAre social services actually offered?\nWhat are the measurable outcomes?"
+  },
+  {
+    "objectID": "inClass/week9/test.html#questions-continued-1",
+    "href": "inClass/week9/test.html#questions-continued-1",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Questions (Continued)",
+    "text": "Questions (Continued)\n\n5. Transparency & Accountability\n\nIs the methodology public?\nCan community members access their own “risk scores”?\nIs there a process to challenge predictions?\nWho monitors for disparate impact?\n\n\n\n6. Alternatives\n\nWhat non-punitive interventions were considered?\nCould these resources address root causes instead?\nWhat would actual community safety investment look like?"
+  },
+  {
+    "objectID": "inClass/week9/test.html#the-fundamental-question",
+    "href": "inClass/week9/test.html#the-fundamental-question",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "The Fundamental Question",
+    "text": "The Fundamental Question\n\n\n\n\n\n\nImportantBefore Asking “Does It Work?”, Ask:\n\n\n\n“Should we be doing this at all?”\nConsider:\n\nA system that accurately predicts where over-policing will occur is “accurate”\nA system that reinforces existing inequalities can be “validated”\nA system that efficiently targets marginalized communities is “effective”\n\nBut:\n\nIs it just?\nIs it equitable?\nDoes it make communities safer?\nDoes it address root causes?\nOr does it just manage inequality more efficiently?"
+  },
+  {
+    "objectID": "inClass/week9/test.html#modeling-workflow",
+    "href": "inClass/week9/test.html#modeling-workflow",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Modeling Workflow",
+    "text": "Modeling Workflow\n\n\n1 Setup & Data Preparation\n\nLoad burglaries (point data)\nLoad abandoned cars (311 calls)\nCreate fishnet (500m × 500m grid)\nAggregate burglaries to cells\n\n2 Baseline Comparison\n\nKernel Density Estimation (KDE)\nSimple spatial smoothing\nWhat we need to beat!\n\n3 Feature Engineering\nUsing Abandoned Cars as “Disorder Indicator”:\n\nCount in each cell\nk-Nearest Neighbors (mean distance to 3 nearest)\nLISA (Local Moran’s I - identify hot spots)\nDistance to hot spots (significant clusters)\n\n\n4 Count Regression Models\n\nFit Poisson regression\nTest for overdispersion\nFit Negative Binomial (if needed)\nInterpret coefficients\n\n5 Spatial Cross-Validation\n\nLeave-One-Group-Out (LOGO)\nTrain on n-1 districts\nTest on held-out district\nCalculate MAE/RMSE\n\n6 Model Comparison\n\nCompare to KDE baseline\nMap predictions vs. actual\nAnalyze errors spatially"
+  },
+  {
+    "objectID": "inClass/week9/test.html#the-core-logic-broken-windows-theory",
+    "href": "inClass/week9/test.html#the-core-logic-broken-windows-theory",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "The Core Logic: “Broken Windows Theory”",
+    "text": "The Core Logic: “Broken Windows Theory”\n\n\n\n\n\n\nNoteOur Modeling Approach\n\n\n\nHypothesis: Signs of disorder (abandoned cars) predict property crime (burglaries)\nWhy different spatial measures?\n\nCount → How much disorder is HERE?\nk-NN Distance → How CLOSE are we to disorder?\nHot Spots (LISA) → Where does disorder CLUSTER?\nDistance to Hot Spots → How close to concentrated disorder?\n\nEach captures a different aspect of spatial proximity to our indicator variable.\n\n\n. . .\n\n\n\n\n\n\nWarning\n\n\n\nDoes this actually predict crime? Or does it predict where certain communities call 311?\nWhat assumptions are embedded in using “disorder” as a predictor?"
+  },
+  {
+    "objectID": "inClass/week9/test.html#global-vs.-local-spatial-autocorrelation",
+    "href": "inClass/week9/test.html#global-vs.-local-spatial-autocorrelation",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Global vs. Local Spatial Autocorrelation",
+    "text": "Global vs. Local Spatial Autocorrelation\n\n\n\nGlobal Measures\nMoran’s I (one value for entire study area)\nQuestion answered: “Is there spatial clustering overall?”\nRange:\n\n-1 to +1\n+1: Perfect positive clustering\n0: Random spatial pattern\n-1: Perfect dispersion\n\nLimitation: Doesn’t tell us WHERE clusters are\nExample: “Chicago burglaries show positive spatial autocorrelation (I = 0.65)”\n\n\n\nLocal Measures\nLocal Moran’s I (one value per location)\nQuestion answered: “Where are the clusters? Which specific locations?”\nFor each location:\n\nIs it part of a cluster?\nWhat type of cluster?\nIs it statistically significant?\n\nAdvantage: Maps showing WHERE patterns exist\nExample: “South Side shows significant High-High clustering”"
+  },
+  {
+    "objectID": "inClass/week9/test.html#spatial-weights-matrix-the-foundation",
+    "href": "inClass/week9/test.html#spatial-weights-matrix-the-foundation",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Spatial Weights Matrix: The Foundation",
+    "text": "Spatial Weights Matrix: The Foundation\nBefore calculating spatial autocorrelation, we need to define “neighbors”\nSpatial weights matrix (W):\n\n\\(w_{ij}\\) = weight between locations \\(i\\) and \\(j\\)\nIf \\(i\\) and \\(j\\) are neighbors: \\(w_{ij} &gt; 0\\)\nIf not neighbors: \\(w_{ij} = 0\\)\n\nCommon approaches:\n\nContiguity: Share a border? (Queen vs. Rook)\nDistance: Within threshold distance?\nK-nearest neighbors: Closest k locations"
+  },
+  {
+    "objectID": "inClass/week9/test.html#spatial-weights-contiguity",
+    "href": "inClass/week9/test.html#spatial-weights-contiguity",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Spatial Weights: Contiguity",
+    "text": "Spatial Weights: Contiguity\nQueen Contiguity: Neighbors share edge OR vertex (corner)\n[A][B][C]\n[D][E][F]\n[G][H][I]\nCell E’s Queen neighbors: B, D, F, H (edges) + A, C, G, I (corners) = 8 neighbors\nRook Contiguity: Neighbors share only edges\nCell E’s Rook neighbors: B, D, F, H = 4 neighbors\nOur fishnet grid uses Queen contiguity (most common for regular grids)"
+  },
+  {
+    "objectID": "inClass/week9/test.html#spatial-weights-row-standardization",
+    "href": "inClass/week9/test.html#spatial-weights-row-standardization",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Spatial Weights: Row Standardization",
+    "text": "Spatial Weights: Row Standardization\nRaw weights: Binary (0 or 1)\nProblem: Corner cells have fewer neighbors than interior cells\nSolution: Row standardization (“W” style)\n\\[w^*_{ij} = \\frac{w_{ij}}{\\sum_j w_{ij}}\\]\nEffect: Each row sums to 1\nExample:\n\nCell with 4 neighbors: each gets weight 0.25\nCell with 8 neighbors: each gets weight 0.125\n\nWhy? Makes cells comparable regardless of number of neighbors"
+  },
+  {
+    "objectID": "inClass/week9/test.html#global-morans-i-formula",
+    "href": "inClass/week9/test.html#global-morans-i-formula",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Global Moran’s I Formula",
+    "text": "Global Moran’s I Formula\n\\[I = \\frac{n}{\\sum_i \\sum_j w_{ij}} \\cdot \\frac{\\sum_i \\sum_j w_{ij}(Y_i - \\bar{Y})(Y_j - \\bar{Y})}{\\sum_i (Y_i - \\bar{Y})^2}\\]\nWhere:\n\n\\(n\\) = number of locations\n\\(Y_i\\) = value at location \\(i\\) (e.g., burglary count)\n\\(\\bar{Y}\\) = mean value\n\\(w_{ij}\\) = spatial weight between \\(i\\) and \\(j\\)\n\nInterpretation:\n\nPositive I: Similar values cluster (high near high, low near low)\nNegative I: Dissimilar values adjacent (high near low)\nZero: Random spatial pattern"
+  },
+  {
+    "objectID": "inClass/week9/test.html#local-morans-i-formula",
+    "href": "inClass/week9/test.html#local-morans-i-formula",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Local Moran’s I Formula",
+    "text": "Local Moran’s I Formula\n\\[I_i = \\frac{(Y_i - \\bar{Y})}{\\sum_j (Y_j - \\bar{Y})^2 / n} \\sum_j w_{ij}(Y_j - \\bar{Y})\\]\nFor each location \\(i\\):\nNumerator: How different is location \\(i\\) from mean?\nDenominator: Variance of all locations\nWeight: How different are neighbors from mean?\nResult: Local statistic for each location\nCritical: Must test for statistical significance!"
+  },
+  {
+    "objectID": "inClass/week9/test.html#the-moran-scatterplot",
+    "href": "inClass/week9/test.html#the-moran-scatterplot",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "The Moran Scatterplot",
+    "text": "The Moran Scatterplot\nVisualizes relationship between:\n\nX-axis: Standardized value at location \\(i\\)\nY-axis: Spatial lag (weighted average of neighbors)\n\nQuadrant II         |    Quadrant I\n(Low-High)          |    (High-High)\nOutliers            |    HOTSPOTS\n                    |\n--------------------|--------------------\n                    |\nQuadrant III        |    Quadrant IV\n(Low-Low)           |    (High-Low)\nCOLDSPOTS           |    Outliers\nInterpretation:\n\nQuadrant I (High-High): High crime surrounded by high crime → Hotspot\nQuadrant II (Low-High): Low crime in high crime area → Outlier\nQuadrant III (Low-Low): Low crime surrounded by low crime → Coldspot\nQuadrant IV (High-Low): High crime in low crime area → Outlier\n\n\n\n\n\nHigh-Low Cluster of Halloween Enthusiasm"
+  },
+  {
+    "objectID": "inClass/week9/test.html#statistical-significance-testing",
+    "href": "inClass/week9/test.html#statistical-significance-testing",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Statistical Significance Testing",
+    "text": "Statistical Significance Testing\nProblem: Not all clusters are “real” - could be random chance\nSolution: Permutation test\nProcess:\n\nCalculate observed \\(I_i\\) for location \\(i\\)\nRandomly shuffle values across locations (999 times)\nRecalculate \\(I_i\\) for each permutation\nCompare observed vs. distribution of permuted values\nIf observed is extreme → statistically significant (p &lt; 0.05)\n\nResult: Only report clusters that are unlikely to occur by chance"
+  },
+  {
+    "objectID": "inClass/week9/test.html#four-types-of-significant-clusters",
+    "href": "inClass/week9/test.html#four-types-of-significant-clusters",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Four Types of Significant Clusters",
+    "text": "Four Types of Significant Clusters\n\n\n\n\n\n\n\n\n\n\nType\nZ-score\nLocation Value\nNeighbor Values\nInterpretation\n\n\n\n\nHigh-High\nPositive\nAbove mean\nAbove mean\nHotspot\n\n\nLow-Low\nPositive\nBelow mean\nBelow mean\nColdspot\n\n\nHigh-Low\nNegative\nAbove mean\nBelow mean\nOutlier (isolated high)\n\n\nLow-High\nNegative\nBelow mean\nAbove mean\nOutlier (isolated low)"
+  },
+  {
+    "objectID": "inClass/week9/test.html#local-morans-i-in-r-step-by-step",
+    "href": "inClass/week9/test.html#local-morans-i-in-r-step-by-step",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Local Moran’s I in R: Step by Step",
+    "text": "Local Moran’s I in R: Step by Step\nlibrary(spdep)\n\n# Step 1: Create spatial object\nfishnet_sp &lt;- as_Spatial(fishnet)\n\n# Step 2: Define neighbors (Queen contiguity)\nneighbors &lt;- poly2nb(fishnet_sp, queen = TRUE)\n\n# Step 3: Create spatial weights (row-standardized)\nweights &lt;- nb2listw(neighbors, style = \"W\", zero.policy = TRUE)\n\n# Step 4: Calculate Local Moran's I\nlocal_moran &lt;- localmoran(\n  fishnet$abandoned_cars,  # Variable of interest\n  weights,                  # Spatial weights\n  zero.policy = TRUE       # Handle cells with no neighbors\n)\n\n# Step 5: Extract components\nfishnet$local_I &lt;- local_moran[, \"Ii\"]      # Local I statistic\nfishnet$p_value &lt;- local_moran[, \"Pr(z != E(Ii))\"]  # P-value\nfishnet$z_score &lt;- local_moran[, \"Z.Ii\"]    # Z-score"
+  },
+  {
+    "objectID": "inClass/week9/test.html#identifying-high-high-clusters-hotspots",
+    "href": "inClass/week9/test.html#identifying-high-high-clusters-hotspots",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Identifying High-High Clusters (Hotspots)",
+    "text": "Identifying High-High Clusters (Hotspots)\n# Standardize the variable for quadrant classification\nfishnet$standardized_value &lt;- scale(fishnet$abandoned_cars)\n\n# Calculate spatial lag (weighted mean of neighbors)\nfishnet$spatial_lag &lt;- lag.listw(weights, fishnet$abandoned_cars)\nfishnet$standardized_lag &lt;- scale(fishnet$spatial_lag)\n\n# Identify High-High clusters\nfishnet$hotspot &lt;- 0  # Default: not a hotspot\n\n# Criteria: \n# 1. Value above mean (standardized &gt; 0)\n# 2. Neighbors above mean (spatial lag &gt; 0)\n# 3. Statistically significant (p &lt; 0.05)\n\nfishnet$hotspot[\n  fishnet$standardized_value &gt; 0 & \n  fishnet$standardized_lag &gt; 0 & \n  fishnet$p_value &lt; 0.05\n] &lt;- 1\n\n# Count hotspots\nsum(fishnet$hotspot)"
+  },
+  {
+    "objectID": "inClass/week9/test.html#critical-interpretation-of-hotspots",
+    "href": "inClass/week9/test.html#critical-interpretation-of-hotspots",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Critical Interpretation of Hotspots",
+    "text": "Critical Interpretation of Hotspots\nWhat you’ve identified:\nStatistically significant clusters of high abandoned car reports\nWhat this MIGHT mean:\n\nActual concentrations of abandoned cars\nAreas where residents report more (higher civic engagement?)\nAreas with more 311 system awareness\nAreas with more code enforcement presence\nGentrifying areas with new residents calling on existing conditions\n\nCritical question:\nAre these “high abandoned car” areas or “high reporting” areas?\nFor modeling:\nWe’re using this as a proxy for “disorder” but recognize it’s a flawed proxy"
+  },
+  {
+    "objectID": "inClass/week9/test.html#why-count-regression-the-problem-with-ols",
+    "href": "inClass/week9/test.html#why-count-regression-the-problem-with-ols",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Why Count Regression? The Problem with OLS",
+    "text": "Why Count Regression? The Problem with OLS\nOur outcome: Burglary counts per grid cell (0, 1, 2, 3, …)\nLinear regression assumes:\n\\[Y_i = \\beta_0 + \\beta_1 X_{1i} + \\beta_2 X_{2i} + \\varepsilon_i\\]\nwhere \\(\\varepsilon_i \\sim N(0, \\sigma^2)\\)\nProblems for counts:\n\nCan predict negative values (impossible for counts)\nAssumes constant variance (counts often have variance ≠ mean)\nAssumes continuous outcome (counts are discrete)\nAssumes normal errors (count data is skewed)"
+  },
+  {
+    "objectID": "inClass/week9/test.html#distribution-of-crime-counts",
+    "href": "inClass/week9/test.html#distribution-of-crime-counts",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Distribution of Crime Counts",
+    "text": "Distribution of Crime Counts\n\n\nCode\n# Typical pattern for crime data\nggplot(fishnet, aes(x = countBurglaries)) +\n  geom_histogram(binwidth = 1, fill = \"#440154FF\", color = \"white\") +\n  labs(\n    title = \"Distribution of Burglary Counts\",\n    subtitle = \"Most cells have 0-2 burglaries, few have many\",\n    x = \"Burglaries per Cell\",\n    y = \"Number of Cells\"\n  ) +\n  theme_minimal()\n\n\nCharacteristics:\n\nRight-skewed: Long tail to the right\nMany zeros: Most cells have no burglaries\nDiscrete: Only integer values\nVariance &gt; Mean: Overdispersion common"
+  },
+  {
+    "objectID": "inClass/week9/test.html#the-poisson-distribution",
+    "href": "inClass/week9/test.html#the-poisson-distribution",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "The Poisson Distribution",
+    "text": "The Poisson Distribution\nAppropriate for count data:\n\\[P(Y = k) = \\frac{\\lambda^k e^{-\\lambda}}{k!}\\]\nWhere:\n\n\\(Y\\) = count outcome (0, 1, 2, …)\n\\(\\lambda\\) = expected count (mean = variance)\n\\(k\\) = observed count\n\nKey property: Mean = Variance = \\(\\lambda\\)\nExamples:\n\nNumber of crimes per week\nNumber of 911 calls per hour\nNumber of accidents per intersection"
+  },
+  {
+    "objectID": "inClass/week9/test.html#poisson-regression-model",
+    "href": "inClass/week9/test.html#poisson-regression-model",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Poisson Regression Model",
+    "text": "Poisson Regression Model\nLink \\(\\lambda\\) to predictors via log link:\n\\[\\log(\\lambda_i) = \\beta_0 + \\beta_1 X_{1i} + \\beta_2 X_{2i} + ... + \\beta_p X_{pi}\\]\nEquivalently:\n\\[\\lambda_i = \\exp(\\beta_0 + \\beta_1 X_{1i} + \\beta_2 X_{2i} + ... + \\beta_p X_{pi})\\]\nWhy log link?\n\nEnsures \\(\\lambda_i &gt; 0\\) (counts can’t be negative)\nLinear relationship on log scale\nMultiplicative effects on count scale"
+  },
+  {
+    "objectID": "inClass/week9/test.html#interpreting-poisson-coefficients",
+    "href": "inClass/week9/test.html#interpreting-poisson-coefficients",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Interpreting Poisson Coefficients",
+    "text": "Interpreting Poisson Coefficients\nOn log scale:\n\\(\\beta_1\\) = change in log(expected count) per unit increase in \\(X_1\\)\nOn count scale (exponentiate):\n\\(\\exp(\\beta_1)\\) = multiplicative effect on expected count\nExamples:\n\n\n\n\\(\\beta\\)\n\\(\\exp(\\beta)\\)\nInterpretation\n\n\n\n\n0.14\n1.15\n15% increase per unit of X\n\n\n-0.22\n0.80\n20% decrease per unit of X\n\n\n0.00\n1.00\nNo effect\n\n\n0.69\n2.00\nDoubling per unit of X"
+  },
+  {
+    "objectID": "inClass/week9/test.html#poisson-regression-in-r",
+    "href": "inClass/week9/test.html#poisson-regression-in-r",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Poisson Regression in R",
+    "text": "Poisson Regression in R\n# Fit Poisson model\nmodel_poisson &lt;- glm(\n  countBurglaries ~ Abandoned_Cars + Abandoned_Cars.nn + abandoned.isSig.dist,\n  data = fishnet,\n  family = poisson(link = \"log\")\n)\n\n# View results\nsummary(model_poisson)\n\n# Exponentiate coefficients for interpretation\nexp(coef(model_poisson))\n\n# Example output:\n#                        exp(coef)\n# (Intercept)            0.234\n# Abandoned_Cars         1.151\n# Abandoned_Cars.nn      0.998\n# abandoned.isSig.dist   0.999\n\n# Interpretation:\n# - Each additional abandoned car → 15.1% increase in expected burglaries\n# - Each meter from nearest abandoned car → 0.2% decrease in expected burglaries"
+  },
+  {
+    "objectID": "inClass/week9/test.html#the-overdispersion-problem",
+    "href": "inClass/week9/test.html#the-overdispersion-problem",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "The Overdispersion Problem",
+    "text": "The Overdispersion Problem\nPoisson assumption: Variance = Mean\nReality with crime data: Variance &gt; Mean (often MUCH larger)\nWhy overdispersion occurs:\n\nUnobserved heterogeneity: Some areas have unmeasured crime attractors\nContagion effects: One crime leads to others (not independent)\nMeasurement error: Counting issues, data quality\nModel misspecification: Missing important variables\n\nCheck for overdispersion:\n\\[\\text{Dispersion} = \\frac{\\text{Residual Deviance}}{\\text{Degrees of Freedom}}\\]\n\nIf ≈ 1: Poisson is fine\nIf &gt; 1: Overdispersion (common!)\nIf &gt; 2-3: Serious overdispersion → Use Negative Binomial"
+  },
+  {
+    "objectID": "inClass/week9/test.html#checking-overdispersion-in-r",
+    "href": "inClass/week9/test.html#checking-overdispersion-in-r",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Checking Overdispersion in R",
+    "text": "Checking Overdispersion in R\n# Fit Poisson model\nmodel_pois &lt;- glm(\n  countBurglaries ~ Abandoned_Cars + Abandoned_Cars.nn + abandoned.isSig.dist,\n  data = fishnet,\n  family = poisson\n)\n\n# Calculate dispersion parameter\ndispersion &lt;- sum(residuals(model_pois, type = \"pearson\")^2) / \n               model_pois$df.residual\n\ncat(\"Dispersion parameter:\", round(dispersion, 3), \"\\n\")\n\n# Rule of thumb:\n# &lt; 1.5: Poisson OK\n# 1.5 - 3: Mild overdispersion, NegBin recommended\n# &gt; 3: Serious overdispersion, NegBin essential\n\n# Example output:\n# Dispersion parameter: 4.523\n# Warning: Serious overdispersion detected!"
+  },
+  {
+    "objectID": "inClass/week9/test.html#negative-binomial-regression",
+    "href": "inClass/week9/test.html#negative-binomial-regression",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Negative Binomial Regression",
+    "text": "Negative Binomial Regression\nRelaxes the variance = mean assumption\nAdds dispersion parameter (\\(\\alpha\\)):\n\\[\\text{Var}(Y_i) = \\mu_i + \\alpha \\mu_i^2\\]\nWhere:\n\n\\(\\mu_i\\) = expected count (same as Poisson)\n\\(\\alpha\\) = dispersion parameter\n\nIf \\(\\alpha = 0\\): Reduces to Poisson\nIf \\(\\alpha &gt; 0\\): Allows extra variance (overdispersion)\nInterpretation: Coefficients interpreted same way as Poisson!"
+  },
+  {
+    "objectID": "inClass/week9/test.html#negative-binomial-in-r",
+    "href": "inClass/week9/test.html#negative-binomial-in-r",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Negative Binomial in R",
+    "text": "Negative Binomial in R\nlibrary(MASS)\n\n# Fit Negative Binomial model\nmodel_nb &lt;- glm.nb(\n  countBurglaries ~ Abandoned_Cars + Abandoned_Cars.nn + abandoned.isSig.dist,\n  data = fishnet\n)\n\n# View results\nsummary(model_nb)\n\n# Compare to Poisson\nAIC(model_pois)  # e.g., 8234.5\nAIC(model_nb)    # e.g., 6721.3\n\n# Lower AIC = better fit\n# If NegBin AIC much lower → use NegBin\n\n# Extract dispersion parameter (theta)\nmodel_nb$theta  # e.g., 2.47\n\n# Interpretation: Significant overdispersion confirmed"
+  },
+  {
+    "objectID": "inClass/week9/test.html#comparing-poisson-vs.-negative-binomial",
+    "href": "inClass/week9/test.html#comparing-poisson-vs.-negative-binomial",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Comparing Poisson vs. Negative Binomial",
+    "text": "Comparing Poisson vs. Negative Binomial\n\n\n\n\n\n\n\n\nAspect\nPoisson\nNegative Binomial\n\n\n\n\nVariance assumption\nVar = Mean\nVar = μ + αμ²\n\n\nOverdispersion\nCannot handle\nAccommodates\n\n\nStandard errors\nUnderestimated if overdispersed\nCorrectly estimated\n\n\nWhen to use\nCount data, no overdispersion\nCount data with overdispersion\n\n\nCrime data\nRarely appropriate\nUsually better\n\n\n\nFor today’s lab: We’ll fit both, compare, and use the better model"
+  },
+  {
+    "objectID": "inClass/week9/test.html#model-diagnostics-for-count-models",
+    "href": "inClass/week9/test.html#model-diagnostics-for-count-models",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Model Diagnostics for Count Models",
+    "text": "Model Diagnostics for Count Models\nUnlike OLS, we don’t use residual plots the same way\nKey diagnostics:\n\nDispersion test (already covered)\nDeviance residuals: Should be roughly normal\nPearson residuals: Check for outliers\nCook’s distance: Influential observations\nPredicted vs. observed: Visual check\n\n# Deviance residuals\nplot(model_nb, which = 1)  # Residuals vs. Fitted\n\n# Identify outliers\noutliers &lt;- which(abs(residuals(model_nb, type = \"deviance\")) &gt; 3)\n\n# Influence\ninfluence &lt;- cooks.distance(model_nb)\ninfluential &lt;- which(influence &gt; 4/length(influence))"
+  },
+  {
+    "objectID": "inClass/week9/test.html#why-add-spatial-features",
+    "href": "inClass/week9/test.html#why-add-spatial-features",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Why Add Spatial Features?",
+    "text": "Why Add Spatial Features?\nBasic model:\n\\[\\log(\\lambda_i) = \\beta_0 + \\beta_1 (\\text{Abandoned Cars}_i)\\]\nProblem: Ignores spatial context\nEnhanced model with spatial features:\n\\[\\log(\\lambda_i) = \\beta_0 + \\beta_1 (\\text{Abandoned Cars}_i) + \\beta_2 (\\text{Distance to Nearest}_i) + \\beta_3 (\\text{Distance to Hotspot}_i)\\]\nBenefits:\n\nCaptures spillover effects\nAccounts for spatial dependence\nImproves predictions\nMore realistic model of spatial crime processes"
+  },
+  {
+    "objectID": "inClass/week9/test.html#distance-to-nearest-feature",
+    "href": "inClass/week9/test.html#distance-to-nearest-feature",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Distance to Nearest Feature",
+    "text": "Distance to Nearest Feature\nConcept: Proximity matters for risk\nImplementation: k-Nearest Neighbors (k=1)\nFor each grid cell:\n\nFind location of all abandoned cars\nCalculate distance to each\nKeep minimum distance\n\nIn R:\nlibrary(FNN)\n\n# Calculate distance to nearest abandoned car\nnn_dist &lt;- get.knnx(\n  data = st_coordinates(abandoned_cars),      # \"To\" locations\n  query = st_coordinates(st_centroid(fishnet)), # \"From\" locations\n  k = 1                                          # Nearest 1\n)\n\n# Extract distances\nfishnet$abandoned_car_nn &lt;- nn_dist$nn.dist[, 1]"
+  },
+  {
+    "objectID": "inClass/week9/test.html#distance-to-hotspot",
+    "href": "inClass/week9/test.html#distance-to-hotspot",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Distance to Hotspot",
+    "text": "Distance to Hotspot\nTwo-step process:\nStep 1: Identify hotspots (Local Moran’s I High-High clusters)\nStep 2: Calculate distance from each cell to nearest hotspot\n# Step 1: Identify hotspots (we did this earlier)\nhotspot_cells &lt;- filter(fishnet, hotspot == 1)\n\n# Step 2: Calculate distances\nhotspot_dist &lt;- get.knnx(\n  data = st_coordinates(st_centroid(hotspot_cells)),\n  query = st_coordinates(st_centroid(fishnet)),\n  k = 1\n)\n\nfishnet$hotspot_nn &lt;- hotspot_dist$nn.dist[, 1]\nWhy useful? Captures multi-scale spatial dependence:\n\nLocal (within cell)\nNeighborhood (distance to nearest)\nRegional (distance to hotspot cluster)"
+  },
+  {
+    "objectID": "inClass/week9/test.html#visualizing-distance-features",
+    "href": "inClass/week9/test.html#visualizing-distance-features",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Visualizing Distance Features",
+    "text": "Visualizing Distance Features\n# Create comparison maps\np1 &lt;- ggplot(fishnet) +\n  geom_sf(aes(fill = abandoned_car_nn), color = NA) +\n  scale_fill_viridis_c(name = \"Distance (m)\", option = \"plasma\") +\n  labs(title = \"Distance to Nearest Abandoned Car\") +\n  theme_void()\n\np2 &lt;- ggplot(fishnet) +\n  geom_sf(aes(fill = hotspot_nn), color = NA) +\n  scale_fill_viridis_c(name = \"Distance (m)\", option = \"magma\") +\n  labs(title = \"Distance to Nearest Hotspot\") +\n  theme_void()\n\ngrid.arrange(p1, p2, ncol = 2)\nLook for: Concentric patterns around features/hotspots"
+  },
+  {
+    "objectID": "inClass/week9/test.html#why-use-a-fishnet-grid",
+    "href": "inClass/week9/test.html#why-use-a-fishnet-grid",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Why Use a Fishnet Grid?",
+    "text": "Why Use a Fishnet Grid?\nProblem: Crime is points, but we need areas for modeling\nOptions:\n\nExisting boundaries (census tracts, neighborhoods)\n\nPro: Align with administrative data\nCon: Arbitrary, unequal sizes, Modifiable Areal Unit Problem\n\nFishnet grid (regular cells)\n\nPro: Consistent size, no boundary bias\nCon: Arbitrary, may split “natural” areas\n\n\nWe use fishnet because:\n\nStandard approach in predictive policing\nEasier spatial operations\nConsistent unit of analysis"
+  },
+  {
+    "objectID": "inClass/week9/test.html#creating-a-fishnet-grid",
+    "href": "inClass/week9/test.html#creating-a-fishnet-grid",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Creating a Fishnet Grid",
+    "text": "Creating a Fishnet Grid\nlibrary(sf)\n\n# Step 1: Define cell size (in map units - meters for our projection)\ncell_size &lt;- 500  # 500m x 500m cells\n\n# Step 2: Create grid over study area\nfishnet &lt;- st_make_grid(\n  chicago_boundary,\n  cellsize = cell_size,\n  square = TRUE,\n  what = \"polygons\" #you could change to hexagons if you wanted to be fancy.\n) %&gt;%\n  st_sf() %&gt;%\n  mutate(uniqueID = row_number())\n\n# Step 3: Clip to study area (remove cells outside boundary)\nfishnet &lt;- fishnet[chicago_boundary, ]\n\n# Check results\nnrow(fishnet)  # Number of cells\nst_area(fishnet[1, ])  # Area of one cell (should be 250,000 m²)"
+  },
+  {
+    "objectID": "inClass/week9/test.html#grid-cell-size-a-critical-choice",
+    "href": "inClass/week9/test.html#grid-cell-size-a-critical-choice",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Grid Cell Size: A Critical Choice",
+    "text": "Grid Cell Size: A Critical Choice\nCommon sizes:\n\n250m × 250m: Fine-grained, many cells, computationally intensive\n500m × 500m: Standard, balance detail and computation\n1000m × 1000m: Coarse, faster, loses local detail\n\nSmaller cells:\n\n✓ More spatial detail\n✓ Better capture local patterns\n✗ More zeros (sparse data)\n✗ Computational cost\n\nLarger cells:\n\n✓ Fewer zeros\n✓ More stable estimates\n✗ Lose local variation\n✗ May obscure hotspots\n\nChoice affects results! No “correct” answer."
+  },
+  {
+    "objectID": "inClass/week9/test.html#aggregating-points-to-grid",
+    "href": "inClass/week9/test.html#aggregating-points-to-grid",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Aggregating Points to Grid",
+    "text": "Aggregating Points to Grid\nProcess:\n\nSpatial join between crimes (points) and fishnet (polygons)\nCount crimes per cell\nHandle cells with zero crimes\n\n# Count burglaries per cell\nburglary_counts &lt;- st_join(burglaries, fishnet) %&gt;%\n  st_drop_geometry() %&gt;%\n  group_by(uniqueID) %&gt;%\n  summarize(countBurglaries = n())\n\n# Join back to fishnet\nfishnet &lt;- fishnet %&gt;%\n  left_join(burglary_counts, by = \"uniqueID\") %&gt;%\n  mutate(countBurglaries = replace_na(countBurglaries, 0))\n\n# Summary\nsummary(fishnet$countBurglaries)\n#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. \n#      0       0       1    2.3       3      47"
+  },
+  {
+    "objectID": "inClass/week9/test.html#handling-zeros-in-count-data",
+    "href": "inClass/week9/test.html#handling-zeros-in-count-data",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Handling Zeros in Count Data",
+    "text": "Handling Zeros in Count Data\nCrime data typically has MANY zeros\nExample distribution: - 40% of cells: 0 burglaries - 30% of cells: 1 burglary - 20% of cells: 2-3 burglaries - 10% of cells: 4+ burglaries\nImplications:\n\nPoisson handles zeros naturally (built into distribution)\nZero-inflation: If &gt;60% zeros, consider Zero-Inflated Poisson (ZIP)\nFor today: Standard Negative Binomial handles our zeros fine\n\nCritical interpretation: Are zeros “true zeros” (no crime) or “missing data” (unreported)?"
+  },
+  {
+    "objectID": "inClass/week9/test.html#why-standard-cross-validation-fails-for-spatial-data",
+    "href": "inClass/week9/test.html#why-standard-cross-validation-fails-for-spatial-data",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Why Standard Cross-Validation Fails for Spatial Data",
+    "text": "Why Standard Cross-Validation Fails for Spatial Data\nStandard k-fold CV:\n\nRandomly split data into k folds\nTrain on k-1 folds, test on 1\nRepeat k times\n\nProblem with spatial data:\n\nNearby observations are correlated\nTraining set includes cells adjacent to test cells\nSpatial leakage: Model learns from neighbors of test set\nOverly optimistic performance estimates\n\nSolution: Spatial cross-validation"
+  },
+  {
+    "objectID": "inClass/week9/test.html#leave-one-group-out-cross-validation-logo-cv",
+    "href": "inClass/week9/test.html#leave-one-group-out-cross-validation-logo-cv",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Leave-One-Group-Out Cross-Validation (LOGO-CV)",
+    "text": "Leave-One-Group-Out Cross-Validation (LOGO-CV)\nPrinciple: Hold out entire spatial groups, not individual cells\nProcess:\n\nDivide study area into groups (e.g., police districts)\nHold out all cells in District 1\nTrain model on Districts 2-N\nPredict for District 1\nRepeat for each district\n\nWhy better:\n\nTests generalization to truly new areas\nNo spatial leakage between train/test\nMore realistic deployment scenario\nConservative performance estimates"
+  },
+  {
+    "objectID": "inClass/week9/test.html#logo-cv-implementation",
+    "href": "inClass/week9/test.html#logo-cv-implementation",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "LOGO-CV Implementation",
+    "text": "LOGO-CV Implementation\n# Get unique districts\ndistricts &lt;- unique(fishnet$District)\n\n# Initialize results\ncv_results &lt;- list()\n\n# Loop through districts\nfor (dist in districts) {\n  # Split data\n  train_data &lt;- fishnet %&gt;% filter(District != dist)\n  test_data &lt;- fishnet %&gt;% filter(District == dist)\n  \n  # Fit model on training data\n  model_cv &lt;- glm.nb(\n    countBurglaries ~ Abandoned_Cars + Abandoned_Cars.nn + abandoned.isSig.dist,\n    data = train_data\n  )\n  \n  # Predict on test data\n  test_data$prediction &lt;- predict(model_cv, test_data, type = \"response\")\n  \n  # Store results\n  cv_results[[dist]] &lt;- test_data\n}\n\n# Combine all predictions\nall_predictions &lt;- bind_rows(cv_results)"
+  },
+  {
+    "objectID": "inClass/week9/test.html#evaluating-cv-performance",
+    "href": "inClass/week9/test.html#evaluating-cv-performance",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Evaluating CV Performance",
+    "text": "Evaluating CV Performance\nCommon metrics for count models:\nMean Absolute Error (MAE): \\[MAE = \\frac{1}{n}\\sum_i |y_i - \\hat{y}_i|\\]\nRoot Mean Squared Error (RMSE): \\[RMSE = \\sqrt{\\frac{1}{n}\\sum_i (y_i - \\hat{y}_i)^2}\\]\nMean Error (Bias): \\[ME = \\frac{1}{n}\\sum_i (y_i - \\hat{y}_i)\\]\n# Calculate metrics by district\ncv_metrics &lt;- all_predictions %&gt;%\n  group_by(District) %&gt;%\n  summarize(\n    MAE = mean(abs(countBurglaries - prediction)),\n    RMSE = sqrt(mean((countBurglaries - prediction)^2)),\n    ME = mean(countBurglaries - prediction)\n  )"
+  },
+  {
+    "objectID": "inClass/week9/test.html#interpreting-prediction-errors",
+    "href": "inClass/week9/test.html#interpreting-prediction-errors",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Interpreting Prediction Errors",
+    "text": "Interpreting Prediction Errors\nWhat do errors tell us?\nMAE = 1.5 burglaries per cell:\n\nOn average, we’re off by 1.5 burglaries\nInterpretable in original units\n\nRMSE = 2.3 burglaries per cell:\n\nPenalizes large errors more\nIf RMSE &gt;&gt; MAE, we have some very bad predictions\n\nME = -0.3 burglaries per cell:\n\nNegative: We tend to under-predict\nPositive: We tend to over-predict\nClose to zero: Unbiased predictions\n\nCritical question: Are errors evenly distributed across neighborhoods?"
+  },
+  {
+    "objectID": "inClass/week9/test.html#spatial-patterns-in-prediction-errors",
+    "href": "inClass/week9/test.html#spatial-patterns-in-prediction-errors",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Spatial Patterns in Prediction Errors",
+    "text": "Spatial Patterns in Prediction Errors\n# Map prediction errors\nall_predictions &lt;- all_predictions %&gt;%\n  mutate(\n    error = countBurglaries - prediction,\n    abs_error = abs(error),\n    pct_error = (prediction - countBurglaries) / (countBurglaries + 1) * 100\n  )\n\n# Visualize\nggplot(all_predictions) +\n  geom_sf(aes(fill = error), color = NA) +\n  scale_fill_gradient2(\n    low = \"blue\", mid = \"white\", high = \"red\",\n    midpoint = 0,\n    name = \"Error\"\n  ) +\n  labs(title = \"Prediction Errors\",\n       subtitle = \"Red = Over-prediction, Blue = Under-prediction\") +\n  theme_void()\nLook for: Systematic patterns by neighborhood"
+  },
+  {
+    "objectID": "inClass/week9/test.html#why-compare-to-kernel-density-estimation",
+    "href": "inClass/week9/test.html#why-compare-to-kernel-density-estimation",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Why Compare to Kernel Density Estimation?",
+    "text": "Why Compare to Kernel Density Estimation?\nKDE is the simplest spatial prediction method:\n\nPlace smooth “bump” over each crime location\nSum all bumps to create risk surface\nNo predictors, no model, just past locations\n\nBenefits of comparison:\n\nBenchmark: Does our complex model beat a simple baseline?\nValue added: What do spatial features contribute?\nPractical: KDE is computationally simpler\nCritical: Maybe spatial patterns alone explain everything?\n\nIf our model doesn’t beat KDE, we’re wasting complexity"
+  },
+  {
+    "objectID": "inClass/week9/test.html#kernel-density-estimation-explained",
+    "href": "inClass/week9/test.html#kernel-density-estimation-explained",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Kernel Density Estimation Explained",
+    "text": "Kernel Density Estimation Explained\nConceptually:\nImagine placing a “hill” over each crime location:\n\nPeak at the crime location\nHeight decreases with distance\nControlled by bandwidth parameter\n\nMathematical:\n\\[\\hat{f}(s) = \\frac{1}{n\\tau^2}\\sum_{i=1}^n K\\left(\\frac{d(s, s_i)}{\\tau}\\right)\\]\nWhere:\n\n\\(s\\) = location where we estimate density\n\\(s_i\\) = location of crime \\(i\\)\n\\(\\tau\\) = bandwidth (smoothing parameter)\n\\(K\\) = kernel function (usually Gaussian)\n\\(d(s, s_i)\\) = distance between \\(s\\) and \\(s_i\\)"
+  },
+  {
+    "objectID": "inClass/week9/test.html#bandwidth-selection-a-critical-choice",
+    "href": "inClass/week9/test.html#bandwidth-selection-a-critical-choice",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Bandwidth Selection: A Critical Choice",
+    "text": "Bandwidth Selection: A Critical Choice\nSmall bandwidth (e.g., 250m):\n\nNarrow bumps\nPreserves local detail\nCan be “noisy” (overfit to specific locations)\n\nLarge bandwidth (e.g., 2000m):\n\nWide bumps\nSmooth, generalized patterns\nMay miss important local hotspots\n\nCommon choices for urban crime:\n\n500m - 1000m (balance local and regional)\n\nOur approach:\n\nUse 1000m (1 km) bandwidth\nStandard in predictive policing literature"
+  },
+  {
+    "objectID": "inClass/week9/test.html#calculating-kde-in-r",
+    "href": "inClass/week9/test.html#calculating-kde-in-r",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Calculating KDE in R",
+    "text": "Calculating KDE in R\nlibrary(spatstat)\n\n# Step 1: Convert to point pattern (ppp) object\nburglary_ppp &lt;- as.ppp(\n  X = st_coordinates(burglaries),\n  W = as.owin(st_bbox(chicago_boundary))\n)\n\n# Step 2: Calculate KDE\nkde_surface &lt;- density.ppp(\n  burglary_ppp,\n  sigma = 1000,  # Bandwidth in meters\n  edge = TRUE    # Edge correction\n)\n\n# Step 3: Extract values to fishnet cells\nfishnet$kde_risk &lt;- raster::extract(\n  raster(kde_surface),\n  st_centroid(fishnet)\n)\n\n# Standardize to 0-1 scale for comparison\nfishnet$kde_risk &lt;- (fishnet$kde_risk - min(fishnet$kde_risk, na.rm=T)) / \n                     (max(fishnet$kde_risk, na.rm=T) - min(fishnet$kde_risk, na.rm=T))"
+  },
+  {
+    "objectID": "inClass/week9/test.html#creating-risk-categories",
+    "href": "inClass/week9/test.html#creating-risk-categories",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Creating Risk Categories",
+    "text": "Creating Risk Categories\nBoth KDE and our model produce continuous risk scores\nFor evaluation, convert to categories:\n# Create quintiles (5 equal groups)\nfishnet$model_risk_category &lt;- cut(\n  fishnet$prediction,\n  breaks = quantile(fishnet$prediction, probs = seq(0, 1, 0.2)),\n  labels = c(\"1st (Lowest)\", \"2nd\", \"3rd\", \"4th\", \"5th (Highest)\"),\n  include.lowest = TRUE\n)\n\nfishnet$kde_risk_category &lt;- cut(\n  fishnet$kde_risk,\n  breaks = quantile(fishnet$kde_risk, probs = seq(0, 1, 0.2)),\n  labels = c(\"1st (Lowest)\", \"2nd\", \"3rd\", \"4th\", \"5th (Highest)\"),\n  include.lowest = TRUE\n)\nEach category contains 20% of cells"
+  },
+  {
+    "objectID": "inClass/week9/test.html#testing-on-hold-out-data-2018-burglaries",
+    "href": "inClass/week9/test.html#testing-on-hold-out-data-2018-burglaries",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Testing on Hold-Out Data (2018 Burglaries)",
+    "text": "Testing on Hold-Out Data (2018 Burglaries)\nCritical: Test on data the model has NEVER seen\nProcess:\n\nTrain model on 2017 data\nCreate risk predictions for all cells\nLoad 2018 burglaries (new data)\nCount how many 2018 burglaries fall in each risk category\nCompare model vs. KDE\n\nQuestion: Which method captures more crimes in high-risk areas?\n# Spatial join: 2018 burglaries to fishnet with risk categories\nresults_2018 &lt;- st_join(fishnet, burglaries_2018) %&gt;%\n  group_by(model_risk_category) %&gt;%\n  summarize(burglaries_2018 = n()) %&gt;%\n  mutate(pct_of_total = 100 * burglaries_2018 / sum(burglaries_2018))"
+  },
+  {
+    "objectID": "inClass/week9/test.html#the-hit-rate-evaluation",
+    "href": "inClass/week9/test.html#the-hit-rate-evaluation",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "The Hit Rate Evaluation",
+    "text": "The Hit Rate Evaluation\nGoal: Capture maximum crimes with minimum resources\nIdeal result:\nIf we patrol the highest-risk 20% of cells (Category 5):\n\nModel: Captures 55% of 2018 burglaries\nKDE: Captures 48% of 2018 burglaries\n\nInterpretation:\n\nModel is better (55% &gt; 48%)\nBut still imperfect (missing 45% of burglaries)\nSpatial features add value over location alone\n\nRandom patrol: Would capture ~20% (by chance)"
+  },
+  {
+    "objectID": "inClass/week9/test.html#critical-interpretation-of-performance",
+    "href": "inClass/week9/test.html#critical-interpretation-of-performance",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Critical Interpretation of Performance",
+    "text": "Critical Interpretation of Performance\nStatistical Success:\n✓ Model beats KDE\n✓ Better than random\n✓ Statistically significant difference\nBut ask:\n\nWhich neighborhoods are classified as “highest risk”?\nWhat happens when police patrol those areas?\nWho experiences increased surveillance?\nAre we predicting crime or policing patterns?\nDoes “better prediction” = “better public safety”?\n\nA technically superior model can still be ethically problematic"
+  },
+  {
+    "objectID": "inClass/week9/test.html#the-complete-modeling-workflow",
+    "href": "inClass/week9/test.html#the-complete-modeling-workflow",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "The Complete Modeling Workflow",
+    "text": "The Complete Modeling Workflow\nStep 1: Data Preparation\n\nCreate fishnet grid\nAggregate crimes to cells\nCalculate spatial features (Local Moran’s I, distances)\n\nStep 2: Exploratory Analysis\n\nVisualize crime patterns\nCheck for spatial autocorrelation\nIdentify hotspots\n\nStep 3: Model Fitting\n\nFit Poisson (check overdispersion)\nFit Negative Binomial (if overdispersed)\nInterpret coefficients"
+  },
+  {
+    "objectID": "inClass/week9/test.html#workflow-continued",
+    "href": "inClass/week9/test.html#workflow-continued",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Workflow (Continued)",
+    "text": "Workflow (Continued)\nStep 4: Validation\n\nSpatial cross-validation (LOGO-CV)\nCalculate error metrics\nMap prediction errors\n\nStep 5: Comparison\n\nCalculate KDE baseline\nTest both on hold-out data (2018)\nCompare hit rates by risk category\n\nStep 6: Critical Analysis\n\nInterrogate data sources\nIdentify potential biases\nAssess harms and benefits\nPropose alternatives"
+  },
+  {
+    "objectID": "inClass/week9/test.html#what-if-we-predicted-differently",
+    "href": "inClass/week9/test.html#what-if-we-predicted-differently",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "What If We Predicted Differently?",
+    "text": "What If We Predicted Differently?\nInstead of:\n\nWhere will crimes occur? → Deploy police\n\nConsider:\n\nWhere is social services need highest? → Deploy resources\nWhere is community trust lowest? → Invest in legitimacy\nWhere is opportunity lowest? → Economic development\nWhere is housing instability highest? → Stabilize residents\n\nSame technical methods, different normative goal"
+  },
+  {
+    "objectID": "inClass/week9/test.html#predictive-models-for-justice-not-policing",
+    "href": "inClass/week9/test.html#predictive-models-for-justice-not-policing",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Predictive Models for Justice, Not Policing",
+    "text": "Predictive Models for Justice, Not Policing\nExamples:\n\nPredict eviction risk → Provide legal aid proactively\nPredict health crisis → Deploy community health workers\nPredict school dropout → Intensive support services\nPredict food insecurity → Expand access programs\n\nKey differences:\n\nPredictions lead to help, not punishment\nFalse positives = extra support (relatively low harm)\nBuilds trust instead of eroding it\nAddresses root causes"
+  },
+  {
+    "objectID": "inClass/week9/test.html#key-takeaways",
+    "href": "inClass/week9/test.html#key-takeaways",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Key Takeaways",
+    "text": "Key Takeaways\n\n\n\n\n\n\nImportantRemember:\n\n\n\n\nAll crime data is socially constructed - It reflects policing, not just crime\nHistorical harms persist in data - Dirty data trains biased systems\nVendors are not accountable - Black boxes prevent oversight\nFeedback loops amplify inequality - Predictions become self-fulfilling\nTechnical accuracy ≠ social justice - A “good” model can be ethically terrible\nAlternatives exist - We could predict need instead of threat\nYour choices matter - How you build models has real consequences"
+  },
+  {
+    "objectID": "inClass/week10/script/In_Class_Exercise_Instruction.html",
+    "href": "inClass/week10/script/In_Class_Exercise_Instruction.html",
+    "title": "Georgia DOC Policy Advisory Challenge",
+    "section": "",
+    "text": "You are policy analysts hired by the Georgia Department of Corrections. They are considering deploying a recidivism prediction model to inform parole decisions. Your team must analyze the model and make a GO/NO-GO recommendation to the Commissioner.\n\n\n\n\n\n\nRun the provided R script (week10_exercise.R) and note:\n\nWhat’s the model’s AUC?\nAt threshold 0.50, what’s the sensitivity and specificity?\nWhich racial group has the highest false positive rate?\nWhich group has the highest false negative rate?\nWhat happens if we change the threshold to 0.30 or 0.70?\n\n\n\n\nAs a table or half table team, discuss your findings and complete the template below. Prepare to present your recommendation.\n\n\n\nPresent your recommendation to the “Commissioner” (instructor)."
+  },
+  {
+    "objectID": "inClass/week10/script/In_Class_Exercise_Instruction.html#your-role",
+    "href": "inClass/week10/script/In_Class_Exercise_Instruction.html#your-role",
+    "title": "Georgia DOC Policy Advisory Challenge",
+    "section": "",
+    "text": "You are policy analysts hired by the Georgia Department of Corrections. They are considering deploying a recidivism prediction model to inform parole decisions. Your team must analyze the model and make a GO/NO-GO recommendation to the Commissioner."
+  },
+  {
+    "objectID": "inClass/week10/script/In_Class_Exercise_Instruction.html#instructions",
+    "href": "inClass/week10/script/In_Class_Exercise_Instruction.html#instructions",
+    "title": "Georgia DOC Policy Advisory Challenge",
+    "section": "",
+    "text": "Run the provided R script (week10_exercise.R) and note:\n\nWhat’s the model’s AUC?\nAt threshold 0.50, what’s the sensitivity and specificity?\nWhich racial group has the highest false positive rate?\nWhich group has the highest false negative rate?\nWhat happens if we change the threshold to 0.30 or 0.70?\n\n\n\n\nAs a table or half table team, discuss your findings and complete the template below. Prepare to present your recommendation.\n\n\n\nPresent your recommendation to the “Commissioner” (instructor)."
+  },
+  {
+    "objectID": "inClass/week10/script/In_Class_Exercise_Instruction.html#consulting-team-information",
+    "href": "inClass/week10/script/In_Class_Exercise_Instruction.html#consulting-team-information",
+    "title": "Georgia DOC Policy Advisory Challenge",
+    "section": "Consulting Team Information",
+    "text": "Consulting Team Information\nClever Team Name: _____________\nTeam Members:"
+  },
+  {
+    "objectID": "inClass/week10/script/In_Class_Exercise_Instruction.html#technical-assessment",
+    "href": "inClass/week10/script/In_Class_Exercise_Instruction.html#technical-assessment",
+    "title": "Georgia DOC Policy Advisory Challenge",
+    "section": "1. TECHNICAL ASSESSMENT",
+    "text": "1. TECHNICAL ASSESSMENT\n\nModel Performance Metrics\nAUC (Area Under ROC Curve): __________\nAt threshold = 0.50:\n\nSensitivity (True Positive Rate): __________\nSpecificity (True Negative Rate): __________\nPrecision (Positive Predictive Value): __________\nOverall Accuracy: __________\n\n\n\nTechnical Quality Rating\nSelect one:\n\nExcellent (AUC &gt; 0.90)\nGood (AUC 0.80-0.90)\nAcceptable (AUC 0.70-0.80)\nPoor (AUC &lt; 0.70)\n\n\n\nBrief Technical Summary (2-3 sentences)\nIs the model accurate enough for high-stakes decision-making?"
+  },
+  {
+    "objectID": "inClass/week10/script/In_Class_Exercise_Instruction.html#equity-analysis",
+    "href": "inClass/week10/script/In_Class_Exercise_Instruction.html#equity-analysis",
+    "title": "Georgia DOC Policy Advisory Challenge",
+    "section": "2. EQUITY ANALYSIS",
+    "text": "2. EQUITY ANALYSIS\n\nFalse Positive Rates by Race (at threshold 0.50)\n\n\n\nRacial Group\nFalse Positive Rate\nSample Size\n\n\n\n\nGroup 1:\n\n\n\n\nGroup 2:\n\n\n\n\nGroup 3:\n\n\n\n\nGroup 4:\n\n\n\n\n\n\n\nFalse Negative Rates by Race (at threshold 0.50)\n\n\n\nRacial Group\nFalse Negative Rate\nSample Size\n\n\n\n\nGroup 1:\n\n\n\n\nGroup 2:\n\n\n\n\nGroup 3:\n\n\n\n\nGroup 4:\n\n\n\n\n\n\n\nDisparity Analysis\nLargest disparity identified:\nGroup _____________ has ______% higher false positive rate than Group _____________\nOR\nGroup _____________ has ______% higher false negative rate than Group _____________\n\n\nEquity Concerns Summary (3-4 sentences)\nWhat are the implications of these disparities? Who is harmed?"
+  },
+  {
+    "objectID": "inClass/week10/script/In_Class_Exercise_Instruction.html#threshold-recommendation",
+    "href": "inClass/week10/script/In_Class_Exercise_Instruction.html#threshold-recommendation",
+    "title": "Georgia DOC Policy Advisory Challenge",
+    "section": "3. THRESHOLD RECOMMENDATION",
+    "text": "3. THRESHOLD RECOMMENDATION\n\nIf we deploy this model, we recommend:\nSelect one:\n\nThreshold = 0.30 (Aggressive - prioritize catching recidivists)\nThreshold = 0.50 (Balanced - default)\nThreshold = 0.70 (Conservative - minimize false accusations)\nOther: ________\n\n\n\nRationale for Threshold Choice (3-4 sentences)\nWhy this threshold? What does it optimize for? What are the trade-offs?\n\n\n\n\n\n\nThis threshold prioritizes:\nSelect one:\n\nHigh Sensitivity - Catch more people who will reoffend (accept more false positives)\nHigh Specificity - Avoid false accusations (accept more false negatives)\nBalance - Try to minimize both types of errors"
+  },
+  {
+    "objectID": "inClass/week10/script/In_Class_Exercise_Instruction.html#deployment-recommendation",
+    "href": "inClass/week10/script/In_Class_Exercise_Instruction.html#deployment-recommendation",
+    "title": "Georgia DOC Policy Advisory Challenge",
+    "section": "4. DEPLOYMENT RECOMMENDATION",
+    "text": "4. DEPLOYMENT RECOMMENDATION\n\nOur recommendation to Georgia DOC:\nSelect one:\n\nDEPLOY - Use this model to inform parole decisions\nDO NOT DEPLOY - Do not use this model\nCONDITIONAL DEPLOY - Deploy only with specific safeguards in place\n\n\n\nKey Reasons for Our Recommendation\nProvide 3-5 bullet points supporting your decision:\n\n\n\n\n\n\n\n\n\nWhat about the equity concerns?\nHow do you justify your recommendation given the disparate impact you identified?"
+  },
+  {
+    "objectID": "inClass/week10/script/In_Class_Exercise_Instruction.html#safeguards-or-alternatives",
+    "href": "inClass/week10/script/In_Class_Exercise_Instruction.html#safeguards-or-alternatives",
+    "title": "Georgia DOC Policy Advisory Challenge",
+    "section": "5. SAFEGUARDS OR ALTERNATIVES",
+    "text": "5. SAFEGUARDS OR ALTERNATIVES\n\nIf DEPLOY - Required Safeguards\nWhat protections must be in place before deployment?\n\n\n\n\n\n\nOR\n\n\nIf DO NOT DEPLOY - Alternative Approaches\nWhat should Georgia DOC do instead?"
+  },
+  {
+    "objectID": "inClass/week10/script/In_Class_Exercise_Instruction.html#limitations-uncertainties",
+    "href": "inClass/week10/script/In_Class_Exercise_Instruction.html#limitations-uncertainties",
+    "title": "Georgia DOC Policy Advisory Challenge",
+    "section": "6. LIMITATIONS & UNCERTAINTIES",
+    "text": "6. LIMITATIONS & UNCERTAINTIES\n\nWhat we don’t know (but wish we did)\nWhat additional information would strengthen your recommendation?\n\n\n\n\n\nWeaknesses in our recommendation\nWhat’s the strongest argument AGAINST your recommendation?"
+  },
+  {
+    "objectID": "inClass/week10/script/In_Class_Exercise_Instruction.html#bottom-line",
+    "href": "inClass/week10/script/In_Class_Exercise_Instruction.html#bottom-line",
+    "title": "Georgia DOC Policy Advisory Challenge",
+    "section": "7. BOTTOM LINE",
+    "text": "7. BOTTOM LINE\n\nOne-Sentence Recommendation\nIf the Commissioner only reads one thing, what should it be?"
+  },
+  {
+    "objectID": "inClass/week10/student_worksheet_classification_exercise.html",
+    "href": "inClass/week10/student_worksheet_classification_exercise.html",
+    "title": "Disease Testing Exercise - Student Worksheet",
+    "section": "",
+    "text": "Name: ________________________ Date: _______________\n\n\nPatient ID: ________\nTruth (Red dot?): ⃝ YES (has disease) ⃝ NO (no disease)\nModel Prediction (Probability): _______\nDeadly Variant? (Star): ⃝ YES ⃝ NO\n\n\n\n\n\n\nDecision rule: If probability ≥ 0.50 → QUARANTINE\nWhere should you go? ⃝ Quarantine Table\n⃝ Stay at regular table\n\n\n\nBased on where you went and your truth:\n⃝ True Positive (TP) - Correctly quarantined (have disease, high prob)\n⃝ False Positive (FP) - Incorrectly quarantined (no disease, high prob)\n⃝ True Negative (TN) - Correctly not quarantined (no disease, low prob)\n⃝ False Negative (FN) - Incorrectly not quarantined (have disease, low prob)\n\n\n\nWork with your table to count:\n           Predicted Positive   Predicted Negative\n           (Quarantined)       (Not Quarantined)\n\nActually \nPositive   TP = 12         FN = 7\n(Red Dot)\n\nActually\nNegative   FP = 5         TN = 13\n(No Dot)\n\n\n\nSensitivity (True Positive Rate): \\[\\text{Sensitivity} = \\frac{TP}{TP + FN} = \\frac{\\_\\_\\_}{\\_\\_\\_ + \\_\\_\\_} = \\_\\_\\_\\_\\]\nInterpretation: What % of actually sick people did we catch? 63.2%\nSpecificity (True Negative Rate): \\[\\text{Specificity} = \\frac{TN}{TN + FP} = \\frac{\\_\\_\\_}{\\_\\_\\_ + \\_\\_\\_} = \\_\\_\\_\\_\\]\nInterpretation: What % of healthy people did we correctly not quarantine? 72.2%\nPrecision (Positive Predictive Value): \\[\\text{Precision} = \\frac{TP}{TP + FP} = \\frac{\\_\\_\\_}{\\_\\_\\_ + \\_\\_\\_} = \\_\\_\\_\\_\\]\nInterpretation: Of those quarantined, what % actually had disease? 70.5%\nAccuracy: \\[\\text{Accuracy} = \\frac{TP + TN}{\\text{Total}} = \\frac{\\_\\_\\_ + \\_\\_\\_}{48} = \\_\\_\\_\\_\\]\nInterpretation: What % did we classify correctly overall? 67.6%\n\n\n\n\n\n\n\nDecision rule: If probability ≥ 0.30 → QUARANTINE\nWhere should you go? ⃝ Quarantine Table\n⃝ Stay at regular table\nDid your classification change from Round 1? NO\n\n\n\n           Predicted Positive   Predicted Negative\n\nActually \nPositive   TP = 19         FN = 1\n\nActually\nNegative   FP = 10         TN = 7\n\n\n\nSensitivity: 95% (Did this go up ↑ or down ↓ from Round 1?)\nSpecificity: 41.18% (Did this go up ↑ or down ↓ from Round 1?)\nPrecision: 65.52%\nAccuracy: 70.27%\n\n\n\nHow many people with stars (deadly variant) were caught? - Round 1 (threshold 0.50): _______ - Round 2 (threshold 0.30): _______\nDid lowering the threshold help catch deadly variants? ⃝ YES ⃝ NO\n\n\n\n\n\n\n\nDecision rule: If probability ≥ 0.70 → QUARANTINE\nWhere should you go? ⃝ Quarantine Table\n⃝ Stay at regular table\n\n\n\n           Predicted Positive   Predicted Negative\n\nActually \nPositive   TP = _______         FN = _______\n\nActually\nNegative   FP = _______         TN = _______\n\n\n\nSensitivity: _______\nSpecificity: _______\nPrecision: _______\nAccuracy: _______\n\n\n\n\n\nFill in the table below with your results:\n\n\n\nMetric\nThreshold = 0.30\nThreshold = 0.50\nThreshold = 0.70\n\n\n\n\nSensitivity\n\n\n\n\n\nSpecificity\n\n\n\n\n\nPrecision\n\n\n\n\n\nFalse Positives (FP)\n\n\n\n\n\nFalse Negatives (FN)\n\n\n\n\n\n\n\n\n\nAs threshold increases (0.30 → 0.50 → 0.70), what happens to sensitivity?\n⃝ Increases ⃝ Decreases ⃝ Stays the same\nAs threshold increases, what happens to specificity?\n⃝ Increases ⃝ Decreases ⃝ Stays the same\nCan we maximize BOTH sensitivity and specificity at the same time?\n⃝ YES ⃝ NO\nWhat is the fundamental trade-off?\n\n\n\n\n\n\n\n\n\n\nIf you were a False Positive (quarantined when healthy):\nHow did it feel to be quarantined unnecessarily?\n\n\nWhat if this meant missing work for 2 weeks without pay? Or being unable to attend an important event?\n\n\nIf you were a False Negative (missed when actually sick):\nHow did it feel to be sent back when you actually had the disease?\n\n\nWhat if you had the deadly variant (star)? What are the consequences of being missed?\n\n\n\n\n\nScenario A: Rare, extremely deadly disease (like Ebola) - Disease is rare but 70% fatality rate - Treatment is available and effective if caught early - Quarantine costs $1,000/person, treatment costs $5,000\nWhich threshold would you choose? ⃝ 0.30 ⃝ 0.50 ⃝ 0.70\nWhy?\n\n\n\nScenario B: Common, mild illness (like common cold) - Disease is common but not serious (just annoying) - No treatment available - Quarantine means missing work (costs $2,000 in lost wages)\nWhich threshold would you choose? ⃝ 0.30 ⃝ 0.50 ⃝ 0.70\nWhy?\n\n\n\n\n\n\nWhich metric is MOST important for Scenario A (deadly disease)?\n⃝ Sensitivity - Don’t miss any sick people\n⃝ Specificity - Don’t quarantine healthy people\n⃝ Accuracy - Overall correct\n⃝ Precision - When we say “sick,” be sure\nWhy?\n\n\nWhich metric is MOST important for Scenario B (mild illness)?\n⃝ Sensitivity\n⃝ Specificity\n⃝ Accuracy\n⃝ Precision\nWhy?\n\n\n\n\n\nThink about COVID-19 testing. Rapid tests had lower sensitivity than PCR tests.\nWhen might you prefer a rapid test (lower sensitivity)?\n\n\nWhen would you insist on PCR test (higher sensitivity)?\n\n\n\n\n\nWhat if the model’s predictions were systematically wrong for certain groups?\nFor example: The model gives lower probabilities for women even when they have the disease.\nWhat would happen?\n\n\nHow could we detect this problem?\n\n\nWhat should we do about it?\n\n\n\n\n\n\n\nWrite 3 key things you learned from this exercise:\n\n\n\n\n\n\n\n\nOne question you still have:"
+  },
+  {
+    "objectID": "inClass/week10/student_worksheet_classification_exercise.html#your-patient-information",
+    "href": "inClass/week10/student_worksheet_classification_exercise.html#your-patient-information",
+    "title": "Disease Testing Exercise - Student Worksheet",
+    "section": "",
+    "text": "Patient ID: ________\nTruth (Red dot?): ⃝ YES (has disease) ⃝ NO (no disease)\nModel Prediction (Probability): _______\nDeadly Variant? (Star): ⃝ YES ⃝ NO"
+  },
+  {
+    "objectID": "inClass/week10/student_worksheet_classification_exercise.html#round-1-threshold-0.50",
+    "href": "inClass/week10/student_worksheet_classification_exercise.html#round-1-threshold-0.50",
+    "title": "Disease Testing Exercise - Student Worksheet",
+    "section": "",
+    "text": "Decision rule: If probability ≥ 0.50 → QUARANTINE\nWhere should you go? ⃝ Quarantine Table\n⃝ Stay at regular table\n\n\n\nBased on where you went and your truth:\n⃝ True Positive (TP) - Correctly quarantined (have disease, high prob)\n⃝ False Positive (FP) - Incorrectly quarantined (no disease, high prob)\n⃝ True Negative (TN) - Correctly not quarantined (no disease, low prob)\n⃝ False Negative (FN) - Incorrectly not quarantined (have disease, low prob)\n\n\n\nWork with your table to count:\n           Predicted Positive   Predicted Negative\n           (Quarantined)       (Not Quarantined)\n\nActually \nPositive   TP = 12         FN = 7\n(Red Dot)\n\nActually\nNegative   FP = 5         TN = 13\n(No Dot)\n\n\n\nSensitivity (True Positive Rate): \\[\\text{Sensitivity} = \\frac{TP}{TP + FN} = \\frac{\\_\\_\\_}{\\_\\_\\_ + \\_\\_\\_} = \\_\\_\\_\\_\\]\nInterpretation: What % of actually sick people did we catch? 63.2%\nSpecificity (True Negative Rate): \\[\\text{Specificity} = \\frac{TN}{TN + FP} = \\frac{\\_\\_\\_}{\\_\\_\\_ + \\_\\_\\_} = \\_\\_\\_\\_\\]\nInterpretation: What % of healthy people did we correctly not quarantine? 72.2%\nPrecision (Positive Predictive Value): \\[\\text{Precision} = \\frac{TP}{TP + FP} = \\frac{\\_\\_\\_}{\\_\\_\\_ + \\_\\_\\_} = \\_\\_\\_\\_\\]\nInterpretation: Of those quarantined, what % actually had disease? 70.5%\nAccuracy: \\[\\text{Accuracy} = \\frac{TP + TN}{\\text{Total}} = \\frac{\\_\\_\\_ + \\_\\_\\_}{48} = \\_\\_\\_\\_\\]\nInterpretation: What % did we classify correctly overall? 67.6%"
+  },
+  {
+    "objectID": "inClass/week10/student_worksheet_classification_exercise.html#round-2-threshold-0.30",
+    "href": "inClass/week10/student_worksheet_classification_exercise.html#round-2-threshold-0.30",
+    "title": "Disease Testing Exercise - Student Worksheet",
+    "section": "",
+    "text": "Decision rule: If probability ≥ 0.30 → QUARANTINE\nWhere should you go? ⃝ Quarantine Table\n⃝ Stay at regular table\nDid your classification change from Round 1? NO\n\n\n\n           Predicted Positive   Predicted Negative\n\nActually \nPositive   TP = 19         FN = 1\n\nActually\nNegative   FP = 10         TN = 7\n\n\n\nSensitivity: 95% (Did this go up ↑ or down ↓ from Round 1?)\nSpecificity: 41.18% (Did this go up ↑ or down ↓ from Round 1?)\nPrecision: 65.52%\nAccuracy: 70.27%\n\n\n\nHow many people with stars (deadly variant) were caught? - Round 1 (threshold 0.50): _______ - Round 2 (threshold 0.30): _______\nDid lowering the threshold help catch deadly variants? ⃝ YES ⃝ NO"
+  },
+  {
+    "objectID": "inClass/week10/student_worksheet_classification_exercise.html#round-3-threshold-0.70",
+    "href": "inClass/week10/student_worksheet_classification_exercise.html#round-3-threshold-0.70",
+    "title": "Disease Testing Exercise - Student Worksheet",
+    "section": "",
+    "text": "Decision rule: If probability ≥ 0.70 → QUARANTINE\nWhere should you go? ⃝ Quarantine Table\n⃝ Stay at regular table\n\n\n\n           Predicted Positive   Predicted Negative\n\nActually \nPositive   TP = _______         FN = _______\n\nActually\nNegative   FP = _______         TN = _______\n\n\n\nSensitivity: _______\nSpecificity: _______\nPrecision: _______\nAccuracy: _______"
+  },
+  {
+    "objectID": "inClass/week10/student_worksheet_classification_exercise.html#comparison-across-thresholds",
+    "href": "inClass/week10/student_worksheet_classification_exercise.html#comparison-across-thresholds",
+    "title": "Disease Testing Exercise - Student Worksheet",
+    "section": "",
+    "text": "Fill in the table below with your results:\n\n\n\nMetric\nThreshold = 0.30\nThreshold = 0.50\nThreshold = 0.70\n\n\n\n\nSensitivity\n\n\n\n\n\nSpecificity\n\n\n\n\n\nPrecision\n\n\n\n\n\nFalse Positives (FP)\n\n\n\n\n\nFalse Negatives (FN)\n\n\n\n\n\n\n\n\n\nAs threshold increases (0.30 → 0.50 → 0.70), what happens to sensitivity?\n⃝ Increases ⃝ Decreases ⃝ Stays the same\nAs threshold increases, what happens to specificity?\n⃝ Increases ⃝ Decreases ⃝ Stays the same\nCan we maximize BOTH sensitivity and specificity at the same time?\n⃝ YES ⃝ NO\nWhat is the fundamental trade-off?"
+  },
+  {
+    "objectID": "inClass/week10/student_worksheet_classification_exercise.html#reflection-questions",
+    "href": "inClass/week10/student_worksheet_classification_exercise.html#reflection-questions",
+    "title": "Disease Testing Exercise - Student Worksheet",
+    "section": "",
+    "text": "If you were a False Positive (quarantined when healthy):\nHow did it feel to be quarantined unnecessarily?\n\n\nWhat if this meant missing work for 2 weeks without pay? Or being unable to attend an important event?\n\n\nIf you were a False Negative (missed when actually sick):\nHow did it feel to be sent back when you actually had the disease?\n\n\nWhat if you had the deadly variant (star)? What are the consequences of being missed?\n\n\n\n\n\nScenario A: Rare, extremely deadly disease (like Ebola) - Disease is rare but 70% fatality rate - Treatment is available and effective if caught early - Quarantine costs $1,000/person, treatment costs $5,000\nWhich threshold would you choose? ⃝ 0.30 ⃝ 0.50 ⃝ 0.70\nWhy?\n\n\n\nScenario B: Common, mild illness (like common cold) - Disease is common but not serious (just annoying) - No treatment available - Quarantine means missing work (costs $2,000 in lost wages)\nWhich threshold would you choose? ⃝ 0.30 ⃝ 0.50 ⃝ 0.70\nWhy?\n\n\n\n\n\n\nWhich metric is MOST important for Scenario A (deadly disease)?\n⃝ Sensitivity - Don’t miss any sick people\n⃝ Specificity - Don’t quarantine healthy people\n⃝ Accuracy - Overall correct\n⃝ Precision - When we say “sick,” be sure\nWhy?\n\n\nWhich metric is MOST important for Scenario B (mild illness)?\n⃝ Sensitivity\n⃝ Specificity\n⃝ Accuracy\n⃝ Precision\nWhy?\n\n\n\n\n\nThink about COVID-19 testing. Rapid tests had lower sensitivity than PCR tests.\nWhen might you prefer a rapid test (lower sensitivity)?\n\n\nWhen would you insist on PCR test (higher sensitivity)?\n\n\n\n\n\nWhat if the model’s predictions were systematically wrong for certain groups?\nFor example: The model gives lower probabilities for women even when they have the disease.\nWhat would happen?\n\n\nHow could we detect this problem?\n\n\nWhat should we do about it?"
+  },
+  {
+    "objectID": "inClass/week10/student_worksheet_classification_exercise.html#key-takeaways",
+    "href": "inClass/week10/student_worksheet_classification_exercise.html#key-takeaways",
+    "title": "Disease Testing Exercise - Student Worksheet",
+    "section": "",
+    "text": "Write 3 key things you learned from this exercise:\n\n\n\n\n\n\n\n\nOne question you still have:"
+  },
+  {
+    "objectID": "inClass/week9/week9_test.html",
+    "href": "inClass/week9/week9_test.html",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "",
+    "text": "Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see https://quarto.org/docs/presentations/."
+  },
+  {
+    "objectID": "inClass/week9/week9_test.html#quarto",
+    "href": "inClass/week9/week9_test.html#quarto",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "",
+    "text": "Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see https://quarto.org/docs/presentations/."
+  },
+  {
+    "objectID": "inClass/week9/week9_test.html#bullets",
+    "href": "inClass/week9/week9_test.html#bullets",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Bullets",
+    "text": "Bullets\nWhen you click the Render button a document will be generated that includes:\n\nContent authored with markdown\nOutput from executable code"
+  },
+  {
+    "objectID": "inClass/week9/week9_test.html#code",
+    "href": "inClass/week9/week9_test.html#code",
+    "title": "Critical Perspectives on Predictive Policing",
+    "section": "Code",
+    "text": "Code\nWhen you click the Render button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:\n\n\nCode\n1 + 1\n\n\n[1] 2"
+  },
+  {
+    "objectID": "labs/lab4/Assignment4_Instructions.html",
+    "href": "labs/lab4/Assignment4_Instructions.html",
+    "title": "Lab Assignment 4: Spatial Predictive Analysis",
+    "section": "",
+    "text": "In this lab, you will apply the spatial predictive modeling techniques demonstrated in the class exercise to a 311 service request type of your choice. You will build a complete spatial predictive model, document your process, and interpret your results.\n\n\nDue Date: November 17, 2025, 10:00AM\nDeliverable: One rendered document, posted to your portfolio website.\n\n\n\nBy completing this assignment, you will demonstrate your ability to:\n\nAdapt example code to analyze a new dataset\nBuild spatial features for predictive modeling\nApply count regression techniques to spatial data\nImplement spatial cross-validation\nInterpret and communicate model results\nCritically evaluate model performance\n\n\n\n\n\n\n\n\nVisit the Chicago 311 Service Requests dataset:\nhttps://data.cityofchicago.org/stories/s/311-Dataset-Changes-12-11-2018/d7nq-5g7t\nBrowse the available service request types (e.g., Graffiti Removal, Pothole Repair, Street Light Out, Sanitation Code Violations, etc.) and choose one violation type that interests you.\n\n\n\n\n\n\n\n\n\n\nUsing the class exercise as your template, adapt the code to analyze your chosen 311 violation type.\n\n\nWork through all major sections of the analysis:\n\n\n\nLoad your 311 data and Chicago spatial boundaries\nCreate visualizations showing the spatial distribution of your violation type\nDescribe patterns you observe\n\n\n\n\n\nCreate a 500m x 500m fishnet grid\nAggregate your violations to grid cells\nVisualize the count distribution\n\n\n\n\n\nCalculate k-nearest neighbor features\nPerform Local Moran’s I analysis\nIdentify hot spots and cold spots\nCreate distance-to-hotspot measures\nJoin any additional contextual data if you are looking for more to do and really get into this (e.g., demographics, land use)\n\n\n\n\n\nFit Poisson regression\nFit Negative Binomial regression\nCompare model fit (AIC)\n\n\n\n\n\nImplement Leave-One-Group-Out cross-validation on 2017 data\nCalculate and report error metrics (MAE, RMSE)\n\n\n\n\n\nGenerate final predictions for both years\nCompare to KDE baseline\nMap prediction errors for 2018\nAssess model performance across time\n\n\n\n\n\nDownload 2018 crimes https://data.cityofchicago.org/Public-Safety/Crimes-2018/3i3m-jwuy/about_data\nBe sure to filter for BURGLARIES (FORCED ENTRY only to match the 2017 data)\nAggregate 2018 violations to the same fishnet grid\nUse your 2017 model to predict 2018 counts\nCalculate temporal validation metrics\nCompare spatial vs. temporal validation performance\n\n\n\n\n\n\n\n\n\nFor each major section, you must explain in your own words:\n\nWhat you are doing in that step\nWhy this step is important for the analysis\nWhat you found or learned from the results\n\nDo not simply copy text from the example or from your AI friend. Think about the purpose of each technique and articulate it in your own words.\n\n\n\n\n\n\n\nYour knitted HTML document should be professional and easy to read:\n\n\n\nRemove unnecessary code, comments, or debugging lines\nKeep only essential code chunks\nUse code-fold: show in your YAML header\n\n\n\n\n\nUse headers to organize sections\nInclude a table of contents\nAdd your name and date\n\n\n\n\n\nEnsure all text renders properly (no broken markdown)\nCheck that headers appear as headers (not plain text)\nUse proper markdown formatting\n\n\n\n\n\nAll plots should have titles and labels\nMaps should be readable\nUse consistent color schemes\n\n\n\n\n\nProofread for typos\nRemove any “Your answer here” placeholders\nMake sure all code runs without errors\nMake IT NEAT. WE GOTTA LOOK GOOD HERE.\n\n\n\n\n\n\n\nBefore you submit, verify that your document includes:\n\n\n\nIntroduction: Brief description of your chosen 311 violation type and why you selected it\nData Exploration: Maps and summary statistics of your violation data\nFishnet Grid: Successfully created and visualized grid with aggregated counts\nSpatial Features: At least 2-3 spatial features calculated (k-NN, distance measures, etc.)\nLocal Moran’s I: Spatial autocorrelation analysis with interpretation\nCount Regression: Both Poisson and Negative Binomial models with comparison\nSpatial Cross-Validation: LOGO CV implemented on 2017 data with reported metrics\nTemporal Validation: 2018 data aggregated and tested with 2017 model(OPTIONAL.)\nValidation Comparison: Comparison of spatial vs. temporal validation performance\nModel Comparison: Your model vs. KDE baseline for 2018 predictions\nError Analysis: Maps and discussion of where model performs well/poorly\nWritten Explanations: Your own words explaining each step\n\n\n\n\n\nDocument knits to HTML without errors\nCode is clean and well-organized\nAll visualizations display properly\nHeaders and formatting render correctly\nFile is named successfully posted to your website"
+  },
+  {
+    "objectID": "labs/lab4/Assignment4_Instructions.html#assignment-overview",
+    "href": "labs/lab4/Assignment4_Instructions.html#assignment-overview",
+    "title": "Lab Assignment 4: Spatial Predictive Analysis",
+    "section": "",
+    "text": "In this lab, you will apply the spatial predictive modeling techniques demonstrated in the class exercise to a 311 service request type of your choice. You will build a complete spatial predictive model, document your process, and interpret your results.\n\n\nDue Date: November 17, 2025, 10:00AM\nDeliverable: One rendered document, posted to your portfolio website.\n\n\n\nBy completing this assignment, you will demonstrate your ability to:\n\nAdapt example code to analyze a new dataset\nBuild spatial features for predictive modeling\nApply count regression techniques to spatial data\nImplement spatial cross-validation\nInterpret and communicate model results\nCritically evaluate model performance"
+  },
+  {
+    "objectID": "labs/lab4/Assignment4_Instructions.html#step-1-choose-your-311-violation-type",
+    "href": "labs/lab4/Assignment4_Instructions.html#step-1-choose-your-311-violation-type",
+    "title": "Lab Assignment 4: Spatial Predictive Analysis",
+    "section": "",
+    "text": "Visit the Chicago 311 Service Requests dataset:\nhttps://data.cityofchicago.org/stories/s/311-Dataset-Changes-12-11-2018/d7nq-5g7t\nBrowse the available service request types (e.g., Graffiti Removal, Pothole Repair, Street Light Out, Sanitation Code Violations, etc.) and choose one violation type that interests you."
+  },
+  {
+    "objectID": "labs/lab4/Assignment4_Instructions.html#step-2-complete-the-analysis",
+    "href": "labs/lab4/Assignment4_Instructions.html#step-2-complete-the-analysis",
+    "title": "Lab Assignment 4: Spatial Predictive Analysis",
+    "section": "",
+    "text": "Using the class exercise as your template, adapt the code to analyze your chosen 311 violation type.\n\n\nWork through all major sections of the analysis:\n\n\n\nLoad your 311 data and Chicago spatial boundaries\nCreate visualizations showing the spatial distribution of your violation type\nDescribe patterns you observe\n\n\n\n\n\nCreate a 500m x 500m fishnet grid\nAggregate your violations to grid cells\nVisualize the count distribution\n\n\n\n\n\nCalculate k-nearest neighbor features\nPerform Local Moran’s I analysis\nIdentify hot spots and cold spots\nCreate distance-to-hotspot measures\nJoin any additional contextual data if you are looking for more to do and really get into this (e.g., demographics, land use)\n\n\n\n\n\nFit Poisson regression\nFit Negative Binomial regression\nCompare model fit (AIC)\n\n\n\n\n\nImplement Leave-One-Group-Out cross-validation on 2017 data\nCalculate and report error metrics (MAE, RMSE)\n\n\n\n\n\nGenerate final predictions for both years\nCompare to KDE baseline\nMap prediction errors for 2018\nAssess model performance across time\n\n\n\n\n\nDownload 2018 crimes https://data.cityofchicago.org/Public-Safety/Crimes-2018/3i3m-jwuy/about_data\nBe sure to filter for BURGLARIES (FORCED ENTRY only to match the 2017 data)\nAggregate 2018 violations to the same fishnet grid\nUse your 2017 model to predict 2018 counts\nCalculate temporal validation metrics\nCompare spatial vs. temporal validation performance"
+  },
+  {
+    "objectID": "labs/lab4/Assignment4_Instructions.html#step-3-write-your-analysis",
+    "href": "labs/lab4/Assignment4_Instructions.html#step-3-write-your-analysis",
+    "title": "Lab Assignment 4: Spatial Predictive Analysis",
+    "section": "",
+    "text": "For each major section, you must explain in your own words:\n\nWhat you are doing in that step\nWhy this step is important for the analysis\nWhat you found or learned from the results\n\nDo not simply copy text from the example or from your AI friend. Think about the purpose of each technique and articulate it in your own words."
+  },
+  {
+    "objectID": "labs/lab4/Assignment4_Instructions.html#step-4-format-your-document",
+    "href": "labs/lab4/Assignment4_Instructions.html#step-4-format-your-document",
+    "title": "Lab Assignment 4: Spatial Predictive Analysis",
+    "section": "",
+    "text": "Your knitted HTML document should be professional and easy to read:\n\n\n\nRemove unnecessary code, comments, or debugging lines\nKeep only essential code chunks\nUse code-fold: show in your YAML header\n\n\n\n\n\nUse headers to organize sections\nInclude a table of contents\nAdd your name and date\n\n\n\n\n\nEnsure all text renders properly (no broken markdown)\nCheck that headers appear as headers (not plain text)\nUse proper markdown formatting\n\n\n\n\n\nAll plots should have titles and labels\nMaps should be readable\nUse consistent color schemes\n\n\n\n\n\nProofread for typos\nRemove any “Your answer here” placeholders\nMake sure all code runs without errors\nMake IT NEAT. WE GOTTA LOOK GOOD HERE."
+  },
+  {
+    "objectID": "labs/lab4/Assignment4_Instructions.html#submission-checklist",
+    "href": "labs/lab4/Assignment4_Instructions.html#submission-checklist",
+    "title": "Lab Assignment 4: Spatial Predictive Analysis",
+    "section": "",
+    "text": "Before you submit, verify that your document includes:\n\n\n\nIntroduction: Brief description of your chosen 311 violation type and why you selected it\nData Exploration: Maps and summary statistics of your violation data\nFishnet Grid: Successfully created and visualized grid with aggregated counts\nSpatial Features: At least 2-3 spatial features calculated (k-NN, distance measures, etc.)\nLocal Moran’s I: Spatial autocorrelation analysis with interpretation\nCount Regression: Both Poisson and Negative Binomial models with comparison\nSpatial Cross-Validation: LOGO CV implemented on 2017 data with reported metrics\nTemporal Validation: 2018 data aggregated and tested with 2017 model(OPTIONAL.)\nValidation Comparison: Comparison of spatial vs. temporal validation performance\nModel Comparison: Your model vs. KDE baseline for 2018 predictions\nError Analysis: Maps and discussion of where model performs well/poorly\nWritten Explanations: Your own words explaining each step\n\n\n\n\n\nDocument knits to HTML without errors\nCode is clean and well-organized\nAll visualizations display properly\nHeaders and formatting render correctly\nFile is named successfully posted to your website"
+  },
+  {
+    "objectID": "weekly-notes/week-07-notes.html",
+    "href": "weekly-notes/week-07-notes.html",
+    "title": "Week 7 Notes - Spatial Machine Learning & Advanced Regression",
+    "section": "",
+    "text": "echo = TRUE displays code chunk in quarto\neval = FALSE prevents code chunk from running"
+  },
+  {
+    "objectID": "weekly-notes/week-07-notes.html#pre-lecture-notes-quarto-slides-for-midterm",
+    "href": "weekly-notes/week-07-notes.html#pre-lecture-notes-quarto-slides-for-midterm",
+    "title": "Week 7 Notes - Spatial Machine Learning & Advanced Regression",
+    "section": "",
+    "text": "echo = TRUE displays code chunk in quarto\neval = FALSE prevents code chunk from running"
+  },
+  {
+    "objectID": "weekly-notes/week-07-notes.html#understanding-spatial-patterns-in-errors",
+    "href": "weekly-notes/week-07-notes.html#understanding-spatial-patterns-in-errors",
+    "title": "Week 7 Notes - Spatial Machine Learning & Advanced Regression",
+    "section": "Understanding Spatial Patterns in Errors",
+    "text": "Understanding Spatial Patterns in Errors\nWhat are model errors?\n Good v Bad Errors\n\nRandom errors (good)\n\nNo systematic pattern\nScattered across space\nPrediction equally good everywhere\nModel captures key relationships\n\nClustered errors (bad)\n\nSpatial pattern visible\nUnder/over-predict in areas\nModel misses something about location\nNeed more spatial features!\n\n\nHow do we test this? Look for spatial autocorrelation in the errors\nLibrary(spdep1) is core library"
+  },
+  {
+    "objectID": "weekly-notes/week-07-notes.html#morans-i",
+    "href": "weekly-notes/week-07-notes.html#morans-i",
+    "title": "Week 7 Notes - Spatial Machine Learning & Advanced Regression",
+    "section": "Moran’s I",
+    "text": "Moran’s I\n\nWhat is Moran’s I\nMoran’s I measures spatial autocorrelation Range: -1 to 1\n\n+1 = Perfect positive correlation (clustering)\n0 = Random spatial pattern\n-1 = Perfect negative correlation (dispersion)\n\n\n\n\nMoran’s I equation\n\n\nThe intuition behind it The formula is really just asking: “When I’m above/below average, are my neighbors also above/below average?”\nBreaking it down:\n1.(xi−x¯) = How far am I from the mean? 2. (xj−x¯) = How far is my neighbor from the mean? 3. Multiply them: - If both positive or both negative → positive product (similar) - If opposite signs → negative product (dissimilar) 4. Sum across all neighbor pairs and normalize\n\n\nDefining Neighbors\nDifferent ways to define spatial relationships\n\nContiguity: Polygons that share a border\nDistance: All within X meters, fixed threshold\nk-Nearest: Closest k points, adaptive distace\n\n\n\nSpatial Lag\nspatial lag = avg value of neighbors\n\n\nWhat does Moran’s I Explain?\n Because this class is focused on prediction, we should not be using spatial lag\n\nSimultaneity Problem\n\nIncluding WY (neighbor prices) creates circular logic\nMy price affects neighbors → neighbors affect me\nOLS estimates are biased and inconsistent"
   }
 ]

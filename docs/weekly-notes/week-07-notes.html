@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2025-10-20">
 
-<title>week-07-notes – Matthew Levy - MUSA 5080 Portfolio</title>
+<title>Week 7 Notes - Spatial Machine Learning &amp; Advanced Regression – Matthew Levy - MUSA 5080 Portfolio</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -124,6 +125,18 @@ ul.task-list li input[type="checkbox"] {
     <a class="dropdown-item" href="../weekly-notes/week-06-notes.html">
  <span class="dropdown-text">Week 6</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../weekly-notes/week-07-notes.html">
+ <span class="dropdown-text">Week 7</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../weekly-notes/week-09-notes.html">
+ <span class="dropdown-text">Week 9</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../weekly-notes/week-10-notes.html">
+ <span class="dropdown-text">Week 10</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -156,17 +169,135 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#pre-lecture-notes-quarto-slides-for-midterm" id="toc-pre-lecture-notes-quarto-slides-for-midterm" class="nav-link active" data-scroll-target="#pre-lecture-notes-quarto-slides-for-midterm">Pre-lecture notes: Quarto Slides for Midterm</a></li>
+  <li><a href="#model-diagnostics-spatial-autocorrelation" id="toc-model-diagnostics-spatial-autocorrelation" class="nav-link" data-scroll-target="#model-diagnostics-spatial-autocorrelation">Model Diagnostics &amp; Spatial Autocorrelation</a>
+  <ul class="collapse">
+  <li><a href="#understanding-spatial-patterns-in-errors" id="toc-understanding-spatial-patterns-in-errors" class="nav-link" data-scroll-target="#understanding-spatial-patterns-in-errors">Understanding Spatial Patterns in Errors</a></li>
+  <li><a href="#morans-i" id="toc-morans-i" class="nav-link" data-scroll-target="#morans-i">Moran’s I</a>
+  <ul class="collapse">
+  <li><a href="#what-is-morans-i" id="toc-what-is-morans-i" class="nav-link" data-scroll-target="#what-is-morans-i">What is Moran’s I</a></li>
+  <li><a href="#defining-neighbors" id="toc-defining-neighbors" class="nav-link" data-scroll-target="#defining-neighbors">Defining Neighbors</a></li>
+  <li><a href="#spatial-lag" id="toc-spatial-lag" class="nav-link" data-scroll-target="#spatial-lag">Spatial Lag</a></li>
+  <li><a href="#what-does-morans-i-explain" id="toc-what-does-morans-i-explain" class="nav-link" data-scroll-target="#what-does-morans-i-explain">What does Moran’s I Explain?</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Week 7 Notes - Spatial Machine Learning &amp; Advanced Regression</h1>
+</div>
 
 
 
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 20, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
 
 
+</header>
 
+
+<section id="pre-lecture-notes-quarto-slides-for-midterm" class="level2">
+<h2 class="anchored" data-anchor-id="pre-lecture-notes-quarto-slides-for-midterm">Pre-lecture notes: Quarto Slides for Midterm</h2>
+<ul>
+<li>echo = TRUE displays code chunk in quarto</li>
+<li>eval = FALSE prevents code chunk from running</li>
+</ul>
+</section>
+<section id="model-diagnostics-spatial-autocorrelation" class="level1">
+<h1>Model Diagnostics &amp; Spatial Autocorrelation</h1>
+<section id="understanding-spatial-patterns-in-errors" class="level2">
+<h2 class="anchored" data-anchor-id="understanding-spatial-patterns-in-errors">Understanding Spatial Patterns in Errors</h2>
+<p><strong>What are model errors?</strong></p>
+<p><img src="imgNotes/week7-1.png" class="img-fluid" alt="prediciton error"> <strong>Good v Bad Errors</strong></p>
+<ul>
+<li>Random errors (good)
+<ul>
+<li>No systematic pattern</li>
+<li>Scattered across space</li>
+<li>Prediction equally good everywhere</li>
+<li>Model captures key relationships</li>
+</ul></li>
+<li>Clustered errors (bad)
+<ul>
+<li>Spatial pattern visible</li>
+<li>Under/over-predict in areas</li>
+<li>Model misses something about location</li>
+<li>Need more spatial features!</li>
+</ul></li>
+</ul>
+<p>How do we test this? Look for <em>spatial autocorrelation</em> in the errors</p>
+<p><code>Library(spdep1)</code> is core library</p>
+</section>
+<section id="morans-i" class="level2">
+<h2 class="anchored" data-anchor-id="morans-i">Moran’s I</h2>
+<section id="what-is-morans-i" class="level3">
+<h3 class="anchored" data-anchor-id="what-is-morans-i">What is Moran’s I</h3>
+<p><strong>Moran’s I</strong> measures spatial autocorrelation Range: -1 to 1</p>
+<ul>
+<li>+1 = Perfect positive correlation (clustering)</li>
+<li>0 = Random spatial pattern</li>
+<li>-1 = Perfect negative correlation (dispersion)</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="imgNotes/week7-2.png" class="img-fluid figure-img"></p>
+<figcaption>Moran’s I equation</figcaption>
+</figure>
+</div>
+<p>The intuition behind it The formula is really just asking: “When I’m above/below average, are my neighbors also above/below average?”</p>
+<p>Breaking it down:</p>
+<p>1.(xi−x¯) = How far am I from the mean? 2. (xj−x¯) = How far is my neighbor from the mean? 3. Multiply them: - If both positive or both negative → positive product (similar) - If opposite signs → negative product (dissimilar) 4. Sum across all neighbor pairs and normalize</p>
+</section>
+<section id="defining-neighbors" class="level3">
+<h3 class="anchored" data-anchor-id="defining-neighbors">Defining Neighbors</h3>
+<p><strong>Different ways to define spatial relationships</strong></p>
+<ul>
+<li>Contiguity: Polygons that share a border</li>
+<li>Distance: All within X meters, fixed threshold</li>
+<li>k-Nearest: Closest k points, adaptive distace</li>
+</ul>
+</section>
+<section id="spatial-lag" class="level3">
+<h3 class="anchored" data-anchor-id="spatial-lag">Spatial Lag</h3>
+<p>spatial lag = avg value of neighbors</p>
+</section>
+<section id="what-does-morans-i-explain" class="level3">
+<h3 class="anchored" data-anchor-id="what-does-morans-i-explain">What does Moran’s I Explain?</h3>
+<p><img src="imgNotes/week7-3.png" class="img-fluid" alt="explanation"> Because this class is focused on prediction, we should not be using spatial lag</p>
+<ul>
+<li>Simultaneity Problem
+<ul>
+<li>Including <em>WY</em> (neighbor prices) creates circular logic</li>
+<li>My price affects neighbors → neighbors affect me</li>
+<li>OLS estimates are biased and inconsistent</li>
+</ul></li>
+</ul>
+
+
+</section>
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

@@ -3919,6 +3919,18 @@ vertical-align: -.125em;
     <a class="dropdown-item" href="../../weekly-notes/week-06-notes.html">
  <span class="dropdown-text">Week 6</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../weekly-notes/week-07-notes.html">
+ <span class="dropdown-text">Week 7</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../weekly-notes/week-09-notes.html">
+ <span class="dropdown-text">Week 9</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../weekly-notes/week-10-notes.html">
+ <span class="dropdown-text">Week 10</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -4045,14 +4057,16 @@ vertical-align: -.125em;
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Load spatial data</span></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">#census_api_key(&quot;YOUR KEY&quot;)</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">#options(tigris_use_cache = TRUE)</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">#options(tigris_progress = FALSE)  # Suppress tigris progress bars</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Check that all data loaded correctly</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">#Did not work</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">#options(tigris_use_cache = TRUE)</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">#options(tigris_progress = FALSE)  # Suppress tigris progress bars</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Read a shapefile</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>countiesPA <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">&quot;data/Pennsylvania_County_Boundaries.shp&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Check that all data loaded correctly</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Read a shapefile</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>countiesPA <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">&quot;data/Pennsylvania_County_Boundaries.shp&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Reading layer `Pennsylvania_County_Boundaries&#39; from data source 
   `C:\Users\matth\Documents\pennFall25\PPA\portfolioSetup\labs\lab2\data\Pennsylvania_County_Boundaries.shp&#39; 

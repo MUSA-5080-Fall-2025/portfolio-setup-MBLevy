@@ -1,0 +1,119 @@
+---
+title: "Week 10 Notes - Logistic Regression for Binary Outcomes"
+date: "2025-11-10"
+---
+
+# Part 1: Introduction to Logistic Regression
+
+
+Predicting a probability, and, thus, a binary outcome
+
+![Transform](imgNotes/week10-1.png)
+![compare](imgNotes/week10-2.png)
+When do we use logistic regression?
+
+- Binary Classification!
+  - Criminal Justice
+    - Will somone reoffend?
+  - Health
+    - WIll patient develop disease?
+  - Economics
+    - Will load default?
+  - Urban Planning
+    - Will HH participate in program?
+    
+![lgit](imgNotes/week10-3.png)
+
+
+# Part 2: Building Logistic Models
+
+![build](imgNotes/week10-4.png)
+![fitting](imgNotes/week10-5.png)
+![interpret](imgNotes/week10-6.png)
+![predictions](imgNotes/week10-7.png)
+## The Fundamental Challenge
+
+**This is where logistic regression gets interesting (and complicated):**
+
+The model gives us probabilities, but we need to make **binary decisions**.
+
+**Question:** What probability threshold should we use to classify?
+
+- Threshold = 0.5? (common default)
+- Threshold = 0.3? (more aggressive - flag more as spam)
+- Threshold = 0.7? (more conservative - only flag obvious spam)
+
+**The answer depends on:**
+
+- Cost of false positives (marking legitimate email as spam)
+- Cost of false negatives (missing actual spam)
+- **These costs are rarely equal!**
+
+# Part 3a: Confusion Matrices
+
+![four outcme](imgNotes/week10-8.png)
+![measure](imgNotes/week10-9.png)
+![measure2](imgNotes/week10-10.png)
+
+# Part 4: The Threshold Decision
+
+**Why Threshold Choice Matters**
+
+*Remember:* The model gives us probabilities. We decide what probability triggers action.
+
+*Threshold = 0.3* (low bar)
+- More emails marked as spam
+- Higher sensitivity (catch more spam)
+- Lower specificity (more false alarms)
+
+*Threshold = 0.7* (high bar)
+- Fewer emails marked as spam
+- Lower sensitivity (miss some spam)
+- Higher specificity (fewer false alarms)
+
+**There is no "right" answer - it depends on the costs of each type of error**
+
+
+# Part 5: ROC Curves
+
+
+**ROC = Receiver Operating Characteristic**  
+
+**What it shows:**
+
+- Every possible threshold
+- Trade-off between True Positive Rate (Sensitivity) and False Positive Rate (1 - Specificity)
+- Overall model discrimination ability
+
+**How to read it:**
+
+- X-axis: False Positive Rate (1 - Specificity)
+- Y-axis: True Positive Rate (Sensitivity)
+- Diagonal line: Random guessing
+- Top-left corner: Perfect prediction
+
+
+**AUC (Area Under the Curve)** summarizes overall model performance:
+
+- **AUC = 1.0:** Perfect classifier
+- **AUC = 0.9-1.0:** Excellent
+- **AUC = 0.8-0.9:** Good
+- **AUC = 0.7-0.8:** Acceptable
+- **AUC = 0.6-0.7:** Poor
+- **AUC = 0.5:** No better than random guessing
+- **AUC < 0.5:** Worse than random (your model is backwards!)
+
+**Our spam filter AUC = `r round(auc_value, 3)`**
+
+**Interpretation:** The model has good discrimination ability, but...
+
+- AUC doesn't tell us which threshold to use
+- AUC doesn't account for class imbalance
+- AUC doesn't show us equity implications
+
+![rocCurve](imgNotes/week10-11.png)
+
+# Part 6: Equity Considerations
+
+![core prob](imgNotes/week10-12.png)
+
