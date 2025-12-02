@@ -28,6 +28,11 @@ website:
             text: Week 9
           - href: weekly-notes/week-10-notes.qmd
             text: Week 10
+          - href: weekly-notes/week-11-notes.qmd
+            text: Week 11
+          - href: weekly-notes/week-12-notes.qmd
+            text: Week 12
+          
       - text: Labs
         menu:
           - href: labs/lab0/lab0_template.qmd
@@ -36,6 +41,8 @@ website:
             text: "Lab 1 Census Data Quality for Policy Decisions"
           - href: labs/lab2/Levy-Matthew-Assignment2.qmd
             text: "Lab 2: Spatial Analysis and Visualization"
+          - href: labs/lab5/lab5.qmd
+            text: "Lab 5: Bike Share Prediction"
      
 format:
   html:

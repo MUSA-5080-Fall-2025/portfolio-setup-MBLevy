@@ -1,0 +1,185 @@
+---
+title: "Week 12 Notes - SMapping the DNA of Urban Neighborhoods"
+date: "2025-11-24"
+---
+
+Snapshots do not show *how* neighborhoods change across variables
+
+- did it decline and then recover?
+- was there gentrification?
+
+**Why Sequences Matter for Policy**
+
+*Neighborhood A:*
+Stable → Declining → Struggling → Gentrifying
+
+Intervention: Anti-displacement support, affordable housing preservation
+
+*Neighborhood B:*
+
+Struggling → Struggling → Struggling → Gentrifying
+
+Intervention: Infrastructure investment, longtime resident wealth-building
+
+
+**Neighborhood Pathways Observed**
+
+Upgrading paths:
+
+- Struggling → Young urban (gentrification in diverse areas)
+- Blue collar → Young urban (densification)
+- Suburban → Elite suburban (suburban improvement)
+
+Declining paths:
+
+- Suburban → Blue collar (ring of suburban decline)
+- Blue collar → Struggling (continued decline)
+- Most common: No change (stability at extremes)
+
+## The Methodological Workflow
+
+![overview](imgNotes/week12-1.png)
+### Step 1: K-Means Clustering
+
+**What is K-means Clustering?**
+
+K-means is an unsupervised machine learning algorithm that:
+
+- Groups observations into k clusters based on similarity
+- Assigns each observation to the cluster with the nearest mean (centroid)
+- Iteratively updates cluster assignments and centroids until convergence
+
+**Why unsupervised?** 
+We don’t tell the algorithm what makes a “gentrifying” vs. “declining” neighborhood - it discovers patterns in the data
+
+Therefore, the labels are defined by the machine, not the user (if supervised, then user makes label)
+
+**How K-means Works**
+
+The Algorithm:
+
+1. Initialize: Randomly place k centroids in the data space
+2. Assign: Each neighborhood → nearest centroid (Euclidean distance)
+3. Update: Recalculate centroid positions (mean of assigned points)
+4. Repeat: Until assignments stop changing (convergence)
+
+
+Key feature: Partitions data into k non-overlapping groups
+
+
+**K-means for Neighborhoods**
+
+Input: Variables describing neighborhoods (all years combined)
+
+- Socioeconomic: % college degree, unemployment, poverty
+- Housing: Home value, owner-occupied, multi-unit structures, age
+- Demographic: Recent movers, vacancy, seniors, children
+
+Why standardize (z-score)? Compare relative position within metro over time
+
+Key decision: Cluster all years together → ensures temporal consistency
+
+
+**The Art of Choosing K**
+
+Mathematical optimum ≠ Substantive optimum
+
+From the tutorial: NYC analysis found optimal k=3, but used k=6
+
+Why?
+
+- k=3 groups: mostly White, mostly Black, mostly Hispanic
+- k=6 provides nuance: mixed-race categories, diversity gradations
+- More clusters = richer understanding of change pathways
+- “More art than precise science” – from the tutorial
+
+**Evaluating Different K Values**
+
+Common metrics:
+
+- Within-cluster sum of squares (WSS): Lower is better, always decreases
+- Silhouette width: How well observations fit their cluster (0-1)
+- Elbow method: Look for the “bend” in WSS plot
+
+Tutorial approach: Test k=2 through k=10, examine fit AND interpretability
+
+But ultimately: Choose k that makes theoretical sense and tells meaningful story
+
+![sill](imgNotes/week12-2.png)
+
+
+## Step 2: Create Sequences
+
+**From Clusters to Sequences**
+
+Once each neighborhood is classified at each time point:
+
+Before: Each tract has 5 separate cluster assignments
+
+*Tract 123:  1980=1, 1990=1, 2000=3, 2010=3, 2020=3*
+
+After: Each tract has one sequence describing its trajectory
+
+*Tract 123:  White → White → Hispanic → Hispanic → Hispanic*
+
+Result: Each neighborhood has a “signature” of change over time
+
+**Creating the Sequence Object**
+
+`# Reshape to wide format (one row per tract)
+census_wide <- census_data %>%
+  select(tract, year, cluster) %>%
+  pivot_wider(names_from = year, values_from = cluster)
+
+# Define sequence object with TraMineR
+seq_data <- seqdef(
+  census_wide,
+  var = c("1980", "1990", "2000", "2010", "2020"),
+  labels = c("White", "Black", "Hispanic", "Asian", 
+             "Black/Hisp", "White Mixed")
+)`
+
+## Step 3: Measure Sequence Dissimilarity
+
+Finding similarity depends on if we care more about timing, endpoints, or sequence order
+
+
+### Optimal Matching (OM) Algorithm
+
+Classic approach - borrowed from DNA sequence analysis:
+
+- Counts minimum “edits” to transform one sequence into another
+- Operations: Insert, Delete, Substitute
+- Costs: Based on how difficult/rare each transformation is
+
+Problem: Traditional OM doesn’t emphasize ordering of transitions
+
+
+### OMstrans: Sequence-Aware Matching
+
+From the tutorial: Use OMstrans (Optimal Matching of transitions)
+
+- Focuses on the sequences of transitions, not just states
+- Joins each state with its previous state (AB, BC, CD instead of A, B, C, D)
+- Better captures the process of change
+- More sensitive to the order in which transitions occur
+
+Key difference: “White→Hispanic→Asian” ≠ “White→Asian→Hispanic”
+
+**Computing OMstrans Dissimilarity**
+
+`# Calculate transition-based substitution costs
+submat <- seqsubm(seq_data, method = "TRATE", 
+                  transition = "both")
+
+# Compute OMstrans dissimilarity
+dist_omstrans <- seqdist(
+  seq_data,
+  method = "OMstrans",  # Note: OMstrans, not OM
+  indel = 1,            # insertion/deletion cost
+  sm = submat,          # substitution cost matrix
+  otto = 0.1            # origin-transition tradeoff
+)`
+
+Key parameter: otto (origin-transition tradeoff) - lower values emphasize sequencing
+

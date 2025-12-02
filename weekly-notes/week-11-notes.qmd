@@ -1,0 +1,94 @@
+---
+title: "Week 11 Notes - Space-Time Prediction"
+date: "2025-11-17"
+---
+
+# Part 1: Space-Time Challenge
+
+## Real-world problem: Bike Rebalancing
+
+- 7-9 AM: Residential areas empty out → Downtown fills up
+- 11 AM-2 PM: Lunch rush redistributes bikes
+- 4-6 PM: Reverse commute → Downtown empties
+- **Challenge**: How do we get bikes where they’ll be needed before demand hits?
+  - Can’t wait for stations to empty before rebalancing
+  - Must predict demand 1-2 hours ahead
+  - Need to optimize truck routes based on forecasts
+  - **Your job**: Build a system that predicts demand in space AND time
+
+# Part 2: Panel Data Overview
+
+
+**What is Panel Data?**
+
+Definition: Data that follows the same units over multiple time periods
+
+Cross-sectional data:
+
+- Each row = one observation
+- House prices in 2024
+- One snapshot in time
+
+Panel data:
+
+- Each row = unit × time period
+- Station × hour combinations
+- Repeated observations
+
+# Part 3: Binning Data
+
+**Why bin?**
+
+- Problem: Every trip starts at a unique timestamp
+-Can’t aggregate or find patterns at the second-level
+- Solution: Group trips into uniform time intervals (bins)
+
+# Part 4: Temporal lags
+
+**What Are Temporal Lags?**
+
+Core idea: Past demand predicts future demand
+
+Spatial features (Week 6):
+
+  - Crimes within 500ft
+  - Distance to downtown
+  - Nearby amenities
+
+Temporal features (This week):
+
+  - Demand 1 hour ago
+  - Demand 2 hours ago
+  - Demand yesterday (24 hours ago)
+
+**Intuition**: If there were 15 trips at 8 AM, there will probably be ~15 trips at 9 AM
+
+Important: lags are calculated within each station
+
+
+**Why Multiple Lags?**
+
+Different lags capture different patterns:
+
+- lag1Hour: Short-term persistence (smooth demand changes)
+- lag3Hours: Medium-term trends (morning rush building)
+- lag12Hours: Half-day cycle (AM vs. PM patterns)
+- lag1day (24 hours): Daily periodicity (same time yesterday)
+
+Model will learn which lags are most predictive for each station/time combination
+
+# Part 5: Creating the Space-Time Panel
+
+Need value for every hour at every station
+
+ - use `expand.grid()`
+ 
+**Final Panel Structure**
+
+What we have now:
+
+- Every station-hour combination exists
+- Trip counts (including zeros)
+- Station fixed attributes (location, demographics)
+- Time-varying features (weather, day of week, hour)
+- Temporal lags (lag1Hour, lag1day, etc.)
